@@ -19,7 +19,7 @@ const WhoWeAre = () => {
                           WHO WE ARE
                       </h2>
                       <p className="text-[#353535] text-sm leading-relaxed">
-                          Discover Samadhaan Foundation – Your Trusted Partner for Real Estate and Civil Construction Solutions. We go beyond traditional real estate services, offering comprehensive support for buying, selling, renting, and construction needs with a focus on quality and transparency.
+                          Discover Rsusb2sbuilders Foundation – Your Trusted Partner for Real Estate and Civil Construction Solutions. We go beyond traditional real estate services, offering comprehensive support for buying, selling, renting, and construction needs with a focus on quality and transparency.
                       </p>
                   </div>
                   <div className="w-full">
@@ -44,7 +44,7 @@ const WhoWeAre = () => {
                   <div className="flex flex-col gap-4 p-6 pt-0 md:pt-6">
                       <h2 className="text-2xl font-semibold text-black">OUR MISSION</h2>
                       <p className="text-[#353535] text-sm leading-relaxed">
-                          At Samadhaan Foundation, our mission is to deliver a seamless real estate and construction experience. We empower clients with informed decisions, ensuring every step is rooted in trust, quality, and excellence. Let us help you build, buy, sell, or rent with confidence.
+                          At Rsusb2sbuilders Foundation, our mission is to deliver a seamless real estate and construction experience. We empower clients with informed decisions, ensuring every step is rooted in trust, quality, and excellence. Let us help you build, buy, sell, or rent with confidence.
                       </p>
                   </div>
 

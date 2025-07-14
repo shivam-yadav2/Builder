@@ -8,7 +8,7 @@ const Footer = () => {
     <footer className="bg-[#004e2e] text-white py-10">
       {/* <div className="md:flex justify-between items-center border-b border-gray-700 pb-12 mb-12">
         <div className="lg:pl-22 md:pl-16 pl-6">
-          <h2 className="text-2xl font-semibold pb-6 md:pb-0">Samadhaan Foundation</h2>
+          <h2 className="text-2xl font-semibold pb-6 md:pb-0">Rsusb2sbuilders Foundation</h2>
         </div> 
        
         <div className=" flex items-center  gap-4 md:pr-16 pl-6">
@@ -150,7 +150,7 @@ const Footer = () => {
       </div>
 
       <div className="border-t border-gray-700 mt-8 pt-6 container mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-        <p className="text-sm mx-auto">&copy;2024 Samadhaan Foundation. All Rights Reserved.</p>
+        <p className="text-sm mx-auto">&copy;2024 Rsusb2sbuilders Foundation. All Rights Reserved.</p>
         {/* <div className="flex flex-wrap justify-center space-x-6 text-sm mt-4 md:mt-0">
           <a
             href="#"

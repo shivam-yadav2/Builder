@@ -115,20 +115,11 @@ const data = {
       icon: PieChart,
     },
     {
-      title: "Properties Approve Request",
-      url: "/dashboard/approval_property",
-      icon: PieChart,
-    },
-    {
       title: "Add Properties",
       url: "/dashboard/add_property",
       icon: Map,
     },
-    {
-      title: "Users",
-      url: "/dashboard/user_listing",
-      icon: User,
-    },
+    
   ],
   Enquiry: [
     {
@@ -141,16 +132,7 @@ const data = {
       url: "/dashboard/construction_inquiry",
       icon: Map,
     },
-    {
-      title: "Sales Inquiry",
-      url: "/dashboard/sales_inquiry",
-      icon: BookUser,
-    },
-    {
-      title: "Rent Inquiry",
-      url: "/dashboard/rent_inquiry",
-      icon: HousePlus,
-    },
+    
   ],
 };
 

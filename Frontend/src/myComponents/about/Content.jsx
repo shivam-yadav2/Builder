@@ -17,7 +17,7 @@ const Content = () => {
                       </div>
                       <div className="text-xs lg:text-sm leading-relaxed">
                           <p className=" mb-8 text-[#353535]">
-                              Samadhaan Foundation specializes in real estate and civil construction services, connecting buyers, sellers, tenants, and investors with tailored solutions. From building your dream home to securing profitable investments, we provide expert guidance every step of the way.
+                              Rsusb2sbuilders Foundation specializes in real estate and civil construction services, connecting buyers, sellers, tenants, and investors with tailored solutions. From building your dream home to securing profitable investments, we provide expert guidance every step of the way.
                           </p>
                           <ButtonCustom
                               title={"Explore Our Services"}

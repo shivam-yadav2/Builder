@@ -47,7 +47,7 @@ const Service = () => {
                         <h1 className='uppercase lg:text-2xl text-lg font-semibold'>for buyers</h1>
                     </div>
                     <div className='flex flex-col gap-6 text-[#2f2f2f]'>
-                        <h2>Looking to buy your dream home or invest in a commercial property? Samadhaan Foundation offers expert guidance and a wide range of residential and commercial properties to match your needs. Let us help you find the perfect space.</h2>
+                        <h2>Looking to buy your dream home or invest in a commercial property? Rsusb2sbuilders Foundation offers expert guidance and a wide range of residential and commercial properties to match your needs. Let us help you find the perfect space.</h2>
                         <ButtonCustom title={'Buy a Property'} onClick={() => navigate('/buy')} />
                     </div>
 
@@ -59,7 +59,7 @@ const Service = () => {
                         <h1 className='uppercase lg:text-2xl text-lg font-semibold'>For Sellers</h1>
                     </div>
                     <div className='flex flex-col gap-6 text-[#2f2f2f]'>
-                        <h2>Ready to sell your property? We provide expert strategies and leverage our social media marketing partnerships to maximize your property’s value. Sell with ease and confidence with Samadhaan Foundation.</h2>
+                        <h2>Ready to sell your property? We provide expert strategies and leverage our social media marketing partnerships to maximize your property’s value. Sell with ease and confidence with Rsusb2sbuilders Foundation.</h2>
                         
                         {
                     isLoggedIn ?

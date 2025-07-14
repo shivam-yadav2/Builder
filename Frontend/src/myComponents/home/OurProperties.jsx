@@ -15,7 +15,7 @@ const OurProperties = () => {
                 Explore Our Featured Properties and Projects
               </h1>
               <p className="text-sm lg:text-lg font-semibold text-gray-700 lg:mt-6 capitalize lg:w-4/5 mt-2">
-                Discover the properties and projects that showcase Samadhaan Foundation’s commitment to excellence. From luxurious residential homes to thriving commercial spaces, and even custom civil construction projects, we help clients achieve their dreams with unmatched dedication and expertise.
+                Discover the properties and projects that showcase Rsusb2sbuilders Foundation’s commitment to excellence. From luxurious residential homes to thriving commercial spaces, and even custom civil construction projects, we help clients achieve their dreams with unmatched dedication and expertise.
               </p>
             </div>
             <div className="mt-5">

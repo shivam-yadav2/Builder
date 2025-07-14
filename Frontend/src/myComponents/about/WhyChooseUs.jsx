@@ -35,7 +35,7 @@ const WhyChooseUs = () => {
                   <div className="bg-[#F2FAFF] rounded-lg p-7 pr-24 md:order-4 lg:order-none  md:col-span-2">
                       <img src="/assets/img/Group.svg" className="border-[1px] border-black p-2 rounded-full " alt="" />
                       <h3 className="text-xl font-semibold mt-5 mb-2">Commitment to Excellence</h3>
-                      <p className="text-sm leading-relaxed text-[#353535]">Committed to Excellence in Every Project – Trust Samadhaan Foundation for reliable, transparent, and result-driven real estate and construction solutions. Contact us today to start your journey!</p>
+                      <p className="text-sm leading-relaxed text-[#353535]">Committed to Excellence in Every Project – Trust Rsusb2sbuilders Foundation for reliable, transparent, and result-driven real estate and construction solutions. Contact us today to start your journey!</p>
                   </div>
               </div>
           </div>

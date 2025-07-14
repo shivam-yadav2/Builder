@@ -225,7 +225,7 @@ const AdminDashboard = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-6">Samadhaan Groups Property Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6">Rsusb2sbuilders Groups Property Dashboard</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
