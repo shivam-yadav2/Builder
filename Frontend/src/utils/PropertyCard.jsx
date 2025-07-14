@@ -5,9 +5,9 @@ import '../../src/index.css'
 const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city, type }) => {
   // console.log(name)
   return (
-    <div   className="max-w-md h-[530px] group  onHover transition duration-1000 hover:bg-[#004e2e] hover:shadow-lg  bg-white rounded-sm overflow-hidden">
+    <div className="max-w-md  group shadow-xl onHover transition duration-1000 hover:bg-[#004e2e] hover:shadow-lg  bg-white rounded-lg overflow-hidden">
       <div className="relative overflow-hidden">
-        <div className="h-96 p-[2px]">
+        <div className=" p-[2px]">
           <img
             src={image ? `${image}` : "/assets/img/homeCard.png"}
             alt={title}
@@ -30,19 +30,11 @@ const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city,
         <p className="text-gray-600 flex items-center space-x-1">
           <span className="text-sm group-hover:text-[white]">📍 {location}</span>
         </p>
-        <h3 className="text-lg group-hover:text-[white] font-semibold mt-1">{title}</h3>
-        <p className="text-sm mb-2 group-hover:text-[white] text-gray-500">🏠 Sqft: {sqft}</p>
-        <Separator />
-
         <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center space-x-2">
-            <img
-              // src="https://dummyimage.com/600x400/000/fff"
-              src={"https://dummyimage.com/600x400/000/fff"}
-              alt="Admin"
-              className="w-8 h-8 rounded-full"
-            />
-            <span className="text-sm group-hover:text-[white]  text-gray-600">{name}</span>
+          <div className="">
+
+            <h3 className="text-lg group-hover:text-[white] font-semibold mt-1">{title}</h3>
+            <p className="text-sm mb-2 group-hover:text-[white] text-gray-500">🏠 Sqft: {sqft}</p>
           </div>
           <span className="text-lg font-bold group-hover:text-[white] text-gray-900">₹ {price}</span>
         </div>

@@ -78,7 +78,7 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center justify-end space-x-4">
-          <p>
+          {/* <p>
             {isLoggedIn ? (
               <NavLink
                 to="/dashboard"
@@ -99,7 +99,7 @@ export default function Navbar() {
                 <UserPlus className="h-6 w-6" />
               </NavLink>
             )}
-          </p>
+          </p> */}
           {/* {isLoggedIn ? (
             <NavLink to="/contact" className="relative lg:block hidden">
               <ButtonCustom title="Sell Now" theme={"white"} />
