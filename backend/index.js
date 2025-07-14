@@ -11,20 +11,20 @@ console.log(`PORT from .env: ${process.env.PORT}`);
 // app.use(errorHandler);
 
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    app.listen(process.env.PORT, () => {
-      console.log(`✅ Server is running on port ${process.env.PORT}`);
-    });
+// const startServer = async () => {
+//   try {
+//     await connectDB();
+//     app.listen(process.env.PORT, () => {
+//       console.log(`✅ Server is running on port ${process.env.PORT}`);
+//     });
 
-    // 🔥 Test response at the root endpoint
-    app.get("/", (req, res) => {
-      res.status(200).json({ message: "Server is up and running!" });
-    });
-  } catch (err) {
-    console.error("❌ Server failed to start", err);
-  }
-};
+//     // 🔥 Test response at the root endpoint
+//     app.get("/", (req, res) => {
+//       res.status(200).json({ message: "Server is up and running!" });
+//     });
+//   } catch (err) {
+//     console.error("❌ Server failed to start", err);
+//   }
+// };
 
-startServer();
+// startServer();
