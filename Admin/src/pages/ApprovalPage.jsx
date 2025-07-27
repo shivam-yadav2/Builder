@@ -36,7 +36,7 @@ const AdminApprovalPage = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://admin.samadhaangroups.co.in/api/v1/admin/get-all-properties",
+        "http://localhost:4000/api/v1/admin/get-all-properties",
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
@@ -68,7 +68,7 @@ const AdminApprovalPage = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://admin.samadhaangroups.co.in/api/v1/admin/update-property-status",
+        "http://localhost:4000/api/v1/admin/update-property-status",
         {
           id: propertyId,
           status,
@@ -278,7 +278,7 @@ const AdminApprovalPage = () => {
                                     selectedProperty.images.map((img, index) => (
                                       <img
                                         key={index}
-                                        src={`https://admin.samadhaangroups.co.in/${img}`}
+                                        src={`http://localhost:4000/${img}`}
                                         alt={`Property ${index}`}
                                         className="w-24 h-24 object-cover rounded"
                                       />

@@ -163,8 +163,8 @@ const AddProperty = () => {
         maxBodyLength: Infinity,
         url:
           data.propertyType === "house"
-            ? "https://admin.samadhaangroups.co.in/api/v1/home/add-home-admin"
-            : "https://admin.samadhaangroups.co.in/api/v1/land/add-land-admin",
+            ? "http://localhost:4000/api/v1/home/add-home-admin"
+            : "http://localhost:4000/api/v1/land/add-land-admin",
         headers: {
           Authorization: Cookies.get("accessTokenAdmin"),
           "Content-Type": "multipart/form-data",
@@ -184,7 +184,7 @@ const AddProperty = () => {
       console.error("API Error:", error);
       setApiError(
         error.response?.data?.message ||
-          "Failed to submit property. Please try again."
+        "Failed to submit property. Please try again."
       );
     }
   };
@@ -528,7 +528,7 @@ const AddProperty = () => {
                   )}
                 </div>
                 <div>
-                  <Label>{propertyType === "house" ?"Total Price":"Per Unit Price"} </Label>
+                  <Label>{propertyType === "house" ? "Total Price" : "Per Unit Price"} </Label>
                   <Controller
                     name="perUnitPrice"
                     control={control}

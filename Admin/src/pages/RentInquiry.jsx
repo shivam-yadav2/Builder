@@ -48,7 +48,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 // API URL as a constant
-const API_BASE_URL = "https://admin.samadhaangroups.co.in/api/v1";
+const API_BASE_URL = "http://localhost:4000/api/v1";
 
 // Status mapping
 const STATUS_MAP = {
@@ -462,8 +462,8 @@ const InquiryDashboard = () => {
                   ? "Deleting..."
                   : "Updating..."
                 : dialogType === "delete"
-                ? "Yes, Delete"
-                : "Yes, Confirm"}
+                  ? "Yes, Delete"
+                  : "Yes, Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

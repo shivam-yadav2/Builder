@@ -13,7 +13,7 @@ const TopProperty = () => {
   const bestProperties = allProperties.filter((property) => {
     const hasAmenities = Array.isArray(property.amenities) && property.amenities[0]?.length > 0;
     const hasNearby = Array.isArray(property.nearby) && property.nearby[0]?.length > 0;
-      return hasAmenities && hasNearby
+    return hasAmenities && hasNearby
   });
 
   return (
@@ -30,17 +30,17 @@ const TopProperty = () => {
 
         <div className="grid grid-cols-1 mt-5 md:grid-cols-3 gap-6 p-6 md:ml-10">
           {bestProperties.length > 0 ? (
-            bestProperties.slice(0,3).map((property, index) => (
+            bestProperties.slice(0, 3).map((property, index) => (
               <Link to={`/property-details/${property?.type}/${property?._id}`} key={property?._id}>
-              <PropertyCard key={index}  title={property?.title}
-              location={property?.location}
-              sqft={property?.landArea}
-              price={ property?.unitPrice}
-              image={`https://admin.samadhaangroups.co.in/${property?.images[0]}`}
-              name={property?.creator?.name}
-              city={property?.city}
-              type={property?.propertyType}
-                  avatar={property?.creator?.avatar ? `https://admin.samadhaangroups.co.in/${property?.creator?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`}/>
+                <PropertyCard key={index} title={property?.title}
+                  location={property?.location}
+                  sqft={property?.landArea}
+                  price={property?.unitPrice}
+                  image={`http://localhost:4000/${property?.images[0]}`}
+                  name={property?.creator?.name}
+                  city={property?.city}
+                  type={property?.propertyType}
+                  avatar={property?.creator?.avatar ? `http://localhost:4000/${property?.creator?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`} />
               </Link>
             ))
           ) : (

@@ -37,7 +37,7 @@ const Login = () => {
         // Use this for local testing
         // "http://localhost:4000/api/v1/users/signin",
         // Switch to this for production
-        "https://admin.samadhaangroups.co.in/api/v1/users/signin",
+        "http://localhost:4000/api/v1/users/signin",
         JSON.stringify({
           email: data.email,
           password: data.password,

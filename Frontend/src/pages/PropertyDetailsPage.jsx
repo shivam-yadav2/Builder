@@ -35,7 +35,7 @@ const PropertyDetailsPage = () => {
     //   const config = {
     //     method: "post",
     //     maxBodyLength: Infinity,
-    //     url: `https://admin.samadhaangroups.co.in/api/v1/${
+    //     url: `http://localhost:4000/api/v1/${
     //       type === "Land"
     //         ? "land/land-detail"
     //         : type === "Home"
@@ -63,9 +63,9 @@ const PropertyDetailsPage = () => {
     });
 
     const Homeurl =
-      "https://admin.samadhaangroups.co.in/api/v1/home/home-detail";
+      "http://localhost:4000/api/v1/home/home-detail";
     const Landurl =
-      "https://admin.samadhaangroups.co.in/api/v1/land/land-detail";
+      "http://localhost:4000/api/v1/land/land-detail";
 
     let config = {
       method: "post",
@@ -119,7 +119,7 @@ const PropertyDetailsPage = () => {
   //   let config = {
   //     method: "post",
   //     maxBodyLength: Infinity,
-  //     url: `https://admin.samadhaangroups.co.in/api/v1/land/land-detail/${id}`,
+  //     url: `http://localhost:4000/api/v1/land/land-detail/${id}`,
   //     headers: {
   //       "Content-Type": "application/json",
   //     },
@@ -207,31 +207,31 @@ const PropertyDetailsPage = () => {
                 <div className="mt-4 space-y-6">
                   {combinedProperties?.length > 0 ? (
                     <>
-                   { combinedProperties?.slice(0, 5)?.map((property, i) => (
-                      <>
-                        <PropertyCard
-                          key={id}
-                          title={property?.title}
-                          location={property?.location}
-                          sqft={property?.landArea}
-                          price={ property?.unitPrice}
-                          image={`https://admin.samadhaangroups.co.in/${property?.images[0]}`}
-                        />
-                       
-                      </>
-                    ))}
-                    {combinedProperties?.length > 5 && (
+                      {combinedProperties?.slice(0, 5)?.map((property, i) => (
+                        <>
+                          <PropertyCard
+                            key={id}
+                            title={property?.title}
+                            location={property?.location}
+                            sqft={property?.landArea}
+                            price={property?.unitPrice}
+                            image={`http://localhost:4000/${property?.images[0]}`}
+                          />
+
+                        </>
+                      ))}
+                      {combinedProperties?.length > 5 && (
                         <div className="text-center pt-4">
-                        <NavLink
-                          to="/"
-                          className="text-blue-600 hover:underline font-medium"
-                        >
-                          More Properties
-                        </NavLink>
-                      </div>
-                    )}
-                  
-                  </>
+                          <NavLink
+                            to="/"
+                            className="text-blue-600 hover:underline font-medium"
+                          >
+                            More Properties
+                          </NavLink>
+                        </div>
+                      )}
+
+                    </>
                   ) : (
                     <p className="text-center col-span-3 text-gray-500">
                       No properties available

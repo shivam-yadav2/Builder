@@ -73,11 +73,11 @@ const BuyProperties = () => {
                     location={property.location}
                     sqft={property.landArea}
                     price={property.unitPrice}
-                    image={`https://admin.samadhaangroups.co.in/${property.images?.[0]}`}
+                    image={`http://localhost:4000/${property.images?.[0]}`}
                     name={property?.creator?.name}
                     city={property?.city}
                     type={property?.propertyType}
-                    avatar={`https://admin.samadhaangroups.co.in/${userData?.avatar}`}
+                    avatar={`http://localhost:4000/${userData?.avatar}`}
                   />
                 </Link>
               )

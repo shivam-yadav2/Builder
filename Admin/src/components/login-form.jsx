@@ -38,7 +38,7 @@ export function LoginForm({ className, ...props }) {
       const config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://admin.samadhaangroups.co.in/api/v1/admin/login',
+        url: 'http://localhost:4000/api/v1/admin/login',
         headers: {
           'Content-Type': 'application/json'
         },

@@ -64,7 +64,7 @@ export default function Navbar() {
               About Us
             </NavLink>
           </li>
-     
+
           <li>
             <NavLink to="/property" className="hover:text-gray-300">
               Property
@@ -86,7 +86,7 @@ export default function Navbar() {
               >
                 <Avatar>
                   <AvatarImage
-                    src={userData?.avatar ? `https://admin.samadhaangroups.co.in/${userData?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`}
+                    src={userData?.avatar ? `http://localhost:4000/${userData?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`}
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>

@@ -35,7 +35,7 @@ const UserListing = () => {
         const config = {
           method: "get",
           maxBodyLength: Infinity,
-          url: "https://admin.samadhaangroups.co.in/api/v1/users/all-users",
+          url: "http://localhost:4000/api/v1/users/all-users",
           headers: {
             Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
           },
@@ -78,7 +78,7 @@ const UserListing = () => {
       const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "https://admin.samadhaangroups.co.in/api/v1/users/update-status",
+        url: "http://localhost:4000/api/v1/users/update-status",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
@@ -97,10 +97,10 @@ const UserListing = () => {
         users.map((u) =>
           u._id === user._id
             ? {
-                ...u,
-                approvalStatus: status,
-                adminMessage: config.body.message,
-              }
+              ...u,
+              approvalStatus: status,
+              adminMessage: config.body.message,
+            }
             : u
         )
       );
@@ -116,7 +116,7 @@ const UserListing = () => {
       header: "Avatar",
       cell: ({ row }) => (
         <img
-          src={`https://admin.samadhaangroups.co.in/${row.original.avatar}`}
+          src={`http://localhost:4000/${row.original.avatar}`}
           alt={row.original.name}
           className="w-12 h-12 object-cover rounded-full cursor-pointer"
           onClick={() => {
@@ -169,15 +169,15 @@ const UserListing = () => {
               status === "approved"
                 ? "success"
                 : status === "pending"
-                ? "warning"
-                : "destructive"
+                  ? "warning"
+                  : "destructive"
             }
             className={
               status === "approved"
                 ? "bg-green-100 text-green-700 capitalize"
                 : status === "pending"
-                ? "bg-yellow-100 text-yellow-700 capitalize"
-                : "bg-red-100 text-red-700 capitalize"
+                  ? "bg-yellow-100 text-yellow-700 capitalize"
+                  : "bg-red-100 text-red-700 capitalize"
             }
           >
             {status}
@@ -278,7 +278,7 @@ const UserListing = () => {
                   {selectedUser.adminMessage || "None"}
                 </p>
                 <img
-                  src={`https://admin.samadhaangroups.co.in/${selectedUser.avatar}`}
+                  src={`http://localhost:4000/${selectedUser.avatar}`}
                   alt="Avatar"
                   className="w-24 h-24 object-cover rounded-full"
                 />

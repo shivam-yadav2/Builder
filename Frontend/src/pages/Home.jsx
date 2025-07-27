@@ -141,16 +141,16 @@ const Home = () => {
 
     try {
       if (modalType === "For Rent") {
-        apiUrl = "https://admin.samadhaangroups.co.in/api/v1/rentFilter/add";
+        apiUrl = "http://localhost:4000/api/v1/rentFilter/add";
         loadingToast = toast.loading("Applying rent filter... Please wait...");
       } else if (modalType === "For Construction") {
         apiUrl =
-          "https://admin.samadhaangroups.co.in/api/v1/constructionFilter/add";
+          "http://localhost:4000/api/v1/constructionFilter/add";
         loadingToast = toast.loading(
           "Submitting construction details... Please wait..."
         );
       } else if (modalType === "For Buy") {
-        apiUrl = "https://admin.samadhaangroups.co.in/api/v1/sellFilter/add";
+        apiUrl = "http://localhost:4000/api/v1/sellFilter/add";
         loadingToast = toast.loading("Applying buy filter... Please wait...");
       } else {
         alert("Invalid form type");
@@ -290,7 +290,7 @@ const Home = () => {
                     <span className="text-black">Feels like</span> Home
                   </h1>
                 </div>
-            
+
               </div>
               <div className="absolute bottom-10 right-10 flex gap-4 z-10">
                 <button className="custom-prev cursor-pointer bg-white md:px-5 px-3 rounded-full flex items-center justify-center hover:bg-gray-200">

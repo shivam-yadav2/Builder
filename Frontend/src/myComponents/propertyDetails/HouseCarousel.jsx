@@ -7,7 +7,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"; // Adjust the path based on your setup
 
-const HouseCarousel = ({property}) => {
+const HouseCarousel = ({ property }) => {
 
   const imageArr = property?.images
   //console.log(imageArr  )
@@ -29,11 +29,11 @@ const HouseCarousel = ({property}) => {
           {imageArr?.map((image, index) => (
             <CarouselItem
               key={index}
-              className="pl-2 basis-1/1" 
+              className="pl-2 basis-1/1"
             >
               <div>
                 <img
-                  src={`https://admin.samadhaangroups.co.in/${image}`}
+                  src={`http://localhost:4000/${image}`}
                   alt={`House ${index + 1}`}
                   className="w-full h-[30vh] md:h-[40vh] lg:h-[75vh] object-fill  rounded-lg"
                 />

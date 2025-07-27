@@ -52,7 +52,7 @@ const MyPropertiesPage = () => {
       const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "https://admin.samadhaangroups.co.in/api/v1/users/user-properties",
+        url: "http://localhost:4000/api/v1/users/user-properties",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -82,7 +82,7 @@ const MyPropertiesPage = () => {
 
       const config = {
         method: "post",
-        url: "https://admin.samadhaangroups.co.in/api/v1/users/user-property-delete",
+        url: "http://localhost:4000/api/v1/users/user-property-delete",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -114,7 +114,7 @@ const MyPropertiesPage = () => {
 
       const config = {
         method: "post",
-        url: "https://admin.samadhaangroups.co.in/api/v1/users/update-property-availability",
+        url: "http://localhost:4000/api/v1/users/update-property-availability",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -188,15 +188,15 @@ const MyPropertiesPage = () => {
         {properties.some(
           (property) => property.approvalStatus === "pending"
         ) && (
-          <Alert className="mb-6">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Pending Properties</AlertTitle>
-            <AlertDescription>
-              Properties awaiting admin approval are displayed with lower
-              opacity. You can still update status or delete them.
-            </AlertDescription>
-          </Alert>
-        )}
+            <Alert className="mb-6">
+              <Info className="h-4 w-4" />
+              <AlertTitle>Pending Properties</AlertTitle>
+              <AlertDescription>
+                Properties awaiting admin approval are displayed with lower
+                opacity. You can still update status or delete them.
+              </AlertDescription>
+            </Alert>
+          )}
         {properties.length === 0 ? (
           <Alert>
             <AlertTitle>No Properties Found</AlertTitle>
@@ -212,14 +212,13 @@ const MyPropertiesPage = () => {
                 className="shadow-md hover:shadow-lg transition py-0 pb-4 flex flex-col gap-2"
               >
                 <div
-                  className={`flex-1 ${
-                    property.approvalStatus === "pending"
+                  className={`flex-1 ${property.approvalStatus === "pending"
                       ? "opacity-60"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   <img
-                    src={`https://admin.samadhaangroups.co.in/${property.images[0]}`}
+                    src={`http://localhost:4000/${property.images[0]}`}
                     alt={property.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
@@ -241,15 +240,15 @@ const MyPropertiesPage = () => {
                           property.status === "Available"
                             ? "default"
                             : property.status === "Sold"
-                            ? "destructive"
-                            : "secondary"
+                              ? "destructive"
+                              : "secondary"
                         }
                         className={
                           property.status === "Available"
                             ? "bg-green-500 text-white"
                             : property.status === "Sold"
-                            ? "bg-red-500 text-white"
-                            : "bg-yellow-500 text-white"
+                              ? "bg-red-500 text-white"
+                              : "bg-yellow-500 text-white"
                         }
                       >
                         {property.status}
@@ -279,7 +278,7 @@ const MyPropertiesPage = () => {
                       openStatusModal(
                         property._id,
                         property.propertyType === "rent" ||
-                        property.propertyType === "sale"
+                          property.propertyType === "sale"
                           ? "Home"
                           : "Land",
                         value

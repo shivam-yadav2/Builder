@@ -55,12 +55,12 @@ const ChangePassword = () => {
             return "New password must be different from current password";
         }
         if (formData.newPassword !== formData.confirmPassword) {
-            return "New passwords do not match";    
+            return "New passwords do not match";
         }
         return '';
     };
 
-     const context = useContext(MyContext)
+    const context = useContext(MyContext)
     const { accessToken } = context
 
     const handleSubmit = async (e) => {
@@ -80,7 +80,7 @@ const ChangePassword = () => {
             const config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: 'https://admin.samadhaangroups.co.in/api/v1/users/change-password',
+                url: 'http://localhost:4000/api/v1/users/change-password',
                 headers: {
                     'Content-Type': 'application/json',
                     // Note: You'll need to provide the actual token here

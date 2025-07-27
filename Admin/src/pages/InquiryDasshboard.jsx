@@ -30,7 +30,7 @@ import { Trash2, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // API URL as a constant
-const API_BASE_URL = "https://admin.samadhaangroups.co.in/api/v1";
+const API_BASE_URL = "http://localhost:4000/api/v1";
 
 const InquiryDashboardAcadmey = () => {
   const navigate = useNavigate();

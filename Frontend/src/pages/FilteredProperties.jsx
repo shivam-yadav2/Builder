@@ -69,7 +69,7 @@ const FilteredProperties = () => {
               ["Home", "Land"].includes(property.type) &&
               ["sale", "both"].includes(property.propertyType)
             ) {
-            console.log("in buy 2")
+              console.log("in buy 2")
 
               matchesAny = true;
             }
@@ -154,7 +154,7 @@ const FilteredProperties = () => {
                   price={property.unitPrice}
                   image={
                     property.images?.[0]
-                      ? `https://admin.samadhaangroups.co.in/${property.images[0]}`
+                      ? `http://localhost:4000/${property.images[0]}`
                       : "/placeholder-image.jpg"
                   }
                   name={property?.creator?.name || "Unknown"}
@@ -162,7 +162,7 @@ const FilteredProperties = () => {
                   type={property?.propertyType}
                   avatar={
                     property?.creator?.avatar
-                      ? `https://admin.samadhaangroups.co.in/${property.creator.avatar}`
+                      ? `http://localhost:4000/${property.creator.avatar}`
                       : "https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
                   }
                 />

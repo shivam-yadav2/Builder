@@ -87,7 +87,7 @@ const Signup = () => {
         // Use this for local testing
         // "http://localhost:4000/api/v1/users/signup",
         // Switch to this for production
-        "https://admin.samadhaangroups.co.in/api/v1/users/signup",
+        "http://localhost:4000/api/v1/users/signup",
         formData,
         {
           headers: {

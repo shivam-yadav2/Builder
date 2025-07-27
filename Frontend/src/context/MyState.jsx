@@ -36,7 +36,7 @@ function MyState({ children }) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: 'https://admin.samadhaangroups.co.in/api/v1/users/me',
+            url: 'http://localhost:4000/api/v1/users/me',
             headers: {
                 'Authorization': accessToken
             }
@@ -44,7 +44,7 @@ function MyState({ children }) {
 
         axios.request(config)
             .then((response) => {
-               // console.log(response.data);
+                // console.log(response.data);
                 setUserData(response?.data?.data);
             })
             .catch((error) => {
@@ -53,9 +53,9 @@ function MyState({ children }) {
     }
 
     const getHomeData = () => {
-        axios.get('https://admin.samadhaangroups.co.in/api/v1/home/get-home-user')
+        axios.get('http://localhost:4000/api/v1/home/get-home-user')
             .then((response) => {
-               // console.log('Home Data:', response?.data?.data)
+                // console.log('Home Data:', response?.data?.data)
                 setHomeData(response?.data?.data)
             })
             .catch((error) => {
@@ -64,9 +64,9 @@ function MyState({ children }) {
     }
 
     const getLandData = () => {
-        axios.get('https://admin.samadhaangroups.co.in/api/v1/land/get-land-user')
+        axios.get('http://localhost:4000/api/v1/land/get-land-user')
             .then((response) => {
-               // console.log('Land Data:', response?.data?.data)
+                // console.log('Land Data:', response?.data?.data)
                 setLandData(response?.data?.data)
             })
             .catch((error) => {

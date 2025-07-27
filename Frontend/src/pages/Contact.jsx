@@ -46,7 +46,7 @@ const Contact = () => {
     }
 
     const promise = fetch(
-      "https://admin.samadhaangroups.co.in/api/v1/mainEnquiry/add",
+      "http://localhost:4000/api/v1/mainEnquiry/add",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -227,7 +227,7 @@ const Contact = () => {
                         </label>
                         <Input
                           id="number"
-                         
+
                           type="number"
                           name="phone"
                           value={formData.phone}

@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       const config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://admin.samadhaangroups.co.in/api/v1/admin/get-all-properties',
+        url: 'http://localhost:4000/api/v1/admin/get-all-properties',
         headers: {
           'Authorization': `Bearer ${Cookies.get('accessTokenAdmin')}`,
         },
@@ -140,8 +140,8 @@ const AdminDashboard = () => {
   const confirmEdit = async () => {
     try {
       const updateUrl = selectedProperty.type === 'Land'
-        ? 'https://admin.samadhaangroups.co.in/api/v1/land/update-land'
-        : 'https://admin.samadhaangroups.co.in/api/v1/home/update-home';
+        ? 'http://localhost:4000/api/v1/land/update-land'
+        : 'http://localhost:4000/api/v1/home/update-home';
 
       const payload = {
         id: selectedProperty._id,
@@ -185,8 +185,8 @@ const AdminDashboard = () => {
   const confirmDelete = async () => {
     try {
       const deleteUrl = selectedProperty.type === 'Land'
-        ? 'https://admin.samadhaangroups.co.in/api/v1/land/delete-land'
-        : 'https://admin.samadhaangroups.co.in/api/v1/home/delete-home';
+        ? 'http://localhost:4000/api/v1/land/delete-land'
+        : 'http://localhost:4000/api/v1/home/delete-home';
 
       await toast.promise(
         axios.post(
@@ -264,7 +264,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Price Trend Chart */}
-     
+
 
       {/* Recent Properties Table */}
       <Card>
@@ -486,7 +486,7 @@ const AdminDashboard = () => {
                     viewProperty.images.map((img, index) => (
                       <img
                         key={index}
-                        src={`https://admin.samadhaangroups.co.in/${img}`}
+                        src={`http://localhost:4000/${img}`}
                         alt={`Property ${index}`}
                         className="w-24 h-24 object-cover rounded"
                       />

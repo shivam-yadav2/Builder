@@ -18,7 +18,7 @@ const Dashboard = () => {
     // User data
     const [user, setUser] = useState({
         avatar: userData?.avatar
-            ? `https://admin.samadhaangroups.co.in/${userData.avatar}`
+            ? `http://localhost:4000/${userData.avatar}`
             : 'https://cdn-icons-png.flaticon.com/512/9187/9187604.png',
         name: userData?.name || 'Guest',
         phone: userData?.phone || 'N/A',
@@ -37,7 +37,7 @@ const Dashboard = () => {
                 const config = {
                     method: "post",
                     maxBodyLength: Infinity,
-                    url: "https://admin.samadhaangroups.co.in/api/v1/users/user-properties",
+                    url: "http://localhost:4000/api/v1/users/user-properties",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${Cookies.get("accessToken")}`,

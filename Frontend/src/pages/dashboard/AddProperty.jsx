@@ -111,7 +111,7 @@ const AddProperty = () => {
 
   const onSubmit = async (data) => {
     const id = toast.loading("Adding Property ...")
-    if ( data?.images === undefined) {
+    if (data?.images === undefined) {
       console.log("hello")
       toast.error('Atleast ! Image is Required', { id });
       return
@@ -151,7 +151,7 @@ const AddProperty = () => {
           formData.append("images", file);
         });
       }
-      
+
 
       // House-specific fields
       if (data.propertyType === "house") {
@@ -175,8 +175,8 @@ const AddProperty = () => {
         maxBodyLength: Infinity,
         url:
           data.propertyType === "house"
-            ? "https://admin.samadhaangroups.co.in/api/v1/home/add-home"
-            : "https://admin.samadhaangroups.co.in/api/v1/land/add-land",
+            ? "http://localhost:4000/api/v1/home/add-home"
+            : "http://localhost:4000/api/v1/land/add-land",
         headers: {
           Authorization: Cookies.get("accessToken"),
           "Content-Type": "multipart/form-data",
@@ -623,10 +623,10 @@ const AddProperty = () => {
                   ))}
                 </div>
                 {errors.nearby && (
-                    <p className="text-red-500">
-                      {errors.nearby.message}
-                    </p>
-                  )}
+                  <p className="text-red-500">
+                    {errors.nearby.message}
+                  </p>
+                )}
               </div>
 
               {/* House-Specific Fields */}
@@ -818,10 +818,10 @@ const AddProperty = () => {
                       ))}
                     </div>
                     {errors.amenities && (
-                    <p className="text-red-500">
-                      {errors.amenities.message}
-                    </p>
-                  )}
+                      <p className="text-red-500">
+                        {errors.amenities.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
