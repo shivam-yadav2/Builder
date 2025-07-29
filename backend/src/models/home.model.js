@@ -46,7 +46,7 @@ const HomeSchema = new mongoose.Schema(
       enum: ["Available", "Sold", "Pending"],
       default: "Available",
     },
-    propertyType: { type: String, enum: ["rent", "sale"], default: "sale" },
+    propertyType: { type: String, default: "sale" },
     rooms: { type: Number, required: true },
     bedrooms: { type: Number, required: true },
     kitchen: { type: Number, required: true },
@@ -68,7 +68,7 @@ const HomeSchema = new mongoose.Schema(
     approvalStatus: {
       type: String,
       enum: ["pending", "approved", "denied"],
-      default: "pending",
+      default: "approved",
     },
     adminMessage: {
       type: String,

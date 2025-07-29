@@ -43,7 +43,7 @@ const LandSchema = new mongoose.Schema({
   approvalStatus: {
     type: String,
     enum: ['pending', 'approved', 'denied'],
-    default: 'pending'
+    default: 'approved'
   },
   adminMessage: {
     type: String,

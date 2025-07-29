@@ -9,10 +9,15 @@ const { User } = require("../models/user.model.js");
 const jwt = require("jsonwebtoken");
 
 const generateAccessAndRefreshTokens = async (adminId) => {
+  console.log("i am here ,top ")
   try {
+    console.log("i am here ,in ", adminId)
     const admin = await Admin.findById(adminId);
+    console.log("i am here ,here ", admin)
     const refreshToken = admin.generateRefreshToken();
     const accessToken = admin.generateAccessToken();
+    console.log(refreshToken, accessToken);
+
     admin.refreshToken = refreshToken;
     await admin.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };

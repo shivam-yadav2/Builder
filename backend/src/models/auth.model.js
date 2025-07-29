@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-
 const { Schema } = mongoose;
+const jwt = require('jsonwebtoken');
 const AdminSchema = new Schema(
   {
     email: {
@@ -25,13 +25,38 @@ AdminSchema.pre("save", async function (next) {
   next();
 });
 
-
 // Method to check password correctness
 AdminSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// Generate Access Token
+AdminSchema.methods.generateAccessToken = function () {
+  console.log("in the token function")
+    return jwt.sign(
+        {
+            _id: this._id,
+            email: this.email,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    );
+};
 
+// Generate Refresh Token
+AdminSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    );
+};
 
 // Exporting the Admin model
 module.exports = mongoose.model("Admin", AdminSchema);
