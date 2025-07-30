@@ -20,6 +20,8 @@ import toast from "react-hot-toast"; // Import toast
 import { NavLink, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import RealEstateLanding from "@/myComponents/home/RealEstateLanding";
+import ContactSection from "@/myComponents/home/ContactSection";
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -303,12 +305,14 @@ const Home = () => {
             </div>
           </div>
           <FeaturedProperty />
+          <RealEstateLanding/>
           <Separator />
           <WhyChooseUs />
           <Separator />
           <Service />
           <OurProperties />
           <TopProperty />
+          <ContactSection/>
           <FootContact />
         </Layout>
         <Modal
