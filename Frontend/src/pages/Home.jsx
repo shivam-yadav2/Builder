@@ -22,6 +22,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import RealEstateLanding from "@/myComponents/home/RealEstateLanding";
 import ContactSection from "@/myComponents/home/ContactSection";
+import HeroSection from "./Hero";
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -255,6 +256,7 @@ const Home = () => {
     <section>
       <div>
         <Layout>
+        <HeroSection/>
           <div className="w-full h-[95vh]">
             <div className="w-full h-[91vh] relative">
               <Swiper
