@@ -2,7 +2,7 @@ import React from 'react';
 
 const HeroSection = () => {
   return (
-    <div className="relative min-h-screen bg-emerald-500 overflow-hidden">
+    <div className="relative  bg-emerald-500 overflow-hidden">
       {/* Background gradient image - replace with your asset */}
       <div 
         className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600"
@@ -36,7 +36,7 @@ const HeroSection = () => {
       </div>
 
       {/* Main content container */}
-      <div className="relative z-10  ">
+      <div className="relative z-10 pt-12 ps-12  ">
         <div className="grid grid-cols-2  w-full h-full">
           
           {/* Left content */}

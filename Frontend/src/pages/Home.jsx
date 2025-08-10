@@ -257,7 +257,7 @@ const Home = () => {
       <div>
         <Layout>
         <HeroSection/>
-          <div className="w-full h-[95vh]">
+          {/* <div className="w-full h-[95vh]">
             <div className="w-full h-[91vh] relative">
               <Swiper
                 modules={[Navigation, Autoplay]}
@@ -305,7 +305,7 @@ const Home = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
           <FeaturedProperty />
           <RealEstateLanding/>
           <Separator />
