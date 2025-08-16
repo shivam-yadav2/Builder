@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { NavLink } from "react-router-dom";
 import MyContext from "@/context/MyContext";
-import ButtonCustom from "@/utils/ButtonCustom";
+import ConstructionEnquiry from "@/utils/ButtonCustom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
@@ -77,7 +77,7 @@ export default function Navbar() {
           </li>
         </ul>
 
-        <div className="flex items-center justify-end space-x-4">
+        <div className="flex items-center justify-end lg:space-x-0 space-x-4">
           {/* <p>
             {isLoggedIn ? (
               <NavLink
@@ -108,6 +108,7 @@ export default function Navbar() {
             <ButtonCustom title="Sell Now" theme={"white"} />
           </NavLink>)} */}
 
+          <ConstructionEnquiry title="Sell Now" theme={"white"} />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger className="lg:hidden text-white">
               <Menu className="h-6 w-6" />

@@ -26,6 +26,7 @@ import HeroSection from "./Hero";
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const [modalType, setModalType] = useState("");
   const [formData, setFormData] = useState({
     rent: {
@@ -74,8 +75,8 @@ const Home = () => {
 
   console.log(modalType);
 
-  const openModal = (type) => {
-    setModalType(type);
+  const openModal = () => {
+    setModalType('for construction');
     setIsModalOpen(true);
   };
 
@@ -257,6 +258,7 @@ const Home = () => {
       <div>
         <Layout>
         <HeroSection/>
+        <Service />
           {/* <div className="w-full h-[95vh]">
             <div className="w-full h-[91vh] relative">
               <Swiper
@@ -310,9 +312,8 @@ const Home = () => {
           <RealEstateLanding/>
           <Separator />
           <WhyChooseUs />
-          <Separator />
-          <Service />
-          <OurProperties />
+          {/* <Separator /> */}
+          {/* <OurProperties /> */}
           <TopProperty />
           <ContactSection/>
           <FootContact />
