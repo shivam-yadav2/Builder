@@ -69,9 +69,13 @@ exports.createHome = asyncHandler(async (req, res) => {
     );
   }
 
+  console.log(req?.files)
+
   const images = req.files.images.map((file) =>
-    file.path.replace("public\\", "").replace(/\\/g, "/")
+    file.path.replace("public", "").replace(/\\/g, "/")
   );
+
+  console.log(images , "chek saving path")
 
   const home = await Home.create({
     title,

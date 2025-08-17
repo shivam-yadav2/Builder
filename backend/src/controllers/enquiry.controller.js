@@ -1,4 +1,4 @@
-const {Enquiry} = require("../models/enquiry.model.js");
+const Enquiry = require("../models/enquiry.model.js");
 const {ApiError} = require("../utils/ApiError.utils.js");
 const {ApiResponse} = require("../utils/ApiResponse.utils.js");
 const {asyncHandler} = require("../utils/asyncHandler.utils.js");
@@ -29,6 +29,7 @@ exports.createEnquiry = asyncHandler(async (req, res) => {
 // DELETE an enquiry by ID
 exports.deleteEnquiry = asyncHandler(async (req, res) => {
   const { id } = req.body;
+  console.log(id)
   const enquiry = await Enquiry.findByIdAndUpdate(id, {
     $set: {
       isDeleted: true,

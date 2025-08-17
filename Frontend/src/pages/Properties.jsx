@@ -6,46 +6,16 @@ import WhoWeAre from "@/myComponents/about/WhoWeAre";
 import FootContact from "@/myComponents/home/FootContact";
 import { Link } from "react-router-dom";
 import MyContext from "@/context/MyContext";
+import ContactSection from "@/myComponents/home/ContactSection";
 
 const RentProperties = () => {
-  const properties = [
-    {
-      location: "145 Brooklyn Ave, California, New York",
-      title: "Casa Lomas De Machalí Machas",
-      sqft: "1200",
-      price: "15000",
-    },
-    {
-      location: "Amausi, Lucknow, UP",
-      title: "2 BHK House For Sale In Amausi",
-      sqft: "3250",
-      price: "3900000",
-    },
-    {
-      location: "Amausi, Lucknow, UP",
-      title: "2 BHK House For Sale In Amausi",
-      sqft: "3250",
-      price: "3900000",
-    },
-    {
-      location: "145 Brooklyn Ave, California, New York",
-      title: "Casa Lomas De Machalí Machas",
-      sqft: "1200",
-      price: "15000",
-    },
-    {
-      location: "Amausi, Lucknow, UP",
-      title: "2 BHK House For Sale In Amausi",
-      sqft: "3250",
-      price: "3900000",
-    },
-    {
-      location: "Amausi, Lucknow, UP",
-      title: "2 BHK House For Sale In Amausi",
-      sqft: "3250",
-      price: "3900000",
-    },
-  ];
+  const { homeData, landData, userData } = useContext(MyContext);
+  //console.log("homeData:", homeData);
+  //console.log("landData:", landData);
+
+  const properties = [...(homeData || []), ...(landData || [])].filter(
+    (property) => property?.status === "Available" && !property?.isDelete
+  );
 
 
   return (
@@ -78,6 +48,8 @@ const RentProperties = () => {
       {/* <WhatWeOffer /> */}
       <WhoWeAre />
       <FootContact />
+      <ContactSection/>
+
     </Layout>
   );
 };

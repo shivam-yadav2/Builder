@@ -6,6 +6,7 @@ import Content from "@/myComponents/about/Content";
 import WhoWeAre from "@/myComponents/about/WhoWeAre";
 import WhyChooseUs from "@/myComponents/about/WhyChooseUs";
 import WhatWeOffer from "@/myComponents/about/WhatWeOffer";
+import ContactSection from "@/myComponents/home/ContactSection";
 
 const AboutUs = () => {
   return (
@@ -15,7 +16,9 @@ const AboutUs = () => {
       <WhoWeAre />
       <WhatWeOffer/>
       <WhyChooseUs />
-      <FootContact />
+      {/* <FootContact /> */}
+      <ContactSection/>
+
     </Layout>
   );
 };

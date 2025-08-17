@@ -186,7 +186,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const getAdminAllProperties = asyncHandler(async (req, res) => {
   // Fetch lands with creatorType: "User" and populate creator
-  const userLands = await Land.find({ creatorType: "User" })
+  const userLands = await Land.find({ creatorType: "User" , isDelete:false })
     .populate({
       path: "creator",
       model: "User",
@@ -196,7 +196,7 @@ const getAdminAllProperties = asyncHandler(async (req, res) => {
     .then((lands) => lands.map((land) => ({ ...land, type: "Land" })));
 
   // Fetch lands with creatorType: "Admin" and populate creator
-  const adminLands = await Land.find({ creatorType: "Admin" })
+  const adminLands = await Land.find({ creatorType: "Admin" , isDelete:false })
     .populate({
       path: "creator",
       model: "Admin",
@@ -205,7 +205,7 @@ const getAdminAllProperties = asyncHandler(async (req, res) => {
     .then((lands) => lands.map((land) => ({ ...land, type: "Land" })));
 
   // Fetch homes with creatorType: "User" and populate creator
-  const userHome = await Home.find({ creatorType: "User" })
+  const userHome = await Home.find({ creatorType: "User" , isDelete:false })
     .populate({
       path: "creator",
       model: "User",
@@ -215,7 +215,7 @@ const getAdminAllProperties = asyncHandler(async (req, res) => {
     .then((homes) => homes.map((home) => ({ ...home, type: "Home" })));
 
   // Fetch homes with creatorType: "Admin" and populate creator
-  const adminHome = await Home.find({ creatorType: "Admin" })
+  const adminHome = await Home.find({ creatorType: "Admin" , isDelete:false})
     .populate({
       path: "creator",
       model: "Admin",

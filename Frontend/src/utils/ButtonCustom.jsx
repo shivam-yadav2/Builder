@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { MoveRight, X, MapPin, Home, Calculator, User, Phone } from 'lucide-react';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 const ButtonCustom = ({ title, onClick, theme }) => {
   return (
@@ -72,26 +74,39 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call - replace this with your actual API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Form submitted:', formData);
-      
-      // Reset form and close modal
-      setFormData({
-        name: '',
-        number: '',
-        location: '',
-        plotArea: '',
-        constructionArea: '',
-        budget: ''
+      const response = await axios.post('http://localhost:4000/api/v1/constructionFilter/add', {
+        name: formData.name,
+        number: formData.number,
+        location: formData.location,
+        plotArea: parseFloat(formData.plotArea),
+        constructionArea: parseFloat(formData.constructionArea),
+        budget: parseFloat(formData.budget)
       });
-      onClose();
-      alert('Enquiry submitted successfully! We will contact you soon.');
+      
+      if (response.status === 200 || response.status === 201) {
+        toast.success('Enquiry submitted successfully! We will contact you soon.', {
+          duration: 4000,
+          position: 'top-right'
+        });
+        
+        // Reset form and close modal
+        setFormData({
+          name: '',
+          number: '',
+          location: '',
+          plotArea: '',
+          constructionArea: '',
+          budget: ''
+        });
+        onClose();
+      }
       
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Something went wrong. Please try again.');
+      toast.error(error.response?.data?.message || 'Something went wrong. Please try again.', {
+        duration: 4000,
+        position: 'top-right'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -101,6 +116,7 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <Toaster />
       <div className={`${
         theme === "white" ? "bg-white text-[#001324]" : "bg-[#001324] text-white"
       } rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl`}>

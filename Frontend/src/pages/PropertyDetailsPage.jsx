@@ -17,6 +17,7 @@ import {
 import { Link, NavLink, useParams } from "react-router-dom";
 import axios from "axios";
 import MyContext from "../context/MyContext";
+import ContactSection from "@/myComponents/home/ContactSection";
 const PropertyDetailsPage = () => {
   const { type, id } = useParams();
   const [property, setProperty] = useState(null);
@@ -243,6 +244,9 @@ const PropertyDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      <ContactSection/>
+
     </Layout>
   );
 };

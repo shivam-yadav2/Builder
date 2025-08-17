@@ -17,16 +17,18 @@ app.use(express.static("public"));
 
 // // Import routes (CommonJS format)
 const adminRouter = require("./routes/admin.routes.js");
-// const enquiryRouter = require("./routes/enquiry.routes.js");
+const enquiryRouter = require("./routes/enquiry.routes.js");
 // const categoryRouter = require("./routes/category.routes.js");
 const userRouter = require("./routes/user.routes.js");
 const landRouter = require("./routes/land.routes.js");
 const homeRouter = require("./routes/home.routes.js");
+const constructionFliterRouter = require("./routes/constructionFilter.routes.js")
 // // Use Routes
 app.use("/api/v1/admin/", adminRouter);
-// app.use("/api/v1/enquiry/", enquiryRouter);
+app.use("/api/v1/enquiry/", enquiryRouter);
 // app.use("/api/v1/category/", categoryRouter);
 // app.use("/api/v1/course/", courseRouter);
+app.use("/api/v1/constructionFilter/", constructionFliterRouter);
 app.use("/api/v1/users/", userRouter);
 app.use("/api/v1/land/", landRouter);
 app.use("/api/v1/home/", homeRouter);

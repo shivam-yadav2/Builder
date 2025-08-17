@@ -219,10 +219,11 @@ const InquiryDashboard = () => {
     setIsSubmitting(true);
     try {
       await toast.promise(
-        axios.delete(`${API_BASE_URL}/constructionFilter/delete/${selectedEnrollment}`, {
+        axios.post(`${API_BASE_URL}/constructionFilter/deleteById`, {
           headers: {
             "Content-Type": "application/json",
           },
+          id:selectedEnrollment
         }),
         {
           loading: "Deleting enquiry...",

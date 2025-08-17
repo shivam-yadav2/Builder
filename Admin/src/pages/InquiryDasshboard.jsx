@@ -66,7 +66,7 @@ const InquiryDashboardAcadmey = () => {
 
       const config = {
         method: "get",
-        url: `${API_BASE_URL}/mainEnquiry/getAll`,
+        url: `${API_BASE_URL}/enquiry/get-enquiry`,
         headers: {
           "Content-Type": "text/plain",
         },
@@ -101,14 +101,13 @@ const InquiryDashboardAcadmey = () => {
     setIsSubmitting(true);
     try {
       await toast.promise(
-        axios.delete(`${API_BASE_URL}/mainEnquiry/delete/${selectedEnquiryId}`, {
+        axios.post(`${API_BASE_URL}/enquiry/delete-enquiry`, {
           headers: {
             "Content-Type": "application/json",
           },
-          data: {
-            email: "shiv2@gmail.com",
-            password: "123456",
-          },
+          
+            id:selectedEnquiryId,
+          
         }),
         {
           loading: "Deleting enquiry...",
