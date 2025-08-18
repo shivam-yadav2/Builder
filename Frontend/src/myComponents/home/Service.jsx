@@ -29,7 +29,7 @@ const Service = () => {
           {/* Enhanced Header */}
           <div className="text-center mb-20">
             <div className="inline-block relative">
-              <h1 className="text-6xl font-bold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-6 relative">
+              <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-6 relative">
                 Our Real Estate Services
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full"></div>
               </h1>

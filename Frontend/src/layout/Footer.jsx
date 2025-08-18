@@ -37,7 +37,7 @@ const Footer = () => {
       </div> */}
       <div className="container   px-6 md:px-12 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-10">
         <NavLink to="/" >
-          <img src="/assets/logo/logo.png" className="w-[80%] mt-5" alt="" />
+          <img src="/assets/logo/logo.jpeg" className="h-[100px] rounded-full" alt="" />
         </NavLink>
         <div>
           <p className="text-sm mt-1">

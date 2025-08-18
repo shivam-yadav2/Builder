@@ -48,8 +48,12 @@ export default function Navbar() {
       <div className="container mx-auto grid grid-cols-2 lg:grid-cols-5">
         {/* Mobile Menu */}
         {/* Logo */}
-        <NavLink to="/" className="text-2xl text-white font-bold">
-          <img src="/assets/logo/logo.png" alt="" />
+        <NavLink to="/" className="text-2xl text-white font-bold ">
+          <img
+            src="/assets/logo/logo.jpeg"
+            alt=""
+            className="h-[100px] rounded-full"
+          />
         </NavLink>
 
         {/* Desktop Navigation */}
@@ -68,6 +72,11 @@ export default function Navbar() {
           <li>
             <NavLink to="/property" className="hover:text-gray-300">
               Property
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/gallery" className="hover:text-gray-300">
+              Gallery
             </NavLink>
           </li>
           <li>
@@ -121,13 +130,18 @@ export default function Navbar() {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/shop" onClick={() => setIsOpen(false)}>
-                    Shop
+                  <NavLink to="/about" onClick={() => setIsOpen(false)}>
+                    About Us
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/about" onClick={() => setIsOpen(false)}>
-                    About
+                  <NavLink to="/property" onClick={() => setIsOpen(false)}>
+                    Property
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/gallery" onClick={() => setIsOpen(false)}>
+                    Gallery
                   </NavLink>
                 </li>
                 <li>

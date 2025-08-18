@@ -13,6 +13,7 @@ import PropertyDetailsPage from "./pages/PropertyDetailsPage";
 import ScrollToTop from "./utils/ScrollTop";
 import FilteredProperties from "./pages/FilteredProperties";
 import ForgetPassword from "./auth/ForgotPassword";
+import Gallery from "./pages/Gallery";
 
 function App() {
   return (
@@ -25,11 +26,13 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot_password" element={<ForgetPassword />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/property" element={<Properties/>} />
             <Route path="/filtered-properties" element={<FilteredProperties />} /> {/* Filter page */}
             <Route path="/property-details/:type?/:id?" element={<PropertyDetailsPage />} />
+
           </Routes>
         </BrowserRouter>
       </MyState>
