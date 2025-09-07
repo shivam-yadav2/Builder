@@ -15,6 +15,8 @@ import AddProperty from "@/pages/AddProperty";
 import AllProperty from "@/pages/AllProperty";
 import UserListing from "../pages/UserListing"
 import AdminApprovalPage from "@/pages/ApprovalPage";
+import PropertyManagement from "@/pages/Gallery";
+
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,8 @@ const router = createBrowserRouter([
       {path: "user_listing", element: <UserListing/>},
       {path: "construction_inquiry", element: <ConstructionInquiry />},
       {path: "rent_inquiry", element: <RentInquiry />},
+      {path: "gallery", element: <PropertyManagement />},
+
     ],
   },
 

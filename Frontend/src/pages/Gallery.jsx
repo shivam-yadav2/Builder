@@ -1,356 +1,520 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MapPin, Calendar, Home, Building2, Eye, DollarSign } from 'lucide-react';
-import Layout from '@/layout/Layout';
+import React, { useState, useEffect } from "react";
+import {
+  MapPin,
+  Calendar,
+  IndianRupee,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Award,
+  Home,
+  Star,
+} from "lucide-react";
+import Layout from "@/layout/Layout";
+import axios from "axios";
+
+// Helper function to check if a URL is a video
+const isVideo = (url) => {
+  const videoExtensions = ['.mp4', '.webm', '.ogg'];
+  return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
+};
 
 const Gallery = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [gallery, setGallery] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Sample data - replace with your actual data
-  const properties = [
-    {
-      id: 1,
-      title: "Modern Villa in Downtown",
-      type: "sold",
-      category: "residential",
-      price: "$850,000",
-      location: "Downtown District",
-      bedrooms: 4,
-      bathrooms: 3,
-      area: "2,400 sq ft",
-      soldDate: "2024-03-15",
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop"
-      ],
-      description: "Beautiful modern villa with contemporary design and premium finishes throughout."
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment Complex",
-      type: "constructed",
-      category: "residential",
-      price: "$2.5M Project",
-      location: "Riverside Area",
-      units: 24,
-      floors: 6,
-      area: "45,000 sq ft",
-      completedDate: "2024-01-20",
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&h=600&fit=crop"
-      ],
-      description: "State-of-the-art apartment complex with modern amenities and eco-friendly features."
-    },
-    {
-      id: 3,
-      title: "Commercial Office Building",
-      type: "constructed",
-      category: "commercial",
-      price: "$4.2M Project",
-      location: "Business District",
-      floors: 12,
-      area: "85,000 sq ft",
-      completedDate: "2023-11-10",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop"
-      ],
-      description: "Premium office building with cutting-edge design and sustainable technologies."
-    },
-    {
-      id: 4,
-      title: "Family Home with Garden",
-      type: "sold",
-      category: "residential",
-      price: "$625,000",
-      location: "Suburban Heights",
-      bedrooms: 3,
-      bathrooms: 2,
-      area: "1,800 sq ft",
-      soldDate: "2024-02-28",
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=800&h=600&fit=crop"
-      ],
-      description: "Charming family home with spacious garden and traditional architecture."
-    },
-    {
-      id: 5,
-      title: "Retail Shopping Center",
-      type: "constructed",
-      category: "commercial",
-      price: "$6.8M Project",
-      location: "City Center",
-      stores: 32,
-      floors: 3,
-      area: "120,000 sq ft",
-      completedDate: "2023-09-15",
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"
-      ],
-      description: "Modern shopping center with diverse retail spaces and entertainment facilities."
-    },
-    {
-      id: 6,
-      title: "Penthouse Suite",
-      type: "sold",
-      category: "residential",
-      price: "$1.2M",
-      location: "Skyline Tower",
-      bedrooms: 3,
-      bathrooms: 2,
-      area: "2,100 sq ft",
-      soldDate: "2024-01-10",
-      image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop"
-      ],
-      description: "Stunning penthouse with panoramic city views and luxury amenities."
+  // Fetch properties from backend
+  useEffect(() => {
+    fetchProperties();
+    fetchGalleryProperties();
+  }, []);
+
+  const fetchGalleryProperties = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/v1/gallery/get-gallery"
+      );
+      setGallery(response.data.data);
+      setLoading(false);
+    } catch (err) {
+      setError("Failed to fetch properties");
+      setLoading(false);
     }
-  ];
+  };
 
-  const filteredProperties = properties.filter(property => {
-    if (selectedCategory === 'all') return true;
-    if (selectedCategory === 'sold') return property.type === 'sold';
-    if (selectedCategory === 'constructed') return property.type === 'constructed';
-    return property.category === selectedCategory;
-  });
+  const fetchProperties = async () => {
+    try {
+      // Mock data for demonstration - replace with your API call
+      const mockData = [
+        {
+          _id: 1,
+          title: "Modern Villa in Downtown",
+          location: "Downtown District",
+          price: "₹85,00,000",
+          soldDate: "2024-03-15",
+          description: "Beautiful modern villa with premium amenities",
+          images: [
+            "uploads/image1.jpg",
+            "uploads/video1.mp4",
+            "uploads/image2.png",
+          ],
+        },
+        {
+          _id: 2,
+          title: "Family Home with Garden",
+          location: "Suburban Heights",
+          price: "₹62,50,000",
+          soldDate: "2024-02-28",
+          description: "Spacious family home perfect for growing families",
+          images: [
+            "uploads/image3.jpg",
+            "uploads/video2.webm",
+          ],
+        },
+        {
+          _id: 3,
+          title: "Penthouse Suite",
+          location: "Skyline Tower",
+          price: "₹1,20,00,000",
+          soldDate: "2024-01-10",
+          description: "Luxury penthouse with panoramic city views",
+          images: [
+            "uploads/image4.jpg",
+            "uploads/video3.mp4",
+          ],
+        },
+        {
+          _id: 4,
+          title: "Executive Townhouse",
+          location: "Business District",
+          price: "₹77,50,000",
+          soldDate: "2024-02-15",
+          description: "Contemporary townhouse in prime business location",
+          images: [
+            "uploads/image5.jpg",
+            "uploads/video4.mp4",
+          ],
+        },
+        {
+          _id: 5,
+          title: "Luxury Apartment",
+          location: "Metro Center",
+          price: "₹45,00,000",
+          soldDate: "2024-03-01",
+          description: "Premium apartment with modern amenities",
+          images: [
+            "uploads/image6.jpg",
+          ],
+        },
+        {
+          _id: 6,
+          title: "Coastal Retreat",
+          location: "Oceanview Hills",
+          price: "₹95,00,000",
+          soldDate: "2024-01-20",
+          description: "Stunning coastal property with ocean views",
+          images: [
+            "uploads/image7.jpg",
+            "uploads/video5.mp4",
+          ],
+        },
+      ];
 
-  const PropertyCard = ({ property }) => (
-    <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="relative overflow-hidden">
-        <img
-          src={property.image}
-          alt={property.title}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+      setProperties(mockData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      setLoading(false);
+    }
+  };
+
+  const openModal = (property) => {
+    setSelectedProperty(property);
+    setCurrentImageIndex(0);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProperty(null);
+    setCurrentImageIndex(0);
+  };
+
+  const nextImage = () => {
+    if (
+      selectedProperty &&
+      currentImageIndex < selectedProperty.images.length - 1
+    ) {
+      setCurrentImageIndex(currentImageIndex + 1);
+    }
+  };
+
+  const prevImage = () => {
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex(currentImageIndex - 1);
+    }
+  };
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
+
+  // Render media (image or video)
+  const renderMedia = (url, alt, index, isThumbnail = false) => {
+    console.log(url)
+    const fullUrl = `http://localhost:4000/${url}` ;
+    if (isVideo(url)) {
+      return (
+        <video
+          key={index}
+          src={fullUrl}
+          className={isThumbnail ? "w-full h-full object-cover" : "w-full h-80 object-cover rounded-2xl"}
+          controls={!isThumbnail}
+          muted={true}
+          autoPlay
         />
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300" />
-        <div className="absolute top-4 left-4 flex gap-2">
-          <Badge variant={property.type === 'sold' ? 'destructive' : 'default'} className="text-white">
-            {property.type === 'sold' ? 'SOLD' : 'CONSTRUCTED'}
-          </Badge>
-          <Badge variant="secondary" className="capitalize">
-            {property.category}
-          </Badge>
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="secondary" size="sm" className="bg-white/90 hover:bg-white">
-                <Eye className="w-4 h-4 mr-2" />
-                View Details
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-2xl">{property.title}</DialogTitle>
-              </DialogHeader>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-2">
-                    {property.images.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt={`${property.title} ${idx + 1}`}
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-lg font-semibold text-green-600">
-                    <DollarSign className="w-5 h-5" />
-                    {property.price}
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="w-4 h-4" />
-                    {property.location}
-                  </div>
+      );
+    }
+    return (
+      <img
+        key={index}
+        src={fullUrl}
+        alt={alt}
+        className={isThumbnail ? "w-full h-full object-cover" : "w-full h-80 object-cover rounded-2xl"}
+      />
+    );
+  };
 
-                  <div className="grid grid-cols-2 gap-4">
-                    {property.type === 'sold' && (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <Home className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm">{property.bedrooms} Bedrooms</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm">{property.bathrooms} Bathrooms</span>
-                        </div>
-                      </>
-                    )}
-                    {property.type === 'constructed' && (
-                      <>
-                        {property.floors && (
-                          <div className="flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm">{property.floors} Floors</span>
-                          </div>
-                        )}
-                        {property.units && (
-                          <div className="flex items-center gap-2">
-                            <Home className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm">{property.units} Units</span>
-                          </div>
-                        )}
-                        {property.stores && (
-                          <div className="flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm">{property.stores} Stores</span>
-                          </div>
-                        )}
-                      </>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{property.area}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    {property.type === 'sold' 
-                      ? `Sold on ${new Date(property.soldDate).toLocaleDateString()}`
-                      : `Completed on ${new Date(property.completedDate).toLocaleDateString()}`
-                    }
-                  </div>
-
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-700">{property.description}</p>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+  const PropertyCard = ({ property, index }) => (
+    <div
+      className="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 animate-in slide-in-from-bottom-4"
+      style={{ animationDelay: `${index * 100}ms` }}
+    >
+      <div className="absolute top-4 right-4 z-10">
+        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center space-x-1">
+          <Star className="w-3 h-3 fill-current" />
+          <span>SOLD</span>
         </div>
       </div>
-      <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-2 group-hover:text-blue-600 transition-colors">
+
+      <div className="relative overflow-hidden h-64">
+        {renderMedia(property.images[0], property.title, 0)}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <button
+            onClick={() => openModal(property)}
+            className="bg-white/95 backdrop-blur-sm text-gray-900 px-6 py-3 rounded-full font-semibold flex items-center space-x-2 transform scale-95 group-hover:scale-100 transition-all duration-300 shadow-xl hover:shadow-2xl"
+          >
+            <Eye className="w-4 h-4" />
+            <span>View Details</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="p-6">
+        <h3 className="font-bold text-xl mb-3 text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">
           {property.title}
         </h3>
-        <div className="flex items-center gap-2 text-gray-600 mb-2">
-          <MapPin className="w-4 h-4" />
-          <span className="text-sm">{property.location}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-semibold text-green-600">{property.price}</span>
-          <span className="text-sm text-gray-500">
-            {property.type === 'sold' ? `${property.bedrooms}BR/${property.bathrooms}BA` : property.area}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
-  );
 
-  return (
-    <Layout>
-    <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Portfolio</h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore our collection of successfully sold properties and completed construction projects. 
-              Each property represents our commitment to quality and excellence in real estate.
-            </p>
+        <div className="space-y-3 mb-4">
+          <div className="flex items-center text-gray-600">
+            <MapPin className="w-4 h-4 mr-2 text-emerald-500" />
+            <span className="text-sm">{property.location}</span>
           </div>
 
-          {/* Filter Tabs */}
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
-              <TabsTrigger value="all" className="text-sm">All Projects</TabsTrigger>
-              <TabsTrigger value="sold" className="text-sm">Sold Properties</TabsTrigger>
-              <TabsTrigger value="constructed" className="text-sm">Constructed</TabsTrigger>
-              <TabsTrigger value="residential" className="text-sm">Residential</TabsTrigger>
-              <TabsTrigger value="commercial" className="text-sm">Commercial</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
-
-      {/* Properties Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            {selectedCategory === 'all' ? 'All Projects' : 
-             selectedCategory === 'sold' ? 'Sold Properties' :
-             selectedCategory === 'constructed' ? 'Constructed Buildings' :
-             selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) + ' Properties'}
-          </h2>
-          <span className="text-gray-600">
-            {filteredProperties.length} {filteredProperties.length === 1 ? 'property' : 'properties'}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-
-        {filteredProperties.length === 0 && (
-          <div className="text-center py-16">
-            <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No properties found</h3>
-            <p className="text-gray-500">Try selecting a different category to view more properties.</p>
+          <div className="flex items-center text-gray-600">
+            <Calendar className="w-4 h-4 mr-2 text-blue-500" />
+            <span className="text-sm">
+              Sold on {new Date(property.soldDate).toLocaleDateString()}
+            </span>
           </div>
-        )}
-      </div>
 
-      {/* Stats Section */}
-      <div className="bg-blue-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold mb-2">
-                {properties.filter(p => p.type === 'sold').length}
-              </div>
-              <div className="text-blue-100">Properties Sold</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">
-                {properties.filter(p => p.type === 'constructed').length}
-              </div>
-              <div className="text-blue-100">Buildings Constructed</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">
-                {properties.filter(p => p.category === 'residential').length}
-              </div>
-              <div className="text-blue-100">Residential Projects</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">
-                {properties.filter(p => p.category === 'commercial').length}
-              </div>
-              <div className="text-blue-100">Commercial Projects</div>
-            </div>
+          <div className="flex items-center text-emerald-600 font-bold text-lg pt-2">
+            <IndianRupee className="w-5 h-5 mr-1" />
+            <span>{property.price}</span>
           </div>
         </div>
       </div>
     </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="relative bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 overflow-hidden">
+          <div className="relative max-w-7xl mx-auto px-6 py-16">
+            <div className="text-center">
+              <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                Our Success Stories
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-3xl overflow-hidden shadow-lg animate-pulse"
+              >
+                <div className="h-64 bg-gray-200"></div>
+                <div className="p-6 space-y-3">
+                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        {/* Enhanced Header Section */}
+        <div className="relative bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+            <div
+              className="absolute bottom-20 right-20 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-bounce"
+              style={{ animationDelay: "2s" }}
+            ></div>
+          </div>
+
+          <div className="relative max-w-7xl mx-auto px-6 py-16">
+            <div className="text-center">
+              <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
+                <Award className="w-5 h-5 text-yellow-300" />
+                <span className="text-white font-medium">
+                  Premium Portfolio Showcase
+                </span>
+              </div>
+
+              <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                Our Success Stories
+              </h1>
+              <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+                Discover our collection of successfully sold properties,
+                showcasing our commitment to excellence in real estate and our
+                clients' dreams fulfilled.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          {/* Results Header */}
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              Sold Properties
+            </h2>
+            <p className="text-gray-600 text-lg">
+              {gallery.length}{" "}
+              {gallery.length === 1 ? "property" : "properties"} successfully
+              sold
+            </p>
+          </div>
+
+          {/* Properties Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {gallery.map((property, index) => (
+              <PropertyCard
+                key={property._id}
+                property={property}
+                index={index}
+              />
+            ))}
+          </div>
+
+          {/* No Results */}
+          {gallery.length === 0 && !loading && (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Home className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="text-2xl font-semibold text-gray-600 mb-3">
+                No properties found
+              </h3>
+              <p className="text-gray-500 mb-6">
+                No sold properties available at the moment.
+              </p>
+              <button
+                onClick={fetchProperties}
+                className="bg-emerald-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-emerald-600 transition-colors"
+              >
+                Refresh
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Enhanced Modal */}
+        {isModalOpen && selectedProperty && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {selectedProperty.title}
+                </h2>
+                <button
+                  onClick={closeModal}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* Media Gallery */}
+                  <div className="space-y-4">
+                    <div className="relative">
+                      {renderMedia(
+                        selectedProperty.images?.[currentImageIndex],
+                        `${selectedProperty.title} ${currentImageIndex + 1}`,
+                        currentImageIndex
+                      )}
+                      {selectedProperty.images &&
+                        selectedProperty.images.length > 1 && (
+                          <>
+                            <button
+                              onClick={prevImage}
+                              disabled={currentImageIndex === 0}
+                              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white disabled:opacity-50 rounded-full p-2 transition-all"
+                            >
+                              <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={nextImage}
+                              disabled={
+                                currentImageIndex ===
+                                selectedProperty.images.length - 1
+                              }
+                              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white disabled:opacity-50 rounded-full p-2 transition-all"
+                            >
+                              <ChevronRight className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+                    </div>
+
+                    {/* Thumbnail Gallery */}
+                    {selectedProperty.images &&
+                      selectedProperty.images.length > 1 && (
+                        <div className="flex space-x-2 overflow-x-auto">
+                          {selectedProperty.images.map((media, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setCurrentImageIndex(idx)}
+                              className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                                idx === currentImageIndex
+                                  ? "border-emerald-500"
+                                  : "border-transparent"
+                              }`}
+                            >
+                              {renderMedia(media, `Thumbnail ${idx + 1}`, idx, true)}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Property Details */}
+                  <div className="space-y-6">
+                    <div className="flex items-center text-2xl font-bold text-emerald-600">
+                      <IndianRupee className="w-5 h-5 mr-1" />
+                      {selectedProperty.price}
+                    </div>
+
+                    {selectedProperty.description && (
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h4 className="font-semibold text-gray-800 mb-2">
+                          Description
+                        </h4>
+                        <p className="text-gray-700">
+                          {selectedProperty.description}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      <div className="flex items-center text-gray-600">
+                        <MapPin className="w-5 h-5 mr-3 text-emerald-500" />
+                        <span>{selectedProperty.location}</span>
+                      </div>
+                      <div className="flex items-center text-gray-600">
+                        <Calendar className="w-5 h-5 mr-3 text-blue-500" />
+                        <span>
+                          Sold on{" "}
+                          {new Date(
+                            selectedProperty.soldDate
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                      <div className="flex items-center mb-2">
+                        <Star className="w-5 h-5 text-emerald-600 fill-current mr-2" />
+                        <h4 className="font-semibold text-emerald-800">
+                          Successfully Sold
+                        </h4>
+                      </div>
+                      <p className="text-emerald-700 text-sm">
+                        This property has been successfully sold and represents
+                        our commitment to delivering excellent results for our
+                        clients.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Custom Styles */}
+        <style jsx>{`
+          @keyframes slide-in-from-bottom-4 {
+            from {
+              opacity: 0;
+              transform: translateY(16px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-in {
+            animation-fill-mode: both;
+          }
+          .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+        `}</style>
+      </div>
     </Layout>
   );
 };

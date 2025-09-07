@@ -52,14 +52,11 @@ const Contact = () => {
       return;
     }
 
-    const promise = fetch(
-      "http://localhost:4000/api/v1/enquiry/add-enquiry",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      }
-    ).then(async (res) => {
+    const promise = fetch("http://localhost:4000/api/v1/enquiry/add-enquiry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    }).then(async (res) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Server error");
       return data;
@@ -150,19 +147,23 @@ const Contact = () => {
       <div className="relative bg-gradient-to-br from-green-600 via-green-700 to-green-800 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
         </div>
-        
+
         <div className="container mx-auto px-4 py-16 lg:py-24 relative">
           <div className="text-center text-white">
             <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
               Get in Touch with
-              <span className="block text-green-200">Samadhaan</span>
+              <span className="block text-green-200">Rsus B2S</span>
             </h1>
             <p className="text-xl lg:text-2xl text-green-100 max-w-3xl mx-auto mb-8 leading-relaxed">
-              Ready to build your dream? We're here to bring your vision to life with our expert construction and development services.
+              Ready to build your dream? We're here to bring your vision to life
+              with our expert construction and development services.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <div className="flex items-center gap-2 text-green-200">
@@ -185,7 +186,6 @@ const Contact = () => {
       {/* Main Content */}
       <div className="bg-gray-50 min-h-screen">
         <div className="container mx-auto px-4 py-16 lg:py-20">
-          
           {/* Contact Cards */}
           <div className="mb-20">
             <div className="text-center mb-12">
@@ -196,7 +196,7 @@ const Contact = () => {
                 Choose the most convenient way to get in touch with our team
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {contactItems.map((item, i) => (
                 <Card
@@ -204,7 +204,9 @@ const Contact = () => {
                   className={`group relative overflow-hidden border-2 ${item.borderColor} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer`}
                 >
                   <div className="p-6">
-                    <div className={`inline-flex p-3 rounded-full ${item.bgColor} ${item.iconColor} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <div
+                      className={`inline-flex p-3 rounded-full ${item.bgColor} ${item.iconColor} mb-4 group-hover:scale-110 transition-transform duration-300`}
+                    >
                       {item.icon}
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -213,20 +215,21 @@ const Contact = () => {
                     <p className="text-gray-600 mb-4 text-sm">
                       {item.description}
                     </p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      {item.detail}
-                    </p>
+                    <p className="text-sm text-gray-500 mb-4">{item.detail}</p>
                     <Button
                       className="w-full bg-green-600 hover:bg-green-700 text-white group-hover:scale-105 transition-all duration-300"
                       asChild
                     >
-                      <a href={item.link} className="flex items-center justify-center gap-2">
+                      <a
+                        href={item.link}
+                        className="flex items-center justify-center gap-2"
+                      >
                         {item.action}
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </a>
                     </Button>
                   </div>
-                  
+
                   {/* Hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-green-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Card>
@@ -241,7 +244,8 @@ const Contact = () => {
                 Send Us a Message
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Fill out the form below and we'll get back to you within 24 hours
+                Fill out the form below and we'll get back to you within 24
+                hours
               </p>
             </div>
 
@@ -249,7 +253,7 @@ const Contact = () => {
               <div className="relative">
                 {/* Background Decoration */}
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 rounded-3xl transform rotate-1 scale-105 opacity-10" />
-                
+
                 {/* Form Card */}
                 <Card className="relative bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-2xl overflow-hidden">
                   <div className="p-8 lg:p-12">
@@ -378,7 +382,7 @@ const Contact = () => {
                       </div>
                     </form>
                   </div>
-                  
+
                   {/* Decorative elements */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/20 to-transparent rounded-full -translate-y-16 translate-x-16" />
                   <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-green-400/20 to-transparent rounded-full translate-y-12 -translate-x-12" />
@@ -398,22 +402,34 @@ const Contact = () => {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                     <CheckCircle2 className="w-8 h-8 text-green-600" />
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Expert Team</h4>
-                  <p className="text-gray-600 text-sm">Professional construction experts with years of experience</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Expert Team
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    Professional construction experts with years of experience
+                  </p>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                     <CheckCircle2 className="w-8 h-8 text-green-600" />
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Quality Assured</h4>
-                  <p className="text-gray-600 text-sm">We guarantee high-quality materials and workmanship</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Quality Assured
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    We guarantee high-quality materials and workmanship
+                  </p>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                     <CheckCircle2 className="w-8 h-8 text-green-600" />
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">On-Time Delivery</h4>
-                  <p className="text-gray-600 text-sm">We respect your timeline and deliver projects on schedule</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    On-Time Delivery
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    We respect your timeline and deliver projects on schedule
+                  </p>
                 </div>
               </div>
             </div>

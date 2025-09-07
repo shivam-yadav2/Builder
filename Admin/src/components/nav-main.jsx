@@ -27,7 +27,7 @@ export function NavMain({
       <img
         src="/logo.png"
         alt="logo"
-        className="transition-all duration-300 ease-in-out   bg-black rounded"
+        className="transition-all duration-300 ease-in-out    rounded"
       />
       {/* <SidebarGroupLabel>Menu</SidebarGroupLabel> */}
       {/* <SidebarMenu>

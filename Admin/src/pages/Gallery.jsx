@@ -1,429 +1,286 @@
-"use client";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Upload,
-  Plus,
-  Image as ImageIcon,
-  Trash2,
-  AlertCircle,
-} from "lucide-react";
-import { toast } from "react-hot-toast";
+// Helper function to check if a URL is a video
+const isVideo = (url) => {
+  const videoExtensions = ['.mp4', '.webm', '.ogg'];
+  return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
+};
 
-const GalleryPanel = () => {
-  const [images, setImages] = useState([]);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [multipleImages, setMultipleImages] = useState([]);
-  const [imageTitle, setImageTitle] = useState("");
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const fileInputRef = useRef(null);
+const PropertyManagement = () => {
+  const [properties, setProperties] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    location: '',
+    price: '',
+    soldDate: '',
+    images: [], // This will hold File objects for uploads
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
-
-  // Maximum allowed images
-  const MAX_IMAGES = 3;
-
-  // API base endpoint
-  const API_URL =
-    "https://adminfashioncadamy.traficoanalytica.com/api/v1/gallery";
-  const BASE_URL = "https://adminfashioncadamy.traficoanalytica.com";
-
-  // Fetch images on mount
+  // Check admin authentication
   useEffect(() => {
-    fetchImages();
+    const token = Cookies.get("accessTokenAdmin");
+    if (token) {
+      setIsAdmin(true);
+      fetchProperties();
+    }
   }, []);
 
-  const fetchImages = async () => {
+  // Fetch all properties
+  const fetchProperties = async () => {
     try {
-      const res = await axios.get(`${API_URL}/get-gallery`);
-      const fetchedImages = res.data.data || [];
-      setImages(fetchedImages);
-      console.log("Fetched images:", res.data);
-    } catch (error) {
-      console.error("Error fetching images:", error);
-      toast.error("Failed to load images");
-      setImages([]);
+      const response = await axios.get('http://localhost:4000/api/v1/gallery/get-gallery');
+      setProperties(response.data.data);
+    } catch (err) {
+      setError('Failed to fetch properties');
     }
   };
 
-  const handleAddMultipleImages = async () => {
-    if (multipleImages.length > MAX_IMAGES) {
-      toast.error(`You can only upload a maximum of ${MAX_IMAGES} images`);
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      multipleImages.forEach((file) => {
-        formData.append("images", file);
-      });
-
-      console.log( "Multiple ",multipleImages)
-      console.log( formData , "FormData")
-      
-
-      const response = await axios.post(
-        "http://localhost:4000/api/v1/gallery/add-gallery",
-        {image:multipleImages}
-      );
-
-      console.log( formData , "FormData")
-
-
-      console.log("API response:", response.data);
-      const newImagesFromServer = response.data.data || [];
-      setImages((prevImages) => [...prevImages, ...newImagesFromServer]);
-      toast.success("Images uploaded successfully");
-      setMultipleImages([]);
-      setImageTitle("");
-      setImagePreviews([]);
-      setIsAddDialogOpen(false);
-    } catch (error) {
-      console.error("Error adding images:", error);
-      toast.error("Failed to add images");
-      
-    }
-    
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleDeleteImage = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/${id}`);
-      setImages(images.filter((img) => img.id !== id));
-      toast.success("Image deleted");
-    } catch (error) {
-      console.error("Error deleting image:", error);
-      toast.error("Failed to delete image");
-    }
-  };
-
+  // Handle file input (images and videos)
   const handleFileChange = (e) => {
-    const filesArray = Array.from(e.target.files).slice(0, MAX_IMAGES);
-    setMultipleImages(filesArray);
-    const previews = filesArray.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    setFormData({ ...formData, images: Array.from(e.target.files) });
   };
 
-  const clearFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    setMultipleImages([]);
-    setImagePreviews([]);
-  };
+  // Create or Update property
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = new FormData();
+    form.append('title', formData.title);
+    form.append('location', formData.location);
+    form.append('price', formData.price);
+    form.append('soldDate', formData.soldDate);
+    formData.images.forEach((file) => form.append('images', file));
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      };
 
-  // Updated getImageUrl with type checking
-  const getImageUrl = (imagePath) => {
-    // Handle null, undefined, or non-string cases
-    if (!imagePath || typeof imagePath !== "string") {
-      // If imagePath is an array, use the first element if it exists
-      if (
-        Array.isArray(imagePath) &&
-        imagePath.length > 0 &&
-        typeof imagePath[0] === "string"
-      ) {
-        return getImageUrl(imagePath[0]); // Recursively handle the first string
+      if (isEditing) {
+        form.append('id', selectedProperty._id);
+        const response = await axios.post('http://localhost:4000/api/v1/gallery/update-gallery', form, config);
+        setSuccess('Property updated successfully');
+      } else {
+        const response = await axios.post('http://localhost:4000/api/v1/gallery/add-gallery', form, config);
+        setSuccess('Property created successfully');
       }
-      console.warn("Invalid image path:", imagePath);
-      return "/fallback-image.jpg"; // Fallback image path
-    }
 
-    if (imagePath.startsWith("blob:") || imagePath.startsWith("http")) {
-      return imagePath;
+      setFormData({ title: '', location: '', price: '', soldDate: '', images: [] });
+      setIsEditing(false);
+      setSelectedProperty(null);
+      fetchProperties();
+    } catch (err) {
+      setError(err.response?.data?.message || 'An error occurred');
     }
-    const normalizedPath = imagePath.startsWith("/")
-      ? imagePath
-      : `/${imagePath}`;
-    return `${BASE_URL}${normalizedPath}`;
   };
 
-  const safeImages = Array.isArray(images) ? images : [];
-  const totalPages = Math.max(1, Math.ceil(safeImages.length / itemsPerPage));
+  // Get property details
+  const handleViewProperty = async (id) => {
+    try {
+      const response = await axios.post('http://localhost:4000/api/v1/gallery/gallery-detail', { id });
+      setSelectedProperty(response.data.data);
+    } catch (err) {
+      setError('Failed to fetch property details');
+    }
+  };
 
-  if (currentPage > totalPages) {
-    setCurrentPage(totalPages);
-  }
+  // Delete property
+  const handleDelete = async (id) => {
+    try {
+      await axios.post(
+        'http://localhost:4000/api/v1/gallery/delete-gallery',
+        { id },
+        {
+          headers: { Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}` },
+        }
+      );
+      setSuccess('Property deleted successfully');
+      fetchProperties();
+    } catch (err) {
+      setError('Failed to delete property');
+    }
+  };
 
-  const paginatedImages = safeImages.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Edit property
+  const handleEdit = (property) => {
+    setFormData({
+      title: property.title,
+      location: property.location,
+      price: property.price,
+      soldDate: property.soldDate.toISOString().split('T')[0],
+      images: [], // Reset file input for editing
+    });
+    setSelectedProperty(property);
+    setIsEditing(true);
+  };
+
+  // Render media (image or video)
+  const renderMedia = (url, alt, index) => {
+    if (isVideo(url)) {
+      return (
+        <video
+          key={index}
+          src={`http://localhost:4000/${url}`}
+          alt={alt}
+          className="w-full h-40 object-cover rounded mb-2"
+          controls
+        />
+      );
+    }
+    return (
+      <img
+        key={index}
+        src={`http://localhost:4000/${url}`}
+        alt={alt}
+        className="w-full h-40 object-cover rounded mb-2"
+      />
+    );
+  };
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      <Card className="shadow-md">
-        <CardHeader className="bg-white border-b">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className="text-xl font-medium">
-                Image Gallery
-              </CardTitle>
-              <CardDescription>
-                Manage your gallery images (Maximum 3 images allowed)
-              </CardDescription>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Property Management</h1>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {success}
+        </div>
+      )}
+
+      {isAdmin && (
+        <div className="mb-8 p-6 bg-white rounded-lg shadow">
+          <h2 className="text-2xl font-semibold mb-4">{isEditing ? 'Edit Property' : 'Add New Property'}</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder="Title"
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              placeholder="Location"
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="price"
+              value={formData.price}
+              onChange={handleInputChange}
+              placeholder="Price"
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="date"
+              name="soldDate"
+              value={formData.soldDate}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="file"
+              multiple
+              accept="image/*,video/*" // Allow both image and video files
+              onChange={handleFileChange}
+              className="w-full p-2 border rounded"
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              {isEditing ? 'Update Property' : 'Add Property'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {properties.map((property) => (
+          <div key={property._id} className="bg-white rounded-lg shadow p-4">
+            <h3 className="text-xl font-semibold">{property.title}</h3>
+            <p>Location: {property.location}</p>
+            <p>Price: {property.price}</p>
+            <p>Sold Date: {new Date(property.soldDate).toLocaleDateString()}</p>
+            <div className="mt-2">
+              {property.images.map((media, index) => renderMedia(media, property.title, index))}
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="flex items-center gap-2">
-                  <Plus size={16} />
-                  Add Images
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader className="space-y-1 pb-2">
-                  <DialogTitle>Add Images</DialogTitle>
-                  <DialogDescription className="text-xs">
-                    Upload up to 3 images to your gallery
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="py-2 flex items-center gap-2 text-amber-600 text-sm">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>Maximum {MAX_IMAGES} images allowed</span>
-                </div>
-
-                <div className="space-y-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="title" className="min-w-20 text-sm">
-                      Common Title:
-                    </Label>
-                    <input
-                      id="title"
-                      className="flex-1 border p-1 rounded text-sm"
-                      value={imageTitle}
-                      onChange={(e) => setImageTitle(e.target.value)}
-                      placeholder="Leave blank to use filenames"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed bg-gray-50 hover:bg-gray-100 rounded-lg cursor-pointer">
-                      <div className="flex flex-col items-center justify-center py-2">
-                        <Upload className="h-6 w-6 text-gray-500" />
-                        <p className="text-xs text-gray-500">
-                          <span className="font-semibold">Upload</span> (Max{" "}
-                          {MAX_IMAGES} PNG, JPG or GIF)
-                        </p>
-                      </div>
-                      <input
-                        id="images"
-                        type="file"
-                        ref={fileInputRef}
-                        multiple
-                        className="hidden"
-                        onChange={handleFileChange}
-                        accept="image/png,image/jpeg,image/gif"
-                      />
-                    </label>
-                  </div>
-
-                  {imagePreviews.length > 0 && (
-                    <div className="pt-1">
-                      <p className="text-xs font-medium mb-1">Preview:</p>
-                      <div className="border rounded-lg p-2 bg-gray-50">
-                        <div className="grid grid-cols-3 gap-2">
-                          {imagePreviews.map((preview, i) => (
-                            <div key={i} className="relative group">
-                              <img
-                                src={preview}
-                                alt={`Preview ${i + 1}`}
-                                className="h-16 w-full object-cover rounded-md border"
-                              />
-                              <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <Button
-                                  variant="destructive"
-                                  size="icon"
-                                  className="h-6 w-6"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    const newPreviews = [...imagePreviews];
-                                    const newImages = [...multipleImages];
-                                    newPreviews.splice(i, 1);
-                                    newImages.splice(i, 1);
-                                    setImagePreviews(newPreviews);
-                                    setMultipleImages(newImages);
-                                  }}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="mt-2 text-xs text-gray-600">
-                          {multipleImages.map((file, i) => (
-                            <div
-                              key={i}
-                              className="flex justify-between items-center text-xs"
-                            >
-                              <span className="truncate max-w-40">
-                                {file.name}
-                              </span>
-                              <span>
-                                {(file.size / (1024 * 1024)).toFixed(2)} MB
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {multipleImages.length > 0 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mt-2 h-7 text-xs w-full"
-                            onClick={clearFileInput}
-                          >
-                            Clear All
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <DialogFooter className="pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setIsAddDialogOpen(false);
-                      clearFileInput();
-                    }}
+            <div className="mt-4 space-x-2">
+              <button
+                onClick={() => handleViewProperty(property._id)}
+                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+              >
+                View
+              </button>
+              {isAdmin && (
+                <>
+                  <button
+                    onClick={() => handleEdit(property)}
+                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                   >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleAddMultipleImages}
-                    disabled={multipleImages.length === 0}
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(property._id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   >
-                    Upload {Math.min(multipleImages.length, MAX_IMAGES)}{" "}
-                    {multipleImages.length === 1 ? "Image" : "Images"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-        </CardHeader>
-        <CardContent className="p-4">
-          {paginatedImages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <ImageIcon className="h-16 w-16 text-gray-300 mb-3" />
-              <p className="text-gray-500 text-lg">No images in gallery</p>
-              <p className="text-gray-400 text-sm mt-1">
-                Add images to display them here
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {paginatedImages.map((image) => (
-                <div
-                  key={image.id}
-                  className="group relative rounded-lg overflow-hidden shadow-sm border hover:shadow-md transition-shadow"
-                >
-                  <div className="aspect-w-16 aspect-h-12 w-full">
-                    <img
-                      src={getImageUrl(image.image)}
-                      // alt={image.title || "Gallery image"}
-                      className="w-full h-48 object-cover"
-                      onError={(e) => (e.target.src = "/fallback-image.jpg")}
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <div className="absolute bottom-0 left-0 right-0 p-3 flex justify-between items-end">
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="h-8 w-8 rounded-full"
-                        onClick={() => handleDeleteImage(image.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+        ))}
+      </div>
+
+      {selectedProperty && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+            <h2 className="text-2xl font-semibold mb-4">{selectedProperty.title}</h2>
+            <p>Location: {selectedProperty.location}</p>
+            <p>Price: {selectedProperty.price}</p>
+            <p>Sold Date: {new Date(selectedProperty.soldDate).toLocaleDateString()}</p>
+            <p>Creator: {selectedProperty.creator?.email}</p>
+            <div className="mt-2">
+              {selectedProperty.images.map((media, index) => (
+                renderMedia(media, selectedProperty.title, index)
               ))}
             </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex items-center justify-between py-4 border-t">
-          <div className="text-sm text-gray-500">
-            Showing {paginatedImages.length} of {safeImages.length} images
+            <button
+              onClick={() => setSelectedProperty(null)}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Close
+            </button>
           </div>
-          {totalPages > 1 && (
-            <Pagination>
-              <PaginationContent className="gap-1">
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={
-                      currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      isActive={i + 1 === currentPage}
-                      onClick={() => handlePageChange(i + 1)}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={
-                      currentPage === totalPages
-                        ? "cursor-not-allowed opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
-        </CardFooter>
-      </Card>
+        </div>
+      )}
     </div>
   );
 };
 
-export default GalleryPanel;
+export default PropertyManagement;

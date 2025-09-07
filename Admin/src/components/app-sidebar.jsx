@@ -119,6 +119,11 @@ const data = {
       url: "/dashboard/add_property",
       icon: Map,
     },
+    {
+      title: "Add Gallery",
+      url: "/dashboard/gallery",
+      icon: Map,
+    },
     
   ],
   Enquiry: [
