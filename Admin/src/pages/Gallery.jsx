@@ -8,15 +8,16 @@ const isVideo = (url) => {
   return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
 };
 
-const PropertyManagement = () => {
-  const [properties, setProperties] = useState([]);
-  const [selectedProperty, setSelectedProperty] = useState(null);
+const GalleryManagement = () => {
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
+    name: '',
     location: '',
-    price: '',
-    soldDate: '',
+    sold_price: '',
+    sold_date: '',
+    tags: '',
     images: [], // This will hold File objects for uploads
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -28,17 +29,17 @@ const PropertyManagement = () => {
     const token = Cookies.get("accessTokenAdmin");
     if (token) {
       setIsAdmin(true);
-      fetchProperties();
+      fetchGalleryItems();
     }
   }, []);
 
-  // Fetch all properties
-  const fetchProperties = async () => {
+  // Fetch all gallery items
+  const fetchGalleryItems = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/v1/gallery/get-gallery');
-      setProperties(response.data.data);
+      const response = await axios.get('http://localhost:4000/api/v1/gallery/get-all');
+      setGalleryItems(response.data.data);
     } catch (err) {
-      setError('Failed to fetch properties');
+      setError('Failed to fetch gallery items');
     }
   };
 
@@ -53,14 +54,15 @@ const PropertyManagement = () => {
     setFormData({ ...formData, images: Array.from(e.target.files) });
   };
 
-  // Create or Update property
+  // Create or Update gallery item
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
-    form.append('title', formData.title);
+    form.append('name', formData.name);
     form.append('location', formData.location);
-    form.append('price', formData.price);
-    form.append('soldDate', formData.soldDate);
+    form.append('sold_price', formData.sold_price);
+    form.append('sold_date', formData.sold_date);
+    form.append('tags', formData.tags);
     formData.images.forEach((file) => form.append('images', file));
 
     try {
@@ -72,60 +74,61 @@ const PropertyManagement = () => {
       };
 
       if (isEditing) {
-        form.append('id', selectedProperty._id);
-        const response = await axios.post('http://localhost:4000/api/v1/gallery/update-gallery', form, config);
-        setSuccess('Property updated successfully');
+        form.append('id', selectedItem._id);
+        const response = await axios.post('http://localhost:4000/api/v1/gallery/update', form, config);
+        setSuccess('Gallery item updated successfully');
       } else {
-        const response = await axios.post('http://localhost:4000/api/v1/gallery/add-gallery', form, config);
-        setSuccess('Property created successfully');
+        const response = await axios.post('http://localhost:4000/api/v1/gallery/add', form, config);
+        setSuccess('Gallery item created successfully');
       }
 
-      setFormData({ title: '', location: '', price: '', soldDate: '', images: [] });
+      setFormData({ name: '', location: '', sold_price: '', sold_date: '', tags: '', images: [] });
       setIsEditing(false);
-      setSelectedProperty(null);
-      fetchProperties();
+      setSelectedItem(null);
+      fetchGalleryItems();
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
     }
   };
 
-  // Get property details
-  const handleViewProperty = async (id) => {
+  // Get gallery item details
+  const handleViewItem = async (id) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/gallery/gallery-detail', { id });
-      setSelectedProperty(response.data.data);
+      const response = await axios.post('http://localhost:4000/api/v1/gallery/get-by-id', { id });
+      setSelectedItem(response.data.data);
     } catch (err) {
-      setError('Failed to fetch property details');
+      setError('Failed to fetch gallery item details');
     }
   };
 
-  // Delete property
+  // Delete gallery item
   const handleDelete = async (id) => {
     try {
       await axios.post(
-        'http://localhost:4000/api/v1/gallery/delete-gallery',
+        'http://localhost:4000/api/v1/gallery/delete',
         { id },
         {
           headers: { Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}` },
         }
       );
-      setSuccess('Property deleted successfully');
-      fetchProperties();
+      setSuccess('Gallery item deleted successfully');
+      fetchGalleryItems();
     } catch (err) {
-      setError('Failed to delete property');
+      setError('Failed to delete gallery item');
     }
   };
 
-  // Edit property
-  const handleEdit = (property) => {
+  // Edit gallery item
+  const handleEdit = (item) => {
     setFormData({
-      title: property.title,
-      location: property.location,
-      price: property.price,
-      soldDate: property.soldDate.toISOString().split('T')[0],
+      name: item.name,
+      location: item.location,
+      sold_price: item.sold_price,
+      sold_date: item.sold_date.toISOString().split('T')[0],
+      tags: item.tags ? item.tags.join(', ') : '',
       images: [], // Reset file input for editing
     });
-    setSelectedProperty(property);
+    setSelectedItem(item);
     setIsEditing(true);
   };
 
@@ -154,7 +157,7 @@ const PropertyManagement = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Property Management</h1>
+      <h1 className="text-3xl font-bold mb-6">Gallery Management</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -169,15 +172,16 @@ const PropertyManagement = () => {
 
       {isAdmin && (
         <div className="mb-8 p-6 bg-white rounded-lg shadow">
-          <h2 className="text-2xl font-semibold mb-4">{isEditing ? 'Edit Property' : 'Add New Property'}</h2>
+          <h2 className="text-2xl font-semibold mb-4">{isEditing ? 'Edit Gallery Item' : 'Add New Gallery Item'}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="name"
+              value={formData.name}
               onChange={handleInputChange}
-              placeholder="Title"
+              placeholder="Name"
               className="w-full p-2 border rounded"
+              required
             />
             <input
               type="text"
@@ -186,20 +190,31 @@ const PropertyManagement = () => {
               onChange={handleInputChange}
               placeholder="Location"
               className="w-full p-2 border rounded"
+              required
             />
             <input
               type="text"
-              name="price"
-              value={formData.price}
+              name="sold_price"
+              value={formData.sold_price}
               onChange={handleInputChange}
-              placeholder="Price"
+              placeholder="Sold Price"
               className="w-full p-2 border rounded"
+              required
             />
             <input
               type="date"
-              name="soldDate"
-              value={formData.soldDate}
+              name="sold_date"
+              value={formData.sold_date}
               onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+              required
+            />
+            <input
+              type="text"
+              name="tags"
+              value={formData.tags}
+              onChange={handleInputChange}
+              placeholder="Tags (comma separated)"
               className="w-full p-2 border rounded"
             />
             <input
@@ -208,30 +223,37 @@ const PropertyManagement = () => {
               accept="image/*,video/*" // Allow both image and video files
               onChange={handleFileChange}
               className="w-full p-2 border rounded"
+              required={!isEditing}
             />
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              {isEditing ? 'Update Property' : 'Add Property'}
+              {isEditing ? 'Update Gallery Item' : 'Add Gallery Item'}
             </button>
           </form>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {properties.map((property) => (
-          <div key={property._id} className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-xl font-semibold">{property.title}</h3>
-            <p>Location: {property.location}</p>
-            <p>Price: {property.price}</p>
-            <p>Sold Date: {new Date(property.soldDate).toLocaleDateString()}</p>
+        {galleryItems.map((item) => (
+          <div key={item._id} className="bg-white rounded-lg shadow p-4">
+            <h3 className="text-xl font-semibold">{item.name}</h3>
+            <p>Location: {item.location}</p>
+            <p>Sold Price: {item.sold_price}</p>
+            <p>Sold Date: {new Date(item.sold_date).toLocaleDateString()}</p>
+            {item.tags && item.tags.length > 0 && (
+              <div className="mt-2">
+                <span className="text-sm text-gray-600">Tags: </span>
+                <span className="text-sm">{item.tags.join(', ')}</span>
+              </div>
+            )}
             <div className="mt-2">
-              {property.images.map((media, index) => renderMedia(media, property.title, index))}
+              {item.images.map((media, index) => renderMedia(media, item.name, index))}
             </div>
             <div className="mt-4 space-x-2">
               <button
-                onClick={() => handleViewProperty(property._id)}
+                onClick={() => handleViewItem(item._id)}
                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
               >
                 View
@@ -239,13 +261,13 @@ const PropertyManagement = () => {
               {isAdmin && (
                 <>
                   <button
-                    onClick={() => handleEdit(property)}
+                    onClick={() => handleEdit(item)}
                     className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(property._id)}
+                    onClick={() => handleDelete(item._id)}
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   >
                     Delete
@@ -257,21 +279,23 @@ const PropertyManagement = () => {
         ))}
       </div>
 
-      {selectedProperty && (
+      {selectedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-            <h2 className="text-2xl font-semibold mb-4">{selectedProperty.title}</h2>
-            <p>Location: {selectedProperty.location}</p>
-            <p>Price: {selectedProperty.price}</p>
-            <p>Sold Date: {new Date(selectedProperty.soldDate).toLocaleDateString()}</p>
-            <p>Creator: {selectedProperty.creator?.email}</p>
+            <h2 className="text-2xl font-semibold mb-4">{selectedItem.name}</h2>
+            <p>Location: {selectedItem.location}</p>
+            <p>Sold Price: {selectedItem.sold_price}</p>
+            <p>Sold Date: {new Date(selectedItem.sold_date).toLocaleDateString()}</p>
+            {selectedItem.tags && selectedItem.tags.length > 0 && (
+              <p>Tags: {selectedItem.tags.join(', ')}</p>
+            )}
             <div className="mt-2">
-              {selectedProperty.images.map((media, index) => (
-                renderMedia(media, selectedProperty.title, index)
+              {selectedItem.images.map((media, index) => (
+                renderMedia(media, selectedItem.name, index)
               ))}
             </div>
             <button
-              onClick={() => setSelectedProperty(null)}
+              onClick={() => setSelectedItem(null)}
               className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               Close
@@ -283,4 +307,4 @@ const PropertyManagement = () => {
   );
 };
 
-export default PropertyManagement;
+export default GalleryManagement;

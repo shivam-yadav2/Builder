@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
   Calendar,
@@ -24,115 +24,27 @@ const Gallery = () => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [gallery, setGallery] = useState([]);
-  const [error, setError] = useState(null);
 
-  // Fetch properties from backend
+  // Fetch gallery items from backend
   useEffect(() => {
-    fetchProperties();
     fetchGalleryProperties();
   }, []);
 
   const fetchGalleryProperties = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/v1/gallery/get-gallery"
+        "http://localhost:4000/api/v1/gallery/get-all"
       );
       setGallery(response.data.data);
       setLoading(false);
     } catch (err) {
-      setError("Failed to fetch properties");
+      console.error("Failed to fetch gallery items:", err);
       setLoading(false);
     }
   };
 
-  const fetchProperties = async () => {
-    try {
-      // Mock data for demonstration - replace with your API call
-      const mockData = [
-        {
-          _id: 1,
-          title: "Modern Villa in Downtown",
-          location: "Downtown District",
-          price: "₹85,00,000",
-          soldDate: "2024-03-15",
-          description: "Beautiful modern villa with premium amenities",
-          images: [
-            "uploads/image1.jpg",
-            "uploads/video1.mp4",
-            "uploads/image2.png",
-          ],
-        },
-        {
-          _id: 2,
-          title: "Family Home with Garden",
-          location: "Suburban Heights",
-          price: "₹62,50,000",
-          soldDate: "2024-02-28",
-          description: "Spacious family home perfect for growing families",
-          images: [
-            "uploads/image3.jpg",
-            "uploads/video2.webm",
-          ],
-        },
-        {
-          _id: 3,
-          title: "Penthouse Suite",
-          location: "Skyline Tower",
-          price: "₹1,20,00,000",
-          soldDate: "2024-01-10",
-          description: "Luxury penthouse with panoramic city views",
-          images: [
-            "uploads/image4.jpg",
-            "uploads/video3.mp4",
-          ],
-        },
-        {
-          _id: 4,
-          title: "Executive Townhouse",
-          location: "Business District",
-          price: "₹77,50,000",
-          soldDate: "2024-02-15",
-          description: "Contemporary townhouse in prime business location",
-          images: [
-            "uploads/image5.jpg",
-            "uploads/video4.mp4",
-          ],
-        },
-        {
-          _id: 5,
-          title: "Luxury Apartment",
-          location: "Metro Center",
-          price: "₹45,00,000",
-          soldDate: "2024-03-01",
-          description: "Premium apartment with modern amenities",
-          images: [
-            "uploads/image6.jpg",
-          ],
-        },
-        {
-          _id: 6,
-          title: "Coastal Retreat",
-          location: "Oceanview Hills",
-          price: "₹95,00,000",
-          soldDate: "2024-01-20",
-          description: "Stunning coastal property with ocean views",
-          images: [
-            "uploads/image7.jpg",
-            "uploads/video5.mp4",
-          ],
-        },
-      ];
-
-      setProperties(mockData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-      setLoading(false);
-    }
-  };
 
   const openModal = (property) => {
     setSelectedProperty(property);
@@ -228,7 +140,7 @@ const Gallery = () => {
 
       <div className="p-6">
         <h3 className="font-bold text-xl mb-3 text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">
-          {property.title}
+          {property.name}
         </h3>
 
         <div className="space-y-3 mb-4">
@@ -240,15 +152,33 @@ const Gallery = () => {
           <div className="flex items-center text-gray-600">
             <Calendar className="w-4 h-4 mr-2 text-blue-500" />
             <span className="text-sm">
-              Sold on {new Date(property.soldDate).toLocaleDateString()}
+              Sold on {new Date(property.sold_date).toLocaleDateString()}
             </span>
           </div>
 
           <div className="flex items-center text-emerald-600 font-bold text-lg pt-2">
             <IndianRupee className="w-5 h-5 mr-1" />
-            <span>{property.price}</span>
+            <span>{property.sold_price}</span>
           </div>
         </div>
+
+        {property.tags && property.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-3">
+            {property.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+            {property.tags.length > 3 && (
+              <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium">
+                +{property.tags.length - 3} more
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -358,7 +288,7 @@ const Gallery = () => {
                 No sold properties available at the moment.
               </p>
               <button
-                onClick={fetchProperties}
+                onClick={fetchGalleryProperties}
                 className="bg-emerald-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-emerald-600 transition-colors"
               >
                 Refresh
@@ -373,7 +303,7 @@ const Gallery = () => {
             <div className="bg-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {selectedProperty.title}
+                  {selectedProperty.name}
                 </h2>
                 <button
                   onClick={closeModal}
@@ -390,7 +320,7 @@ const Gallery = () => {
                     <div className="relative">
                       {renderMedia(
                         selectedProperty.images?.[currentImageIndex],
-                        `${selectedProperty.title} ${currentImageIndex + 1}`,
+                        `${selectedProperty.name} ${currentImageIndex + 1}`,
                         currentImageIndex
                       )}
                       {selectedProperty.images &&
@@ -442,7 +372,7 @@ const Gallery = () => {
                   <div className="space-y-6">
                     <div className="flex items-center text-2xl font-bold text-emerald-600">
                       <IndianRupee className="w-5 h-5 mr-1" />
-                      {selectedProperty.price}
+                      {selectedProperty.sold_price}
                     </div>
 
                     {selectedProperty.description && (
@@ -466,11 +396,29 @@ const Gallery = () => {
                         <span>
                           Sold on{" "}
                           {new Date(
-                            selectedProperty.soldDate
+                            selectedProperty.sold_date
                           ).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
+
+                    {selectedProperty.tags && selectedProperty.tags.length > 0 && (
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h4 className="font-semibold text-gray-800 mb-2">
+                          Tags
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedProperty.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
                       <div className="flex items-center mb-2">
@@ -520,3 +468,4 @@ const Gallery = () => {
 };
 
 export default Gallery;
+// export default Gallery;/
