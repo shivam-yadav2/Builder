@@ -80,7 +80,7 @@ const ChangePassword = () => {
             const config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: 'http://localhost:4000/api/v1/users/change-password',
+                url: 'https://backend.rsusb2sbuildersconstructions.com/api/v1/users/change-password',
                 headers: {
                     'Content-Type': 'application/json',
                     // Note: You'll need to provide the actual token here

@@ -31,7 +31,7 @@ const Profile = () => {
 
   // Sample user data (would come from your API)
   const [user, setUser] = useState({
-    avatar: userData?.avatar ? `http://localhost:4000/${userData?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`,
+    avatar: userData?.avatar ? `https://backend.rsusb2sbuildersconstructions.com/${userData?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`,
     name: userData?.name,
     phone: userData?.phone,
     email: userData?.email,

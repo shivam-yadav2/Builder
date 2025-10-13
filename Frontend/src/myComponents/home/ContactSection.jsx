@@ -33,7 +33,7 @@ const ContactSection = () => {
         }
 
         const promise = fetch(
-            "http://localhost:4000/api/v1/enquiry/add-enquiry",
+            "https://backend.rsusb2sbuildersconstructions.com/api/v1/enquiry/add-enquiry",
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

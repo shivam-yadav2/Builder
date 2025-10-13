@@ -36,7 +36,7 @@ const GalleryManagement = () => {
   // Fetch all gallery items
   const fetchGalleryItems = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/v1/gallery/get-all');
+      const response = await axios.get('https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/get-all');
       setGalleryItems(response.data.data);
     } catch (err) {
       setError('Failed to fetch gallery items');
@@ -75,10 +75,10 @@ const GalleryManagement = () => {
 
       if (isEditing) {
         form.append('id', selectedItem._id);
-        const response = await axios.post('http://localhost:4000/api/v1/gallery/update', form, config);
+        const response = await axios.post('https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/update', form, config);
         setSuccess('Gallery item updated successfully');
       } else {
-        const response = await axios.post('http://localhost:4000/api/v1/gallery/add', form, config);
+        const response = await axios.post('https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/add', form, config);
         setSuccess('Gallery item created successfully');
       }
 
@@ -94,7 +94,7 @@ const GalleryManagement = () => {
   // Get gallery item details
   const handleViewItem = async (id) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/gallery/get-by-id', { id });
+      const response = await axios.post('https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/get-by-id', { id });
       setSelectedItem(response.data.data);
     } catch (err) {
       setError('Failed to fetch gallery item details');
@@ -105,7 +105,7 @@ const GalleryManagement = () => {
   const handleDelete = async (id) => {
     try {
       await axios.post(
-        'http://localhost:4000/api/v1/gallery/delete',
+        'https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/delete',
         { id },
         {
           headers: { Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}` },
@@ -138,7 +138,7 @@ const GalleryManagement = () => {
       return (
         <video
           key={index}
-          src={`http://localhost:4000/${url}`}
+          src={`https://backend.rsusb2sbuildersconstructions.com/${url}`}
           alt={alt}
           className="w-full h-40 object-cover rounded mb-2"
           controls
@@ -148,7 +148,7 @@ const GalleryManagement = () => {
     return (
       <img
         key={index}
-        src={`http://localhost:4000/${url}`}
+        src={`https://backend.rsusb2sbuildersconstructions.com/${url}`}
         alt={alt}
         className="w-full h-40 object-cover rounded mb-2"
       />

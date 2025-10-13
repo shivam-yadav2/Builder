@@ -145,16 +145,16 @@ const Home = () => {
 
     try {
       if (modalType === "For Rent") {
-        apiUrl = "http://localhost:4000/api/v1/rentFilter/add";
+        apiUrl = "https://backend.rsusb2sbuildersconstructions.com/api/v1/rentFilter/add";
         loadingToast = toast.loading("Applying rent filter... Please wait...");
       } else if (modalType === "For Construction") {
         apiUrl =
-          "http://localhost:4000/api/v1/constructionFilter/add";
+          "https://backend.rsusb2sbuildersconstructions.com/api/v1/constructionFilter/add";
         loadingToast = toast.loading(
           "Submitting construction details... Please wait..."
         );
       } else if (modalType === "For Buy") {
-        apiUrl = "http://localhost:4000/api/v1/sellFilter/add";
+        apiUrl = "https://backend.rsusb2sbuildersconstructions.com/api/v1/sellFilter/add";
         loadingToast = toast.loading("Applying buy filter... Please wait...");
       } else {
         alert("Invalid form type");

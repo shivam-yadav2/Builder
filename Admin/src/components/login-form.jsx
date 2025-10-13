@@ -38,7 +38,7 @@ export function LoginForm({ className, ...props }) {
       const config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'http://localhost:4000/api/v1/admin/login',
+        url: 'https://backend.rsusb2sbuildersconstructions.com/api/v1/admin/login',
         headers: {
           'Content-Type': 'application/json'
         },

@@ -52,7 +52,7 @@ const Contact = () => {
       return;
     }
 
-    const promise = fetch("http://localhost:4000/api/v1/enquiry/add-enquiry", {
+    const promise = fetch("https://backend.rsusb2sbuildersconstructions.com/api/v1/enquiry/add-enquiry", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),

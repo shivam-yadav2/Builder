@@ -48,7 +48,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 // API URL as a constant
-const API_BASE_URL = "http://localhost:4000/api/v1";
+const API_BASE_URL = "https://backend.rsusb2sbuildersconstructions.com/api/v1";
 
 // Status mapping
 const STATUS_MAP = {

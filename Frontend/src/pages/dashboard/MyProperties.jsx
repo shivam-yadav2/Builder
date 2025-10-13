@@ -52,7 +52,7 @@ const MyPropertiesPage = () => {
       const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "http://localhost:4000/api/v1/users/user-properties",
+        url: "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/user-properties",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -82,7 +82,7 @@ const MyPropertiesPage = () => {
 
       const config = {
         method: "post",
-        url: "http://localhost:4000/api/v1/users/user-property-delete",
+        url: "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/user-property-delete",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -114,7 +114,7 @@ const MyPropertiesPage = () => {
 
       const config = {
         method: "post",
-        url: "http://localhost:4000/api/v1/users/update-property-availability",
+        url: "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/update-property-availability",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -218,7 +218,7 @@ const MyPropertiesPage = () => {
                     }`}
                 >
                   <img
-                    src={`http://localhost:4000/${property.images[0]}`}
+                    src={`https://backend.rsusb2sbuildersconstructions.com/${property.images[0]}`}
                     alt={property.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />

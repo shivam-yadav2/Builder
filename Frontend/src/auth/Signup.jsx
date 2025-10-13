@@ -85,9 +85,9 @@ const Signup = () => {
     try {
       const response = await axios.post(
         // Use this for local testing
-        // "http://localhost:4000/api/v1/users/signup",
+        // "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/signup",
         // Switch to this for production
-        "http://localhost:4000/api/v1/users/signup",
+        "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/signup",
         formData,
         {
           headers: {

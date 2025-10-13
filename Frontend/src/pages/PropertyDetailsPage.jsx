@@ -36,7 +36,7 @@ const PropertyDetailsPage = () => {
     //   const config = {
     //     method: "post",
     //     maxBodyLength: Infinity,
-    //     url: `http://localhost:4000/api/v1/${
+    //     url: `https://backend.rsusb2sbuildersconstructions.com/api/v1/${
     //       type === "Land"
     //         ? "land/land-detail"
     //         : type === "Home"
@@ -64,9 +64,9 @@ const PropertyDetailsPage = () => {
     });
 
     const Homeurl =
-      "http://localhost:4000/api/v1/home/home-detail";
+      "https://backend.rsusb2sbuildersconstructions.com/api/v1/home/home-detail";
     const Landurl =
-      "http://localhost:4000/api/v1/land/land-detail";
+      "https://backend.rsusb2sbuildersconstructions.com/api/v1/land/land-detail";
 
     let config = {
       method: "post",
@@ -120,7 +120,7 @@ const PropertyDetailsPage = () => {
   //   let config = {
   //     method: "post",
   //     maxBodyLength: Infinity,
-  //     url: `http://localhost:4000/api/v1/land/land-detail/${id}`,
+  //     url: `https://backend.rsusb2sbuildersconstructions.com/api/v1/land/land-detail/${id}`,
   //     headers: {
   //       "Content-Type": "application/json",
   //     },
@@ -216,7 +216,7 @@ const PropertyDetailsPage = () => {
                             location={property?.location}
                             sqft={property?.landArea}
                             price={property?.unitPrice}
-                            image={`http://localhost:4000/${property?.images[0]}`}
+                            image={`https://backend.rsusb2sbuildersconstructions.com/${property?.images[0]}`}
                           />
 
                         </>

@@ -36,7 +36,7 @@ const AdminApprovalPage = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/v1/admin/get-all-properties",
+        "https://backend.rsusb2sbuildersconstructions.com/api/v1/admin/get-all-properties",
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
@@ -68,7 +68,7 @@ const AdminApprovalPage = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/v1/admin/update-property-status",
+        "https://backend.rsusb2sbuildersconstructions.com/api/v1/admin/update-property-status",
         {
           id: propertyId,
           status,
@@ -278,7 +278,7 @@ const AdminApprovalPage = () => {
                                     selectedProperty.images.map((img, index) => (
                                       <img
                                         key={index}
-                                        src={`http://localhost:4000/${img}`}
+                                        src={`https://backend.rsusb2sbuildersconstructions.com/${img}`}
                                         alt={`Property ${index}`}
                                         className="w-24 h-24 object-cover rounded"
                                       />

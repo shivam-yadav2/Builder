@@ -36,7 +36,7 @@ function MyState({ children }) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: 'http://localhost:4000/api/v1/users/me',
+            url: 'https://backend.rsusb2sbuildersconstructions.com/api/v1/users/me',
             headers: {
                 'Authorization': accessToken
             }
@@ -53,7 +53,7 @@ function MyState({ children }) {
     }
 
     const getHomeData = () => {
-        axios.get('http://localhost:4000/api/v1/home/get-home-user')
+        axios.get('https://backend.rsusb2sbuildersconstructions.com/api/v1/home/get-home-user')
             .then((response) => {
                 // console.log('Home Data:', response?.data?.data)
                 setHomeData(response?.data?.data)
@@ -64,7 +64,7 @@ function MyState({ children }) {
     }
 
     const getLandData = () => {
-        axios.get('http://localhost:4000/api/v1/land/get-land-user')
+        axios.get('https://backend.rsusb2sbuildersconstructions.com/api/v1/land/get-land-user')
             .then((response) => {
                 // console.log('Land Data:', response?.data?.data)
                 setLandData(response?.data?.data)

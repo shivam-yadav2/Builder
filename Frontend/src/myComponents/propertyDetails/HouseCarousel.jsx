@@ -33,7 +33,7 @@ const HouseCarousel = ({ property }) => {
             >
               <div>
                 <img
-                  src={`http://localhost:4000/${image}`}
+                  src={`https://backend.rsusb2sbuildersconstructions.com/${image}`}
                   alt={`House ${index + 1}`}
                   className="w-full h-[30vh] md:h-[40vh] lg:h-[75vh] object-fill  rounded-lg"
                 />

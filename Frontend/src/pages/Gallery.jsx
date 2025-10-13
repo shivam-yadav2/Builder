@@ -35,7 +35,7 @@ const Gallery = () => {
   const fetchGalleryProperties = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/v1/gallery/get-all"
+        "https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/get-all"
       );
       setGallery(response.data.data);
       setLoading(false);
@@ -88,7 +88,7 @@ const Gallery = () => {
   // Render media (image or video)
   const renderMedia = (url, alt, index, isThumbnail = false) => {
     console.log(url)
-    const fullUrl = `http://localhost:4000/${url}` ;
+    const fullUrl = `https://backend.rsusb2sbuildersconstructions.com/${url}` ;
     if (isVideo(url)) {
       return (
         <video

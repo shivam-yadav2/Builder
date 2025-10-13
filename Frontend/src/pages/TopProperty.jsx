@@ -36,11 +36,11 @@ const TopProperty = () => {
                   location={property?.location}
                   sqft={property?.landArea}
                   price={property?.unitPrice}
-                  image={`http://localhost:4000/${property?.images[0]}`}
+                  image={`https://backend.rsusb2sbuildersconstructions.com/${property?.images[0]}`}
                   name={property?.creator?.name}
                   city={property?.city}
                   type={property?.propertyType}
-                  avatar={property?.creator?.avatar ? `http://localhost:4000/${property?.creator?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`} />
+                  avatar={property?.creator?.avatar ? `https://backend.rsusb2sbuildersconstructions.com/${property?.creator?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`} />
               </Link>
             ))
           ) : (

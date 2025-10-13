@@ -35,7 +35,7 @@ const UserListing = () => {
         const config = {
           method: "get",
           maxBodyLength: Infinity,
-          url: "http://localhost:4000/api/v1/users/all-users",
+          url: "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/all-users",
           headers: {
             Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
           },
@@ -78,7 +78,7 @@ const UserListing = () => {
       const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "http://localhost:4000/api/v1/users/update-status",
+        url: "https://backend.rsusb2sbuildersconstructions.com/api/v1/users/update-status",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
@@ -116,7 +116,7 @@ const UserListing = () => {
       header: "Avatar",
       cell: ({ row }) => (
         <img
-          src={`http://localhost:4000/${row.original.avatar}`}
+          src={`https://backend.rsusb2sbuildersconstructions.com/${row.original.avatar}`}
           alt={row.original.name}
           className="w-12 h-12 object-cover rounded-full cursor-pointer"
           onClick={() => {
@@ -278,7 +278,7 @@ const UserListing = () => {
                   {selectedUser.adminMessage || "None"}
                 </p>
                 <img
-                  src={`http://localhost:4000/${selectedUser.avatar}`}
+                  src={`https://backend.rsusb2sbuildersconstructions.com/${selectedUser.avatar}`}
                   alt="Avatar"
                   className="w-24 h-24 object-cover rounded-full"
                 />

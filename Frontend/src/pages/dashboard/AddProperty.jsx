@@ -175,8 +175,8 @@ const AddProperty = () => {
         maxBodyLength: Infinity,
         url:
           data.propertyType === "house"
-            ? "http://localhost:4000/api/v1/home/add-home"
-            : "http://localhost:4000/api/v1/land/add-land",
+            ? "https://backend.rsusb2sbuildersconstructions.com/api/v1/home/add-home"
+            : "https://backend.rsusb2sbuildersconstructions.com/api/v1/land/add-land",
         headers: {
           Authorization: Cookies.get("accessToken"),
           "Content-Type": "multipart/form-data",

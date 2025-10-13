@@ -73,11 +73,11 @@ const BuyProperties = () => {
                     location={property.location}
                     sqft={property.landArea}
                     price={property.unitPrice}
-                    image={`http://localhost:4000/${property.images?.[0]}`}
+                    image={`https://backend.rsusb2sbuildersconstructions.com/${property.images?.[0]}`}
                     name={property?.creator?.name}
                     city={property?.city}
                     type={property?.propertyType}
-                    avatar={`http://localhost:4000/${userData?.avatar}`}
+                    avatar={`https://backend.rsusb2sbuildersconstructions.com/${userData?.avatar}`}
                   />
                 </Link>
               )
