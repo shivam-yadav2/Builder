@@ -13,7 +13,7 @@ const ButtonCustom = ({ title, onClick, theme }) => {
       style={{
         background: theme === "white" 
           ? 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #ffffff 100%)' 
-          : 'linear-gradient(135deg, #004e2e 0%, #006b3f 50%, #008751 100%)',
+          : 'linear-gradient(135deg, #015231 0%, #006b3f 50%, #008751 100%)',
         boxShadow: theme === "white"
           ? '0 4px 15px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)'
           : '0 4px 20px rgba(0, 78, 46, 0.3), 0 2px 8px rgba(0, 78, 46, 0.2)'

@@ -3,8 +3,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { MapPin, Bed, Bath, Square } from 'lucide-react';
 
-const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city, type }) => {
+const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city, type , property }) => {
   // Format price for better display
+  console.log(property)
   const formatPrice = (price) => {
     if (price >= 100000000) {
       return `IDR.${(price / 1000000).toFixed(0)}.000.000`;
@@ -69,31 +70,31 @@ const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city,
                 <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
                   <Bed className="w-4 h-4 text-emerald-600" />
                 </div>
-                <span className="text-lg font-bold text-white group-hover:text-gray-900">3</span>
-                <span className="text-xs group-hover:text-gray-500 text-gray-100">Kamar Tidur</span>
+                <span className="text-lg font-bold text-white group-hover:text-gray-900">{property?.bedrooms}</span>
+                <span className="text-xs group-hover:text-gray-500 text-gray-100">Bedrooms</span>
               </div>
 
               <div className="flex flex-col items-center space-y-1">
                 <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
                   <Bath className="w-4 h-4 text-emerald-600" />
                 </div>
-                <span className="text-lg font-bold text-white group-hover:text-gray-900">3</span>
-                <span className="text-xs group-hover:text-gray-500 text-gray-100">Kamar Tidur</span>
+                <span className="text-lg font-bold text-white group-hover:text-gray-900">{property?.bathrooms}</span>
+                <span className="text-xs group-hover:text-gray-500 text-gray-100">Bathrooms</span>
               </div>
 
               <div className="flex flex-col items-center space-y-1">
                 <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
                   <Square className="w-4 h-4 text-emerald-600" />
                 </div>
-                <span className="text-lg font-bold text-white group-hover:text-gray-900">3</span>
-                <span className="text-xs group-hover:text-gray-500 text-gray-100">Kamar Tidur</span>
+                <span className="text-lg font-bold text-white group-hover:text-gray-900">{property?.kitchen}</span>
+                <span className="text-xs group-hover:text-gray-500 text-gray-100">Kitchen</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Property Type Badge */}
-        <div className="mt-4 flex justify-start">
+        {/* <div className="mt-4 flex justify-start">
           <span className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors duration-300 ${
             type === 'Jual' || type === 'sale'
               ? 'bg-emerald-100 text-emerald-700 group-hover:bg-white group-hover:text-emerald-700' 
@@ -103,7 +104,7 @@ const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city,
           }`}>
             {type === 'Jual' || type === 'sale' ? 'Property Baru' : type === 'Sewa' || type === 'rent' ? 'Sewa' : type}
           </span>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );

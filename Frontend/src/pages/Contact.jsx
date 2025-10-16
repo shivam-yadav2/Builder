@@ -1,4 +1,3 @@
-// src/pages/Contact.jsx
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -9,9 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Twitter,
-  Facebook,
   Instagram,
-  Youtube,
+  Linkedin,
   Mail,
   MessageSquare,
   MapPin,
@@ -90,15 +88,15 @@ const Contact = () => {
     }
   };
 
-  // contact card data - updated with Samadhaan branding
+  // contact card data - updated with Rsus B2S Builders and Constructions branding
   const contactItems = [
     {
       title: "Chat to Sales",
       description: "Speak to our friendly team",
       icon: <MessageSquare className="w-6 h-6" />,
       action: "WhatsApp Us",
-      detail: "+91 969-630-3855",
-      link: "https://wa.me/+919696303855?text=Hello%20Samadhaan%20Foundation",
+      detail: "+91 955-938-7028",
+      link: "https://wa.me/+919559387028?text=Hello%20Rsus%20B2S%20Builders%20and%20Constructions",
       bgColor: "bg-green-50",
       iconColor: "text-green-600",
       borderColor: "border-green-200",
@@ -108,8 +106,8 @@ const Contact = () => {
       description: "We're here to help you",
       icon: <Mail className="w-6 h-6" />,
       action: "Send Email",
-      detail: "samadhaangroups@gmail.com",
-      link: "mailto:samadhaangroups@gmail.com",
+      detail: "anujchauhan06059@gmail.com",
+      link: "mailto:anujchauhan06059@gmail.com",
       bgColor: "bg-blue-50",
       iconColor: "text-blue-600",
       borderColor: "border-blue-200",
@@ -119,7 +117,7 @@ const Contact = () => {
       description: "Come see us in person",
       icon: <MapPin className="w-6 h-6" />,
       action: "Get Directions",
-      detail: "View on Google Maps",
+      detail: "538ka/950 Shiv Lok, Triveni Nagar 3rd, Lucknow",
       link: "https://maps.app.goo.gl/9A1abgbbc4pTUgwX6",
       bgColor: "bg-purple-50",
       iconColor: "text-purple-600",
@@ -130,11 +128,43 @@ const Contact = () => {
       description: "Mon-Fri 8 AM – 6 PM",
       icon: <Phone className="w-6 h-6" />,
       action: "Call Now",
-      detail: "+91 955-462-2666",
-      link: "tel:9554622666",
+      detail: "+91 790-521-6115",
+      link: "tel:+917905216115",
       bgColor: "bg-orange-50",
       iconColor: "text-orange-600",
       borderColor: "border-orange-200",
+    },
+  ];
+
+  // social media links
+  const socialMedia = [
+    {
+      name: "Explurger",
+      icon: <MessageSquare className="w-6 h-6" />,
+      link: "https://app.explurger.com/dl/MXcZHuV263ZY2UrP8",
+      bgColor: "bg-green-50",
+      iconColor: "text-green-600",
+    },
+    {
+      name: "Instagram",
+      icon: <Instagram className="w-6 h-6" />,
+      link: "https://instagram.com/rsus.b2s6461",
+      bgColor: "bg-pink-50",
+      iconColor: "text-pink-600",
+    },
+    {
+      name: "Twitter",
+      icon: <Twitter className="w-6 h-6" />,
+      link: "https://twitter.com/B2sRsus",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
+    },
+    {
+      name: "LinkedIn",
+      icon: <Linkedin className="w-6 h-6" />,
+      link: "https://www.linkedin.com/in/rsus-b2s-builder-s-and-construction-a7a453244",
+      bgColor: "bg-blue-100",
+      iconColor: "text-blue-700",
     },
   ];
 
@@ -159,7 +189,7 @@ const Contact = () => {
           <div className="text-center text-white">
             <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
               Get in Touch with
-              <span className="block text-green-200">Rsus B2S</span>
+              <span className="block text-green-200">Rsus B2S Builders and Constructions</span>
             </h1>
             <p className="text-xl lg:text-2xl text-green-100 max-w-3xl mx-auto mb-8 leading-relaxed">
               Ready to build your dream? We're here to bring your vision to life
@@ -237,6 +267,51 @@ const Contact = () => {
             </div>
           </div>
 
+          {/* Social Media Section */}
+          <div className="mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Connect With Us
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Follow us on social media for updates and project showcases
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {socialMedia.map((item, i) => (
+                <Card
+                  key={i}
+                  className={`group relative overflow-hidden border-2 border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer`}
+                >
+                  <div className="p-6 text-center">
+                    <div
+                      className={`inline-flex p-3 rounded-full ${item.bgColor} ${item.iconColor} mb-4 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {item.icon}
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {item.name}
+                    </h3>
+                    <Button
+                      className="bg-green-600 hover:bg-green-700 text-white group-hover:scale-105 transition-all duration-300"
+                      asChild
+                    >
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        Follow Us
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </a>
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+
           {/* Contact Form Section */}
           <div className="relative">
             <div className="text-center mb-12">
@@ -244,8 +319,7 @@ const Contact = () => {
                 Send Us a Message
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Fill out the form below and we'll get back to you within 24
-                hours
+                Fill out the form below and we'll get back to you within 24 hours
               </p>
             </div>
 
@@ -395,7 +469,7 @@ const Contact = () => {
           <div className="mt-20 text-center">
             <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto border border-gray-100">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Why Choose Samadhaan?
+                Why Choose Rsus B2S Builders and Constructions?
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="flex flex-col items-center">

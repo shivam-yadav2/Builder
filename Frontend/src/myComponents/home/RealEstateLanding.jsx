@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Phone, MapPin, Square, Building, DollarSign, Send, Zap, Sparkles, Home, Search } from 'lucide-react';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const RealEstateLanding = () => {
     const [formData, setFormData] = useState({
@@ -55,21 +57,39 @@ const RealEstateLanding = () => {
         setIsSubmitting(true);
         
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Reset form on success
-            setFormData({
-                name: '',
-                number: '',
-                location: '',
-                plotArea: '',
-                constructionArea: '',
-                budget: ''
-            });
-            
-            // Show success message (you can replace with your toast implementation)
-            alert('🎉 Enquiry submitted successfully! We will contact you soon.');
+            const response = await axios.post('https://backend.rsusb2sbuildersconstructions.com/api/v1/constructionFilter/add', {
+                name: formData.name,
+                number: formData.number,
+                location: formData.location,
+                plotArea: parseFloat(formData.plotArea),
+                constructionArea: parseFloat(formData.constructionArea),
+                budget: parseFloat(formData.budget)
+              });
+              
+              if (response.status === 200 || response.status === 201) {
+                toast.success('🎉 Enquiry submitted successfully! We will contact you soon.', {
+                  duration: 4000,
+                  position: 'top-right',
+                  style: {
+                    background: 'linear-gradient(135deg, #004e2e 0%, #006b3f 100%)',
+                    color: 'white',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    boxShadow: '0 10px 30px rgba(0, 78, 46, 0.3)'
+                  }
+                });
+                
+                // Reset form and close modal
+                setFormData({
+                  name: '',
+                  number: '',
+                  location: '',
+                  plotArea: '',
+                  constructionArea: '',
+                  budget: ''
+                });
+               
+              }
             
         } catch (error) {
             console.error('Error submitting form:', error);

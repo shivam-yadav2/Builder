@@ -36,6 +36,7 @@ const RentProperties = () => {
                   city={property?.city}
                   type={property?.propertyType}
                   avatar={property?.creator?.avatar ? `https://backend.rsusb2sbuildersconstructions.com/${property?.creator?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`}
+                  property={property}
                 />
               </Link>
             ))

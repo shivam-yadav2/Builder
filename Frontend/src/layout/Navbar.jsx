@@ -64,13 +64,13 @@ export default function Navbar() {
         {/* Enhanced Logo Section */}
         <NavLink
           to="/"
-          className="group flex items-center space-x-3 text-2xl text-white font-bold transition-all duration-300 hover:scale-105"
+          className="group flex items-center space-x-3 text-2xl text-white font-bold transition-all duration-300"
         >
           <div className="relative">
             <img
               src="/assets/logo/logo.png"
               alt="Logo"
-              className="  transition-all h-[100px] duration-300 group-hover:border-white/60 group-hover:shadow-xl group-hover:rotate-12"
+              className="  transition-all h-[80px] duration-300 "
             />
             {/* <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-ping"></div>
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div> */}
@@ -86,7 +86,7 @@ export default function Navbar() {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    `relative flex items-center space-x-2 px-4 py-3 rounded-xl font-medium text-sm xl:text-base transition-all duration-300 overflow-hidden ${
+                    `relative flex items-center space-x-2 px-3 py-2 rounded-xl font-medium text-sm xl:text-base transition-all duration-300 overflow-hidden ${
                       isActive
                         ? "text-[#004e2e] bg-white shadow-lg scale-105"
                         : "text-white hover:text-white hover:bg-white/15 hover:shadow-lg hover:scale-105"
@@ -130,7 +130,7 @@ export default function Navbar() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
               <div className="relative">
-                <ConstructionEnquiry title="Sell Now" theme={"white"} />
+                <ConstructionEnquiry title="Build Your  Home" />
               </div>
             </div>
           </div>

@@ -314,7 +314,7 @@ const Home = () => {
           <WhyChooseUs />
           {/* <Separator /> */}
           {/* <OurProperties /> */}
-          <TopProperty />
+          {/* <TopProperty /> */}
           <ContactSection/>
           <FootContact />
         </Layout>
