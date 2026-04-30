@@ -148,14 +148,14 @@ const Contact = () => {
     {
       name: "Instagram",
       icon: <Instagram className="w-6 h-6" />,
-      link: "https://instagram.com/rsus.b2s6461",
+      link: "https://instagram.com/rsus.b2s6461?igshid=MzNlNGNkZWQ4Mg==",
       bgColor: "bg-pink-50",
       iconColor: "text-pink-600",
     },
     {
       name: "Twitter",
       icon: <Twitter className="w-6 h-6" />,
-      link: "https://twitter.com/B2sRsus",
+      link: "https://twitter.com/B2sRsus?t=rsHgcyO8jhtz_85maiWSaQ&s=08",
       bgColor: "bg-blue-50",
       iconColor: "text-blue-600",
     },
