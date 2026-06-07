@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Heart, ArrowUp } from 'lucide-react';
+import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Youtube, MessageSquare, Heart, ArrowUp } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const Footer = () => {
@@ -28,6 +28,22 @@ const Footer = () => {
     'Legal Assistance'
   ];
 
+  const socialLinks = [
+    { icon: Facebook, href: 'https://www.facebook.com/share/1BBt4E1Pxt/', label: 'Facebook' },
+    { icon: Instagram, href: 'https://www.instagram.com/rsus.b2sbuilderandconstruction?igsh=aXUyZ2UxZmlyZ3ph', label: 'Instagram' },
+    { icon: Youtube, href: 'https://youtube.com/@rsus.b2sbuildersandconstru712?si=FXH3tV05TeOwGh4R', label: 'YouTube' },
+    { icon: Twitter, href: 'https://x.com/B2sRsus', label: 'Twitter' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/rsus-b2s-builder-s-and-construction-a7a453244', label: 'LinkedIn' },
+    { icon: MessageSquare, href: 'https://app.explurger.com/dl/MXcZHuV263ZY2UrP8', label: 'Explurger' }
+  ];
+
+  const locationLink = 'https://maps.app.goo.gl/kLkiByTNz9FSUEZF8?g_st=aw';
+  const phoneNumber = '+91 790-521-6115';
+  const phoneHref = 'tel:+917905216115';
+  const whatsappHref = 'https://wa.me/+919559387028?text=Hello%20Rsus%20B2S%20Builders%20and%20Constructions';
+  const emailAddress = 'anujchauhan06059@gmail.com';
+  const emailHref = 'mailto:anujchauhan06059@gmail.com';
+
   return (
     <footer className="bg-gradient-to-br from-[#004e2e] via-[#005a35] to-[#003422] text-white relative overflow-hidden">
       {/* Background decorative elements */}
@@ -40,7 +56,7 @@ const Footer = () => {
       <div className="relative container mx-auto px-4 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          
+
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
@@ -49,23 +65,20 @@ const Footer = () => {
                 alt="PropExpert Logo"
                 className=""
               />
-              
+
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
                Trust us to handle your real estate needs.
             </p>
-            
+
             {/* Social Media */}
-            <div className="flex space-x-3">
-              {[
-                { icon: Facebook, href: '#', label: 'Facebook' },
-                { icon: Twitter, href: '#', label: 'Twitter' },
-                { icon: Instagram, href: '#', label: 'Instagram' },
-                { icon: Linkedin, href: '#', label: 'LinkedIn' }
-              ].map(({ icon: Icon, href, label }) => (
+            <div className="flex flex-wrap gap-3">
+              {socialLinks.map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   className="group p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-300 hover:scale-110 hover:-translate-y-1"
                 >
@@ -121,35 +134,61 @@ const Footer = () => {
               Contact Info
             </h4>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group">
+              <a
+                href={locationLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group"
+              >
                 <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Location</p>
-                  <p className="text-xs text-gray-400">Lucknow, Uttar Pradesh</p>
+                  <p className="text-xs text-gray-400">538ka/950 Shiv Lok, Triveni Nagar 3rd, Lucknow</p>
                 </div>
-              </div>
-              
-              <div className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group">
+              </a>
+
+              <a
+                href={phoneHref}
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group"
+              >
                 <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Phone</p>
-                  <p className="text-xs text-gray-400">+91 98765 43210</p>
+                  <p className="text-xs text-gray-400">{phoneNumber}</p>
                 </div>
-              </div>
-              
-              <div className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group">
+              </a>
+
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group"
+              >
+                <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">WhatsApp</p>
+                  <p className="text-xs text-gray-400">+91 955-938-7028</p>
+                </div>
+              </a>
+
+              <a
+                href={emailHref}
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors group"
+              >
                 <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Email</p>
-                  <p className="text-xs text-gray-400">info@propexpert.com</p>
+                  <p className="text-xs text-gray-400">{emailAddress}</p>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -164,7 +203,7 @@ const Footer = () => {
             <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" />
             <span>in India. All rights reserved.</span>
           </div>
-          
+
           <div className="flex items-center space-x-6">
             <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
               Privacy Policy

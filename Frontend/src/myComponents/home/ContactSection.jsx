@@ -1,6 +1,22 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram } from 'lucide-react';
+import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Youtube, MessageSquare } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
+
+const contactLinks = {
+    location: 'https://maps.app.goo.gl/kLkiByTNz9FSUEZF8?g_st=aw',
+    phone: 'tel:+917905216115',
+    whatsapp: 'https://wa.me/+919559387028?text=Hello%20Rsus%20B2S%20Builders%20and%20Constructions',
+    email: 'mailto:anujchauhan06059@gmail.com',
+};
+
+const socialLinks = [
+    { Icon: Facebook, href: 'https://www.facebook.com/share/1BBt4E1Pxt/', label: 'Facebook' },
+    { Icon: Instagram, href: 'https://www.instagram.com/rsus.b2sbuilderandconstruction?igsh=aXUyZ2UxZmlyZ3ph', label: 'Instagram' },
+    { Icon: Twitter, href: 'https://x.com/B2sRsus', label: 'Twitter' },
+    { Icon: Youtube, href: 'https://youtube.com/@rsus.b2sbuildersandconstru712?si=FXH3tV05TeOwGh4R', label: 'YouTube' },
+    { Icon: Linkedin, href: 'https://www.linkedin.com/in/rsus-b2s-builder-s-and-construction-a7a453244', label: 'LinkedIn' },
+    { Icon: MessageSquare, href: 'https://app.explurger.com/dl/MXcZHuV263ZY2UrP8', label: 'Explurger' },
+];
 
 const ContactSection = () => {
     const [formData, setFormData] = useState({
@@ -98,34 +114,64 @@ const ContactSection = () => {
                         <div className="space-y-4 sm:space-y-6">
                             <h4 className="text-base sm:text-lg font-medium">Contact</h4>
 
-                            <div className="flex items-start space-x-3">
+                            <a
+                                href={contactLinks.location}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-start space-x-3 hover:opacity-80 transition-opacity"
+                            >
                                 <MapPin size={16} className="text-white mt-1 " />
                                 <div>
                                     <p className="font-medium text-sm sm:text-base">
-                                        Jl. Pajajaran Indah No.123 Majasaya Bandung
+                                        538ka/950 Shiv Lok, Triveni Nagar 3rd, Lucknow
                                     </p>
-                                    <p className="font-medium text-sm sm:text-base">Indonesia</p>
+                                    <p className="font-medium text-sm sm:text-base">Uttar Pradesh , India</p>
                                 </div>
-                            </div>
+                            </a>
 
-                            <div className="flex items-center space-x-3">
+                            <a
+                                href={contactLinks.phone}
+                                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+                            >
                                 <Phone size={16} className="text-white " />
-                                <p className="font-medium text-sm sm:text-base">+62-21-123-4567</p>
-                            </div>
+                                <p className="font-medium text-sm sm:text-base">+91 790-521-6115</p>
+                            </a>
 
-                            <div className="flex items-center space-x-3">
+                            <a
+                                href={contactLinks.whatsapp}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+                            >
+                                <MessageSquare size={16} className="text-white " />
+                                <p className="font-medium text-sm sm:text-base">+91 955-938-7028 (WhatsApp)</p>
+                            </a>
+
+                            <a
+                                href={contactLinks.email}
+                                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+                            >
                                 <Mail size={16} className="text-white " />
-                                <p className="font-medium text-sm sm:text-base">info@rsusbuilders.com</p>
-                            </div>
+                                <p className="font-medium text-sm sm:text-base">anujchauhan06059@gmail.com</p>
+                            </a>
                         </div>
 
                         {/* Social Media */}
                         <div className="space-y-4">
                             <h4 className="text-base sm:text-lg font-medium">Social Media</h4>
-                            <div className="flex space-x-4">
-                                <Facebook size={20} className="text-white" />
-                                <Twitter size={20} className="text-white" />
-                                <Instagram size={20} className="text-white" />
+                            <div className="flex flex-wrap gap-4">
+                                {socialLinks.map(({ Icon, href, label }) => (
+                                    <a
+                                        key={label}
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={label}
+                                        className="hover:scale-110 hover:-translate-y-0.5 transition-transform"
+                                    >
+                                        <Icon size={20} className="text-white" />
+                                    </a>
+                                ))}
                             </div>
                             <p className="text-white text-sm sm:text-base">RsusBuilders</p>
                         </div>

@@ -118,7 +118,7 @@ const Contact = () => {
       icon: <MapPin className="w-6 h-6" />,
       action: "Get Directions",
       detail: "538ka/950 Shiv Lok, Triveni Nagar 3rd, Lucknow",
-      link: "https://maps.app.goo.gl/9A1abgbbc4pTUgwX6",
+      link: "https://maps.app.goo.gl/kLkiByTNz9FSUEZF8?g_st=aw",
       bgColor: "bg-purple-50",
       iconColor: "text-purple-600",
       borderColor: "border-purple-200",
@@ -148,16 +148,30 @@ const Contact = () => {
     {
       name: "Instagram",
       icon: <Instagram className="w-6 h-6" />,
-      link: "https://instagram.com/rsus.b2s6461?igshid=MzNlNGNkZWQ4Mg==",
+      link: "https://www.instagram.com/rsus.b2sbuilderandconstruction?igsh=aXUyZ2UxZmlyZ3ph",
       bgColor: "bg-pink-50",
       iconColor: "text-pink-600",
     },
     {
-      name: "Twitter",
-      icon: <Twitter className="w-6 h-6" />,
-      link: "https://twitter.com/B2sRsus?t=rsHgcyO8jhtz_85maiWSaQ&s=08",
+      name: "Facebook",
+      icon: <MessageSquare className="w-6 h-6" />,
+      link: "https://www.facebook.com/share/1BBt4E1Pxt/",
       bgColor: "bg-blue-50",
       iconColor: "text-blue-600",
+    },
+    {
+      name: "YouTube",
+      icon: <MessageSquare className="w-6 h-6" />,
+      link: "https://youtube.com/@rsus.b2sbuildersandconstru712?si=FXH3tV05TeOwGh4R",
+      bgColor: "bg-red-50",
+      iconColor: "text-red-600",
+    },
+    {
+      name: "Twitter (X)",
+      icon: <Twitter className="w-6 h-6" />,
+      link: "https://x.com/B2sRsus",
+      bgColor: "bg-black-50",
+      iconColor: "text-black-600",
     },
     {
       name: "LinkedIn",
@@ -231,6 +245,13 @@ const Contact = () => {
               {contactItems.map((item, i) => (
                 <Card
                   key={i}
+                  onClick={() => {
+                    if (item.link.startsWith("http")) {
+                      window.open(item.link, "_blank", "noopener,noreferrer");
+                    } else {
+                      window.location.href = item.link;
+                    }
+                  }}
                   className={`group relative overflow-hidden border-2 ${item.borderColor} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer`}
                 >
                   <div className="p-6">
@@ -252,6 +273,8 @@ const Contact = () => {
                     >
                       <a
                         href={item.link}
+                        target={item.link.startsWith("http") ? "_blank" : undefined}
+                        rel={item.link.startsWith("http") ? "noopener noreferrer" : undefined}
                         className="flex items-center justify-center gap-2"
                       >
                         {item.action}
