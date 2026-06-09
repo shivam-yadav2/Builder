@@ -35,7 +35,7 @@ const Gallery = () => {
   const fetchGalleryProperties = async () => {
     try {
       const response = await axios.get(
-        "https://backend.rsusb2sbuildersconstructions.com/api/v1/gallery/get-all"
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/gallery/get-all`
       );
       setGallery(response.data.data);
       setLoading(false);
@@ -88,7 +88,7 @@ const Gallery = () => {
   // Render media (image or video)
   const renderMedia = (url, alt, index, isThumbnail = false) => {
     console.log(url)
-    const fullUrl = `https://backend.rsusb2sbuildersconstructions.com/${url}` ;
+    const fullUrl = `${import.meta.env.VITE_API_BASE_URL}/${url}` ;
     if (isVideo(url)) {
       return (
         <video

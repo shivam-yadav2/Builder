@@ -47,16 +47,12 @@ const BuyProperties = () => {
     },
   ];
 
-  const { homeData, landData, userData } = useContext(MyContext);
-  console.log("homeData:", homeData);
-  console.log("landData:", landData);
-
+  const { homeData, landData } = useContext(MyContext);
 
   const combinedProperties = [
     ...(homeData || []),
     ...(landData || [])
-  ].filter((property) => property?.status === 'Available' && !property?.isDelete && (property?.propertyType === 'sale' || property?.propertyType === 'both') && property?.approvalStatus == "approved");
-  console.log("combinedProperties:", combinedProperties);
+  ].filter((property) => property?.status === 'Available' && !property?.isDelete && (property?.propertyType === 'sale' || property?.propertyType === 'both'));
 
   return (
     <Layout>
@@ -73,11 +69,9 @@ const BuyProperties = () => {
                     location={property.location}
                     sqft={property.landArea}
                     price={property.unitPrice}
-                    image={`https://backend.rsusb2sbuildersconstructions.com/${property.images?.[0]}`}
-                    name={property?.creator?.name}
+                    image={`${import.meta.env.VITE_API_BASE_URL}/${property.images?.[0]}`}
                     city={property?.city}
                     type={property?.propertyType}
-                    avatar={`https://backend.rsusb2sbuildersconstructions.com/${userData?.avatar}`}
                   />
                 </Link>
               )

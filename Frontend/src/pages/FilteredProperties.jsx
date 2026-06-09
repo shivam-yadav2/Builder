@@ -154,7 +154,7 @@ const FilteredProperties = () => {
                   price={property.unitPrice}
                   image={
                     property.images?.[0]
-                      ? `https://backend.rsusb2sbuildersconstructions.com/${property.images[0]}`
+                      ? `${import.meta.env.VITE_API_BASE_URL}/${property.images[0]}`
                       : "/placeholder-image.jpg"
                   }
                   name={property?.creator?.name || "Unknown"}
@@ -162,7 +162,7 @@ const FilteredProperties = () => {
                   type={property?.propertyType}
                   avatar={
                     property?.creator?.avatar
-                      ? `https://backend.rsusb2sbuildersconstructions.com/${property.creator.avatar}`
+                      ? `${import.meta.env.VITE_API_BASE_URL}/${property.creator.avatar}`
                       : "https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
                   }
                 />

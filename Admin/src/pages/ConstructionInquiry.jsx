@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
 import {
   Card,
@@ -7,14 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,71 +29,69 @@ import {
 import {
   MoreVertical,
   Users,
-  Calendar,
   CheckCircle,
   Clock,
-  LogOut,
   AlertTriangle,
   XCircle,
   FileUser,
   Trash2,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { DataTable } from "@/utils/Datatable";
 
-// API URL as a constant
-const API_BASE_URL = "https://backend.rsusb2sbuildersconstructions.com/api/v1";
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
-// Status mapping
 const STATUS_MAP = {
   new: {
     displayName: "New Lead",
-    badge: {
-      variant: "secondary",
-      className: "bg-amber-100 text-amber-800 hover:bg-amber-200",
-      icon: <Clock className="h-4 w-4 mr-1" />,
-    },
+    className: "bg-amber-100 text-amber-800",
+    icon: <Clock className="h-4 w-4 mr-1" />,
   },
   contacted: {
     displayName: "Contacted",
-    badge: {
-      variant: "default",
-      className: "bg-purple-100 text-purple-800 hover:bg-purple-200",
-      icon: <Users className="h-4 w-4 mr-1" />,
-    },
+    className: "bg-purple-100 text-purple-800",
+    icon: <Users className="h-4 w-4 mr-1" />,
   },
   converted: {
     displayName: "Converted",
-    badge: {
-      variant: "default",
-      className: "bg-green-100 text-green-800 hover:bg-green-200",
-      icon: <CheckCircle className="h-4 w-4 mr-1" />,
-    },
+    className: "bg-green-100 text-green-800",
+    icon: <CheckCircle className="h-4 w-4 mr-1" />,
   },
   lost: {
     displayName: "Lost",
-    badge: {
-      variant: "default",
-      className: "bg-red-100 text-red-800 hover:bg-red-200",
-      icon: <XCircle className="h-4 w-4 mr-1" />,
-    },
+    className: "bg-red-100 text-red-800",
+    icon: <XCircle className="h-4 w-4 mr-1" />,
   },
   fake: {
     displayName: "Fake",
-    badge: {
-      variant: "default",
-      className: "bg-gray-100 text-gray-800 hover:bg-gray-200",
-      icon: <AlertTriangle className="h-4 w-4 mr-1" />,
-    },
+    className: "bg-gray-100 text-gray-800",
+    icon: <AlertTriangle className="h-4 w-4 mr-1" />,
   },
 };
 
-const InquiryDashboard = () => {
-  const navigate = useNavigate();
+const ACTION_TO_STATUS = {
+  "lead-converted": "converted",
+  "lead-lost": "lost",
+  "lead-contacted": "contacted",
+  "lead-fake": "fake",
+};
+
+const authHeader = () => ({
+  Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
+});
+
+const convertBudgetToNumber = (enquiry) => {
+  if (enquiry.budget && typeof enquiry.budget === "string") {
+    return { ...enquiry, budget: parseInt(enquiry.budget, 10) };
+  }
+  return enquiry;
+};
+
+const ConstructionInquiry = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filteredEnquiries, setFilteredEnquiries] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState(null); // 'status' or 'delete'
+  const [dialogType, setDialogType] = useState(null);
   const [selectedAction, setSelectedAction] = useState(null);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,61 +100,36 @@ const InquiryDashboard = () => {
     fetchEnquiries();
   }, []);
 
-  // Convert budget string to number
-  const convertBudgetToNumber = (enquiry) => {
-    if (enquiry.budget && typeof enquiry.budget === "string") {
-      return {
-        ...enquiry,
-        budget: parseInt(enquiry.budget, 10),
-      };
-    }
-    return enquiry;
-  };
-
   const fetchEnquiries = async () => {
     setIsLoading(true);
     try {
-      const config = {
-        method: "get",
-        url: `${API_BASE_URL}/constructionFilter/getAll`,
-        headers: {},
-        data: "",
-      };
-
-      const response = await axios.request(config);
-      const processedEnquiries = (response.data.message || []).map((enquiry) =>
+      const response = await axios.get(
+        `${API_BASE_URL}/constructionFilter/getAll`,
+        { headers: authHeader() }
+      );
+      const payload =
+        response?.data?.message ?? response?.data?.data ?? [];
+      const processed = (payload || []).map((enquiry) =>
         convertBudgetToNumber({
           ...enquiry,
-          _id: enquiry._id || Date.now().toString(), // Fallback ID
-          number: enquiry.number.toString(), // Ensure number is string
-          status: enquiry.status || "new", // Default status
+          _id: enquiry._id || Date.now().toString(),
+          number: enquiry.number?.toString() ?? "",
+          status: enquiry.status || "new",
         })
       );
-
-      // Filter for construction inquiries (if needed)
-      const constructionEnquiries = processedEnquiries.filter((item) =>
-        item.location?.toLowerCase().includes("construction") ||
-        item.plotArea ||
-        item.constructionArea
+      const constructionEnquiries = processed.filter(
+        (item) => item.plotArea || item.constructionArea
       );
       setFilteredEnquiries(constructionEnquiries);
       setError(null);
     } catch (err) {
       console.error("Error fetching enquiries:", err);
-      setError("Unable to load construction inquiries. Please try again later.");
+      setError(
+        "Unable to load construction inquiries. Please try again later."
+      );
       toast.error("Failed to load construction inquiries");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
     }
   };
 
@@ -180,28 +146,16 @@ const InquiryDashboard = () => {
     setIsDialogOpen(true);
   };
 
-  const getStatusDisplayName = (status) => {
-    return STATUS_MAP[status]?.displayName || status;
-  };
-
-  const getApiStatusValue = (action) => {
-    const actionMap = {
-      "lead-converted": "converted",
-      "lead-lost": "lost",
-      "lead-contacted": "contacted",
-      "lead-fake": "fake",
-    };
-    return actionMap[action] || "new";
-  };
+  const getStatusDisplayName = (status) =>
+    STATUS_MAP[status]?.displayName || status;
+  const getApiStatusValue = (action) => ACTION_TO_STATUS[action] || "new";
 
   const confirmStatusChange = () => {
     setIsSubmitting(true);
     const newStatus = getApiStatusValue(selectedAction);
 
     const updated = filteredEnquiries.map((item) =>
-      item._id === selectedEnrollment
-        ? { ...item, status: newStatus }
-        : item
+      item._id === selectedEnrollment ? { ...item, status: newStatus } : item
     );
 
     setTimeout(() => {
@@ -212,27 +166,24 @@ const InquiryDashboard = () => {
       setSelectedAction(null);
       setDialogType(null);
       setIsSubmitting(false);
-    }, 800); // Simulate delay
+    }, 800);
   };
 
   const confirmDelete = async () => {
     setIsSubmitting(true);
     try {
       await toast.promise(
-        axios.post(`${API_BASE_URL}/constructionFilter/deleteById`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          id:selectedEnrollment
-        }),
+        axios.post(
+          `${API_BASE_URL}/constructionFilter/deleteById`,
+          { id: selectedEnrollment },
+          { headers: authHeader() }
+        ),
         {
           loading: "Deleting enquiry...",
           success: "Enquiry deleted successfully",
           error: "Failed to delete enquiry",
         }
       );
-
-      // Refresh enquiries after deletion
       fetchEnquiries();
     } catch (error) {
       console.error("Error deleting enquiry:", error);
@@ -244,25 +195,126 @@ const InquiryDashboard = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const columns = [
+    { accessorKey: "name", header: "Name" },
+    {
+      accessorKey: "number",
+      header: "Mobile",
+      cell: ({ row }) => row.original.number || "—",
+    },
+    {
+      accessorKey: "location",
+      header: "Location",
+      cell: ({ row }) => row.original.location || "—",
+    },
+    {
+      accessorKey: "plotArea",
+      header: "Plot Area (sq ft)",
+      cell: ({ row }) =>
+        row.original.plotArea
+          ? Number(row.original.plotArea).toLocaleString()
+          : "—",
+    },
+    {
+      accessorKey: "constructionArea",
+      header: "Construction Area (sq ft)",
+      cell: ({ row }) =>
+        row.original.constructionArea
+          ? Number(row.original.constructionArea).toLocaleString()
+          : "—",
+    },
+    {
+      accessorKey: "budget",
+      header: "Budget (₹)",
+      cell: ({ row }) => {
+        const b = Number(row.original.budget) || 0;
+        return b.toLocaleString();
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const statusInfo = STATUS_MAP[row.original.status] || STATUS_MAP.new;
+        return (
+          <Badge className={statusInfo.className}>
+            <div className="flex items-center">
+              {statusInfo.icon}
+              {statusInfo.displayName}
+            </div>
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => {
+        const enquiry = row.original;
+        return (
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() =>
+                    handleStatusChange(enquiry._id, "lead-contacted")
+                  }
+                >
+                  Mark as Contacted
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    handleStatusChange(enquiry._id, "lead-converted")
+                  }
+                >
+                  Mark as Converted
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    handleStatusChange(enquiry._id, "lead-lost")
+                  }
+                >
+                  Mark as Lost
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    handleStatusChange(enquiry._id, "lead-fake")
+                  }
+                >
+                  Mark as Fake
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleDelete(enquiry._id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="space-y-4">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -275,26 +327,20 @@ const InquiryDashboard = () => {
         }}
       />
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold">Inquiry Dashboard</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            Construction Inquiries
+          </h1>
           <Badge variant="outline" className="flex items-center gap-1 py-1">
             <FileUser className="h-3 w-3" />
-            Construction Inquiries Only
+            Construction
           </Badge>
         </div>
-        <Button
-          onClick={handleLogout}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </Button>
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           <div className="flex items-center">
             <AlertTriangle className="h-4 w-4 mr-2" />
             {error}
@@ -304,112 +350,25 @@ const InquiryDashboard = () => {
 
       <Card className="shadow-sm">
         <CardHeader className="bg-gray-50 border-b">
-          <CardTitle>Construction Inquiries</CardTitle>
+          <CardTitle>Inquiries ({filteredEnquiries.length})</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          {filteredEnquiries.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              No construction inquiries found
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Mobile</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Plot Area (sq ft)</TableHead>
-                  <TableHead>Construction Area (sq ft)</TableHead>
-                  <TableHead>Budget (₹)</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEnquiries.map((enquiry) => {
-                  const statusInfo = STATUS_MAP[enquiry.status] || STATUS_MAP.new;
-                  return (
-                    <TableRow key={enquiry._id}>
-                      <TableCell>{enquiry.name}</TableCell>
-                      <TableCell>{enquiry.number}</TableCell>
-                      <TableCell>{enquiry.location}</TableCell>
-                      <TableCell>{enquiry.plotArea}</TableCell>
-                      <TableCell>{enquiry.constructionArea}</TableCell>
-                      <TableCell>{enquiry.budget.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={statusInfo.badge.variant}
-                          className={statusInfo.badge.className}
-                        >
-                          <div className="flex items-center">
-                            {statusInfo.badge.icon}
-                            {statusInfo.displayName}
-                          </div>
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStatusChange(enquiry._id, "lead-contacted")
-                                }
-                              >
-                                Mark as Contacted
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStatusChange(enquiry._id, "lead-converted")
-                                }
-                              >
-                                Mark as Converted
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStatusChange(enquiry._id, "lead-lost")
-                                }
-                              >
-                                Mark as Lost
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStatusChange(enquiry._id, "lead-fake")
-                                }
-                              >
-                                Mark as Fake
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(enquiry._id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
+        <CardContent className="p-3 sm:p-4">
+          <DataTable
+            columns={columns}
+            data={filteredEnquiries}
+            filterColumnId="name"
+            filterPlaceholder="Search by name..."
+          />
         </CardContent>
       </Card>
 
-      {/* Alert Dialog */}
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {dialogType === "delete" ? "Confirm Deletion" : "Confirm Status Change"}
+              {dialogType === "delete"
+                ? "Confirm Deletion"
+                : "Confirm Status Change"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {dialogType === "delete" ? (
@@ -426,9 +385,13 @@ const InquiryDashboard = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isSubmitting}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={dialogType === "delete" ? confirmDelete : confirmStatusChange}
+              onClick={
+                dialogType === "delete" ? confirmDelete : confirmStatusChange
+              }
               disabled={isSubmitting}
             >
               {isSubmitting
@@ -446,4 +409,4 @@ const InquiryDashboard = () => {
   );
 };
 
-export default InquiryDashboard;
+export default ConstructionInquiry;

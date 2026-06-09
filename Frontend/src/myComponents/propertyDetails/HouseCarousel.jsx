@@ -33,7 +33,7 @@ const HouseCarousel = ({ property }) => {
             >
               <div>
                 <img
-                  src={`https://backend.rsusb2sbuildersconstructions.com/${image}`}
+                  src={`${import.meta.env.VITE_API_BASE_URL}/${image}`}
                   alt={`House ${index + 1}`}
                   className="w-full h-[30vh] md:h-[40vh] lg:h-[75vh] object-fill  rounded-lg"
                 />

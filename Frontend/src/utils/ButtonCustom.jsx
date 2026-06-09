@@ -119,7 +119,7 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
     setIsSubmitting(true);
     
     try {
-      const response = await axios.post('https://backend.rsusb2sbuildersconstructions.com/api/v1/constructionFilter/add', {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/constructionFilter/add`, {
         name: formData.name,
         number: formData.number,
         location: formData.location,
@@ -191,40 +191,40 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
       <Toaster />
       
       {/* Main modal container with enhanced scrolling */}
-      <div className={`relative w-full max-w-lg mx-auto max-h-[95vh] ${
+      <div className={`relative w-full max-w-lg mx-auto max-h-[92vh] ${
         theme === "white" ? "bg-white text-[#001324]" : "bg-gradient-to-br from-[#001324] via-[#002244] to-[#001324] text-white"
-      } rounded-3xl shadow-2xl overflow-hidden border border-white/10`}>
-        
+      } rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-white/10`}>
+
         {/* Sticky Header with enhanced design */}
         <div className={`sticky top-0 z-10 ${
-          theme === "white" 
-            ? "bg-white/95 backdrop-blur-sm border-b border-gray-200" 
+          theme === "white"
+            ? "bg-white/95 backdrop-blur-sm border-b border-gray-200"
             : "bg-gradient-to-r from-[#001324]/95 via-[#004e2e]/95 to-[#001324]/95 backdrop-blur-sm border-b border-white/10"
-        } p-6`}>
+        } px-4 py-3 sm:p-6`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-br from-[#004e2e] to-[#006b3f] rounded-2xl shadow-lg">
-                <Building className="w-6 h-6 text-white" />
+            <div className="flex items-center space-x-2.5 sm:space-x-3">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-[#004e2e] to-[#006b3f] rounded-xl sm:rounded-2xl shadow-lg">
+                <Building className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#004e2e] to-[#006b3f] bg-clip-text text-transparent">
+                <h2 className="text-base sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#004e2e] to-[#006b3f] bg-clip-text text-transparent leading-tight">
                   Construction Enquiry
                 </h2>
-                <p className="text-sm text-gray-500">Get your dream project started</p>
+                <p className="text-[11px] sm:text-sm text-gray-500">Get your dream project started</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className={`group p-3 ${
-                theme === "white" 
-                  ? "hover:bg-gray-100 text-gray-600" 
+              className={`group p-2 sm:p-3 ${
+                theme === "white"
+                  ? "hover:bg-gray-100 text-gray-600"
                   : "hover:bg-white/10 text-white"
-              } rounded-2xl transition-all duration-300 hover:scale-110 hover:rotate-90`}
+              } rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-110 hover:rotate-90`}
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
-          
+
           {/* Progress indicator */}
           <div className="mt-4 hidden lg:flex items-center space-x-2">
             <Star className="w-4 h-4 text-yellow-500 fill-current" />
@@ -233,16 +233,14 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
         </div>
 
         {/* Scrollable Form Content */}
-        <div className="overflow-y-auto max-h-[calc(80vh-140px)] custom-scrollbar">
-          <div className="p-3 lg:p-6 space-y-6 ">
-            
+        <div className="overflow-y-auto max-h-[calc(92vh-180px)] custom-scrollbar">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+
             {/* Personal Information Section */}
-            <div className="space-y-4">
-              
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">
                     Full Name *
                   </label>
                   <div className="relative">
@@ -251,21 +249,21 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className={`w-full px-4 py-2 lg:py-4 pl-12 rounded-2xl border-2 transition-all duration-300 ${
-                        errors.name 
-                          ? 'border-red-400 shadow-red-100' 
+                      className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 lg:py-4 pl-9 sm:pl-10 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${
+                        errors.name
+                          ? 'border-red-400 shadow-red-100'
                           : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
                       } ${
-                        theme === "white" 
-                          ? "bg-gray-50 text-[#001324] focus:bg-white" 
+                        theme === "white"
+                          ? "bg-gray-50 text-[#001324] focus:bg-white"
                           : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
-                      } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20 focus:scale-[1.02]`}
+                      } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20`}
                       placeholder="Enter your full name"
                     />
-                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
+                    <User className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
                   </div>
                   {errors.name && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center space-x-1 animate-shake">
+                    <p className="text-red-500 text-xs mt-1.5 flex items-center space-x-1 animate-shake">
                       <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                       <span>{errors.name}</span>
                     </p>
@@ -273,7 +271,7 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                 </div>
 
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">
                     Phone Number *
                   </label>
                   <div className="relative">
@@ -282,21 +280,21 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                       name="number"
                       value={formData.number}
                       onChange={handleInputChange}
-                      className={`w-full px-4 py-2 lg:py-4 pl-12 rounded-2xl border-2 transition-all duration-300 ${
-                        errors.number 
-                          ? 'border-red-400 shadow-red-100' 
+                      className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 lg:py-4 pl-9 sm:pl-10 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${
+                        errors.number
+                          ? 'border-red-400 shadow-red-100'
                           : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
                       } ${
-                        theme === "white" 
-                          ? "bg-gray-50 text-[#001324] focus:bg-white" 
+                        theme === "white"
+                          ? "bg-gray-50 text-[#001324] focus:bg-white"
                           : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
-                      } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20 focus:scale-[1.02]`}
+                      } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20`}
                       placeholder="Enter your phone number"
                     />
-                    <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
+                    <Phone className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
                   </div>
                   {errors.number && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center space-x-1 animate-shake">
+                    <p className="text-red-500 text-xs mt-1.5 flex items-center space-x-1 animate-shake">
                       <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                       <span>{errors.number}</span>
                     </p>
@@ -306,43 +304,10 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
             </div>
 
             {/* Project Details Section */}
-            <div className="space-y-4">
-              
-              
-              <div className="group">
-                <label className="block text-sm font-semibold mb-2 text-gray-700">
-                  Location *
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2 lg:py-4 pl-12 rounded-2xl border-2 transition-all duration-300 ${
-                      errors.location 
-                        ? 'border-red-400 shadow-red-100' 
-                        : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
-                    } ${
-                      theme === "white" 
-                        ? "bg-gray-50 text-[#001324] focus:bg-white" 
-                        : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
-                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20 focus:scale-[1.02]`}
-                    placeholder="Enter project location"
-                  />
-                  <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
-                </div>
-                {errors.location && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center space-x-1 animate-shake">
-                    <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-                    <span>{errors.location}</span>
-                  </p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">
                     Plot Area (sq ft) *
                   </label>
                   <input
@@ -350,20 +315,20 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                     name="plotArea"
                     value={formData.plotArea}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-2 lg:py-4 rounded-2xl border-2 transition-all duration-300 ${
-                      errors.plotArea 
-                        ? 'border-red-400 shadow-red-100' 
+                    className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 lg:py-4 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${
+                      errors.plotArea
+                        ? 'border-red-400 shadow-red-100'
                         : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
                     } ${
-                      theme === "white" 
-                        ? "bg-gray-50 text-[#001324] focus:bg-white" 
+                      theme === "white"
+                        ? "bg-gray-50 text-[#001324] focus:bg-white"
                         : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
-                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20 focus:scale-[1.02]`}
+                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20`}
                     placeholder="0"
                     min="1"
                   />
                   {errors.plotArea && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center space-x-1 animate-shake">
+                    <p className="text-red-500 text-xs mt-1.5 flex items-center space-x-1 animate-shake">
                       <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                       <span>{errors.plotArea}</span>
                     </p>
@@ -371,28 +336,28 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                 </div>
 
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Construction Area (sq ft) *
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">
+                    Cons. Area (sq ft) *
                   </label>
                   <input
                     type="number"
                     name="constructionArea"
                     value={formData.constructionArea}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-2 lg:py-4 rounded-2xl border-2 transition-all duration-300 ${
-                      errors.constructionArea 
-                        ? 'border-red-400 shadow-red-100' 
+                    className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 lg:py-4 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${
+                      errors.constructionArea
+                        ? 'border-red-400 shadow-red-100'
                         : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
                     } ${
-                      theme === "white" 
-                        ? "bg-gray-50 text-[#001324] focus:bg-white" 
+                      theme === "white"
+                        ? "bg-gray-50 text-[#001324] focus:bg-white"
                         : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
-                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20 focus:scale-[1.02]`}
+                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20`}
                     placeholder="0"
                     min="1"
                   />
                   {errors.constructionArea && (
-                    <p className="text-red-500 text-sm mt-2 flex items-center space-x-1 animate-shake">
+                    <p className="text-red-500 text-xs mt-1.5 flex items-center space-x-1 animate-shake">
                       <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                       <span>{errors.constructionArea}</span>
                     </p>
@@ -401,7 +366,38 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
               </div>
 
               <div className="group">
-                <label className="block text-sm font-semibold mb-2 text-gray-700">
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">
+                  Location *
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 lg:py-4 pl-10 sm:pl-12 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${
+                      errors.location
+                        ? 'border-red-400 shadow-red-100'
+                        : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
+                    } ${
+                      theme === "white"
+                        ? "bg-gray-50 text-[#001324] focus:bg-white"
+                        : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
+                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20`}
+                    placeholder="Enter project location"
+                  />
+                  <MapPin className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
+                </div>
+                {errors.location && (
+                  <p className="text-red-500 text-xs mt-1.5 flex items-center space-x-1 animate-shake">
+                    <span className="w-1 h-1 bg-red-500 rounded-full"></span>
+                    <span>{errors.location}</span>
+                  </p>
+                )}
+              </div>
+
+              <div className="group">
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">
                   Budget (₹) *
                 </label>
                 <div className="relative">
@@ -410,22 +406,22 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                     name="budget"
                     value={formData.budget}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-2 lg:py-4 pl-12 rounded-2xl border-2 transition-all duration-300 ${
-                      errors.budget 
-                        ? 'border-red-400 shadow-red-100' 
+                    className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 lg:py-4 pl-10 sm:pl-12 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${
+                      errors.budget
+                        ? 'border-red-400 shadow-red-100'
                         : 'border-gray-200 focus:border-[#004e2e] hover:border-gray-300'
                     } ${
-                      theme === "white" 
-                        ? "bg-gray-50 text-[#001324] focus:bg-white" 
+                      theme === "white"
+                        ? "bg-gray-50 text-[#001324] focus:bg-white"
                         : "bg-white/5 text-white focus:bg-white/10 backdrop-blur-sm"
-                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20 focus:scale-[1.02]`}
+                    } focus:outline-none focus:ring-4 focus:ring-[#004e2e]/20`}
                     placeholder="Enter your budget"
                     min="1"
                   />
-                  <Calculator className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
+                  <Calculator className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#004e2e] transition-colors" />
                 </div>
                 {errors.budget && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center space-x-1 animate-shake">
+                  <p className="text-red-500 text-xs mt-1.5 flex items-center space-x-1 animate-shake">
                     <span className="w-1 h-1 bg-red-500 rounded-full"></span>
                     <span>{errors.budget}</span>
                   </p>
@@ -437,15 +433,15 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
 
         {/* Sticky Footer with enhanced action buttons */}
         <div className={`sticky bottom-0 ${
-          theme === "white" 
-            ? "bg-white/95 backdrop-blur-sm border-t border-gray-200" 
+          theme === "white"
+            ? "bg-white/95 backdrop-blur-sm border-t border-gray-200"
             : "bg-gradient-to-r from-[#001324]/95 via-[#004e2e]/95 to-[#001324]/95 backdrop-blur-sm border-t border-white/10"
-        } p-6`}>
-          <div className="flex gap-4">
+        } px-4 py-3 sm:p-6`}>
+          <div className="flex gap-2.5 sm:gap-4">
             <button
               type="button"
               onClick={onClose}
-              className={`flex-1 px-3 lg:px-6 py-2 lg:py-4 rounded-2xl border-2 font-semibold transition-all duration-300 hover:scale-[1.02] ${
+              className={`flex-1 px-3 sm:px-6 py-2 sm:py-3 lg:py-4 rounded-xl sm:rounded-2xl border-2 font-semibold text-sm sm:text-base transition-all duration-300 hover:scale-[1.02] ${
                 theme === "white"
                   ? "border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
                   : "border-white/20 text-white hover:bg-white/10 hover:border-white/40"
@@ -453,14 +449,14 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
             >
               Cancel
             </button>
-            
+
             <button
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className={`group flex-1 px-3 lg:px-6 py-2 lg:py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-3 hover:scale-[1.02] ${
-                isSubmitting 
-                  ? 'opacity-70 cursor-not-allowed' 
+              className={`group relative flex-1 overflow-hidden px-3 sm:px-6 py-2 sm:py-3 lg:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 hover:scale-[1.02] ${
+                isSubmitting
+                  ? 'opacity-70 cursor-not-allowed'
                   : 'hover:shadow-2xl active:scale-95'
               }`}
               style={{
@@ -468,26 +464,21 @@ const EnquiryModal = ({ isOpen, onClose, theme = "dark" }) => {
                 boxShadow: '0 8px 25px rgba(0, 78, 46, 0.3), 0 3px 10px rgba(0, 78, 46, 0.2)'
               }}
             >
-              {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-2xl"></div>
-              
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-xl sm:rounded-2xl"></div>
+
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span className="text-white">Submitting...</span>
                 </>
               ) : (
-                <>
-                  
-                  <span className="text-white">Submit Enquiry</span>
-                  
-                </>
+                <span className="text-white">Submit Enquiry</span>
               )}
             </button>
           </div>
-          
+
           {/* Trust indicators */}
-          <div className="mt-4 flex items-center justify-center space-x-6 text-xs text-gray-500">
+          <div className="mt-3 sm:mt-4 hidden sm:flex items-center justify-center space-x-6 text-xs text-gray-500">
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span>Secure & Private</span>

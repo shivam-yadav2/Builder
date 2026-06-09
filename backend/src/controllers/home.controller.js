@@ -3,7 +3,9 @@ const { ApiError } = require("../utils/ApiError.utils.js");
 const { ApiResponse } = require("../utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../utils/asyncHandler.utils.js");
 
-// Create a new home
+const cleanImagePath = (filePath) =>
+  filePath.replace(/^public[\\/]/, "").replace(/\\/g, "/");
+
 exports.createHome = asyncHandler(async (req, res) => {
   const {
     title,
@@ -22,8 +24,6 @@ exports.createHome = asyncHandler(async (req, res) => {
     totalPrice,
     status,
     propertyType,
-    creator,
-    creatorType,
     rooms,
     bedrooms,
     kitchen,
@@ -50,14 +50,12 @@ exports.createHome = asyncHandler(async (req, res) => {
     !kitchen ||
     !bathrooms ||
     !floor ||
-    !buildYear ||
-    !amenities ||
-    !nearby
+    !buildYear
   ) {
     throw new ApiError(400, "Missing required fields");
   }
 
-  if (!req.files || req.files.length === 0) {
+  if (!req.files || !req.files.images || req.files.images.length === 0) {
     throw new ApiError(400, "At least one image is required");
   }
 
@@ -69,13 +67,7 @@ exports.createHome = asyncHandler(async (req, res) => {
     );
   }
 
-  console.log(req?.files)
-
-  const images = req.files.images.map((file) =>
-    file.path.replace("public", "").replace(/\\/g, "/")
-  );
-
-  console.log(images , "chek saving path")
+  const images = req.files.images.map((file) => cleanImagePath(file.path));
 
   const home = await Home.create({
     title,
@@ -102,9 +94,7 @@ exports.createHome = asyncHandler(async (req, res) => {
     amenities,
     nearby,
     buildYear,
-    creator,
-    creatorType,
-    propertyFor
+    propertyFor,
   });
 
   res
@@ -112,103 +102,27 @@ exports.createHome = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, home, "Home Listing Created Successfully"));
 });
 
-// Get all home
 exports.getAllHomes = asyncHandler(async (req, res) => {
-  // Fetch home with creatorType: "User" and populate creator
-  const userHome = await Home.find({ creatorType: "User" })
-    .populate({
-      path: "creator",
-      model: "User", // Specify the User model
-      select: "name email phone avatar",
-    })
-    .lean(); // Convert to plain JavaScript objects for easier merging
-
-  // Fetch home with creatorType: "Admin" and populate creator
-  const adminHome = await Home.find({ creatorType: "Admin" })
-    .populate({
-      path: "creator",
-      model: "Admin", // Specify the Admin model
-    })
+  const homes = await Home.find({ isDelete: false })
+    .sort({ createdAt: -1 })
     .lean();
-
-  // Combine the results
-  // const home = [...userHome, ...adminHome];
-
-  const home = [...userHome, ...adminHome].map((land) => ({
-    ...land,
-    type: "Home",
-  }));
-
+  const result = homes.map((h) => ({ ...h, type: "Home" }));
   res
     .status(200)
-    .json(new ApiResponse(200, home, "Home Listings Fetched Successfully"));
+    .json(new ApiResponse(200, result, "Home Listings Fetched Successfully"));
 });
 
-exports.getAllHomeForUser = asyncHandler(async (req, res) => {
-  const userHome = await Home.find({ creatorType: "User", isDelete: false })
-    .populate({
-      path: "creator",
-      model: "User", // Specify the User model
-      select: "name email phone", // Specify fields to include from User model
-    })
-    .lean();
-
-  // Fetch home with creatorType: "Admin" and populate creator with specific fields
-  const adminHome = await Home.find({ creatorType: "Admin", isDelete: false })
-    .populate({
-      path: "creator",
-      model: "Admin", // Specify the Admin model
-    })
-    .lean();
-  const type = 'Home'
-
-  const home = [...userHome, ...adminHome].map((land) => ({
-    ...land,
-    type: "Home",
-  }));
-
-  // Combine the results
-  // const home = [...userHome, ...adminHome, type];
-  res
-    .status(200)
-    .json(new ApiResponse(200, home, "User Properties Fetched Successfully"));
-});
-
-// Get a single home by ID
 exports.getHomeById = asyncHandler(async (req, res) => {
   const { id } = req.body;
-
-  // Fetch the home by ID
-  let home = await Home.findById(id);
-
-  if (!home) {
+  const home = await Home.findById(id).lean();
+  if (!home || home.isDelete) {
     throw new ApiError(404, "Home Listing Not Found");
   }
-
-  // Populate creator based on creatorType
-  if (home.creatorType === "User") {
-    home = await Home.findById(id)
-      .populate({
-        path: "creator",
-        model: "User",
-        select: "name email phone avatar", // Select specific fields from User model
-      })
-      .lean();
-  } else if (home.creatorType === "Admin") {
-    home = await Home.findById(id)
-      .populate({
-        path: "creator",
-        model: "Admin",
-      })
-      .lean();
-  }
-
   res
     .status(200)
     .json(new ApiResponse(200, home, "Home Listing Fetched Successfully"));
 });
 
-// Update a home listing with optional image upload
 exports.updateHome = asyncHandler(async (req, res) => {
   const { id, ...updateData } = req.body;
 
@@ -217,10 +131,8 @@ exports.updateHome = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Home Listing Not Found");
   }
 
-  if (req.files && req.files.length > 0) {
-    updateData.images = req.files.map((file) =>
-      file.path.replace("public\\", "").replace(/\\/g, "/")
-    );
+  if (req.files && req.files.images && req.files.images.length > 0) {
+    updateData.images = req.files.images.map((file) => cleanImagePath(file.path));
   }
 
   const updatedHome = await Home.findByIdAndUpdate(id, updateData, {
@@ -238,7 +150,6 @@ exports.updateHome = asyncHandler(async (req, res) => {
     );
 });
 
-//  delete a home
 exports.deleteHome = asyncHandler(async (req, res) => {
   const { id } = req.body;
   const home = await Home.findById(id);
@@ -253,19 +164,15 @@ exports.deleteHome = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Home Listing Deleted Successfully"));
 });
 
-// Get all home by status
 exports.getHomesByStatus = asyncHandler(async (req, res) => {
-  const { status } = req.params;
+  const { status } = req.query;
   const validStatuses = ["Available", "Sold", "Pending"];
 
   if (!validStatuses.includes(status)) {
     throw new ApiError(400, "Invalid status value");
   }
 
-  const homes = await Home.find({ status, isDelete: false }).populate(
-    "createdBy",
-    "username email"
-  );
+  const homes = await Home.find({ status, isDelete: false }).lean();
   res
     .status(200)
     .json(
@@ -275,30 +182,4 @@ exports.getHomesByStatus = asyncHandler(async (req, res) => {
         `Home Listings with ${status} Status Fetched Successfully`
       )
     );
-});
-
-
-exports.updateHomeApprovalStatus = asyncHandler(async (req, res) => {
-
-  const { status, message, id } = req.body;
-
-  // Validate status
-  const validStatuses = ["approved", "denied"];
-  if (!validStatuses.includes(status)) {
-    throw new ApiError(400, "Invalid status. Must be 'approved' or 'denied'");
-  }
-
-  const user = await Home.findById(id);
-  if (!user) {
-    throw new ApiError(404, "Home not found");
-  }
-
-  user.approvalStatus = status;
-  user.adminMessage = message || "";
-
-  await user.save({ validateBeforeSave: false });
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, `Home ${status} successfully.`));
 });

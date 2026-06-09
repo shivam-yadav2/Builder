@@ -29,14 +29,13 @@ export function NavProjects({
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.url}>
             <SidebarMenuButton asChild>
               <NavLink to={item.url}>
                 <item.icon />
                 <span>{item.title}</span>
               </NavLink>
             </SidebarMenuButton>
-            
           </SidebarMenuItem>
         ))}
         

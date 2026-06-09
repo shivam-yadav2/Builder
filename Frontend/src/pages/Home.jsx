@@ -18,8 +18,6 @@ import "swiper/css/navigation";
 import { MoveLeft, MoveRight } from "lucide-react";
 import toast from "react-hot-toast"; // Import toast
 import { NavLink, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import RealEstateLanding from "@/myComponents/home/RealEstateLanding";
 import ContactSection from "@/myComponents/home/ContactSection";
 import HeroSection from "./Hero";
@@ -75,8 +73,8 @@ const Home = () => {
 
   console.log(modalType);
 
-  const openModal = () => {
-    setModalType('for construction');
+  const openModal = (type = 'For Construction') => {
+    setModalType(type);
     setIsModalOpen(true);
   };
 
@@ -91,24 +89,6 @@ const Home = () => {
     }));
   };
   const navigate = useNavigate();
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [decodedUserData, setDecodedUserData] = useState();
-
-  const refreshToken = Cookies.get("refreshToken");
-  const accessToken = Cookies.get("accessToken");
-
-  const authCheck = () => {
-    if (accessToken) {
-      const decoded = jwtDecode(accessToken);
-      setIsLoggedIn(true);
-      setDecodedUserData(decoded);
-    }
-  };
-
-  useEffect(() => {
-    authCheck();
-  }, [refreshToken, accessToken]);
 
   const handleSubmit = async () => {
     const dataToSend = formData[modalType.toLowerCase()];
@@ -145,16 +125,16 @@ const Home = () => {
 
     try {
       if (modalType === "For Rent") {
-        apiUrl = "https://backend.rsusb2sbuildersconstructions.com/api/v1/rentFilter/add";
+        apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/v1/rentFilter/add`;
         loadingToast = toast.loading("Applying rent filter... Please wait...");
       } else if (modalType === "For Construction") {
         apiUrl =
-          "https://backend.rsusb2sbuildersconstructions.com/api/v1/constructionFilter/add";
+          `${import.meta.env.VITE_API_BASE_URL}/api/v1/constructionFilter/add`;
         loadingToast = toast.loading(
           "Submitting construction details... Please wait..."
         );
       } else if (modalType === "For Buy") {
-        apiUrl = "https://backend.rsusb2sbuildersconstructions.com/api/v1/sellFilter/add";
+        apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/v1/sellFilter/add`;
         loadingToast = toast.loading("Applying buy filter... Please wait...");
       } else {
         alert("Invalid form type");
@@ -258,7 +238,11 @@ const Home = () => {
       <div>
         <Layout>
         <HeroSection/>
-        <Service />
+        <Service
+          onBuyClick={() => openModal('For Buy')}
+          onRentClick={() => openModal('For Rent')}
+          onConstructionClick={() => openModal('For Construction')}
+        />
           {/* <div className="w-full h-[95vh]">
             <div className="w-full h-[91vh] relative">
               <Swiper

@@ -9,7 +9,6 @@ const {
 } = require('../controllers/gallery.controller.js');
 
 const { upload } = require("../middelware/multer.middelware.js");
-const { verifyJwt } = require("../middelware/auth.middelware.js");
 const { verifyAdminJwt } = require('../middelware/adminAuth.middelware.js');
 
 // Create gallery item (Admin only)

@@ -123,8 +123,6 @@ const AddProperty = () => {
       formData.append("unitPrice", data.perUnitPrice.toString());
       formData.append("status", "Available");
       formData.append("propertyType", data.propertyIntent);
-      formData.append("creator", "67fe997ae404ff1a96e93805"); // Hardcoded as per example
-      formData.append("creatorType", "User");
 
       // Handle nearby and amenities (convert arrays to comma-separated strings if needed)
       if (data.nearby?.length) formData.append("nearby", data.nearby.join(","));
@@ -157,16 +155,15 @@ const AddProperty = () => {
         ); // Calculate total price
       }
 
-      // API configuration
       const config = {
         method: "post",
         maxBodyLength: Infinity,
         url:
           data.propertyType === "house"
-            ? "https://backend.rsusb2sbuildersconstructions.com/api/v1/home/add-home-admin"
-            : "https://backend.rsusb2sbuildersconstructions.com/api/v1/land/add-land-admin",
+            ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/add-home`
+            : `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/add-land`,
         headers: {
-          Authorization: Cookies.get("accessTokenAdmin"),
+          Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
           "Content-Type": "multipart/form-data",
           Accept: "application/json",
         },

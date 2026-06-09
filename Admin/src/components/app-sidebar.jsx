@@ -1,106 +1,25 @@
-import * as React from "react";
 import {
-  AudioWaveform,
   BookOpen,
-  Bot,
-  Command,
+  Building2,
   Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-  User,
-  BookUser,
-  HousePlus,
+  Home as HomeIcon,
+  Image as ImageIcon,
+  Plus,
+  Wrench,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
-import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-// Sample data
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboards",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Fashion Academy Dashboard",
-          url: "/dashboard",
-        },
-        {
-          title: "Salon Dashboard",
-          url: "/dashboard/salon_dashboard",
-        },
-      ],
-    },
-    {
-      title: "Fashion Academy",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Course Category",
-          url: "/dashboard/academy_category",
-        },
-        {
-          title: "All Courses",
-          url: "/dashboard/courses",
-        },
-        {
-          title: "Add Courses",
-          url: "/dashboard/add_course",
-        },
-      ],
-    },
-    {
-      title: "Salon Services",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Salon Service",
-          url: "/dashboard/salon_service",
-        },
-      ],
-    },
-  ],
   projects: [
     {
       title: "Admin Dashboard",
@@ -112,32 +31,40 @@ const data = {
     {
       title: "All Properties",
       url: "/dashboard/all_property",
-      icon: PieChart,
+      icon: Building2,
     },
     {
-      title: "Add Properties",
+      title: "Add Property",
       url: "/dashboard/add_property",
-      icon: Map,
+      icon: Plus,
     },
     {
-      title: "Add Gallery",
+      title: "Gallery",
       url: "/dashboard/gallery",
-      icon: Map,
+      icon: ImageIcon,
     },
-    
   ],
   Enquiry: [
     {
-      title: "Main Inquiry",
-      url: "/dashboard/acadmey_inquiry",
+      title: "General Inquiry",
+      url: "/dashboard/general_inquiry",
       icon: BookOpen,
+    },
+    {
+      title: "Sales Inquiry",
+      url: "/dashboard/sales_inquiry",
+      icon: HomeIcon,
+    },
+    {
+      title: "Rent Inquiry",
+      url: "/dashboard/rent_inquiry",
+      icon: HomeIcon,
     },
     {
       title: "Construction Inquiry",
       url: "/dashboard/construction_inquiry",
-      icon: Map,
+      icon: Wrench,
     },
-    
   ],
 };
 
@@ -146,10 +73,8 @@ export function AppSidebar({ ...props }) {
 
   const logout = () => {
     const id = toast.loading("Logging Out ...");
-
     Cookies.remove("accessTokenAdmin");
-    Cookies.remove("accessTokenAdmin"); // Remove if used elsewhere
-    Cookies.remove("refreshToken"); // Remove if used elsewhere
+    Cookies.remove("refreshToken");
     setTimeout(() => {
       navigate("/");
       toast.success("Logged Out Successfully", { id });
@@ -158,9 +83,6 @@ export function AppSidebar({ ...props }) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      {/* <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader> */}
       <SidebarContent>
         <NavMain />
         <NavProjects title="Dashboard" projects={data.projects} />
@@ -170,7 +92,7 @@ export function AppSidebar({ ...props }) {
       <SidebarFooter>
         <button
           onClick={logout}
-          className="w-full bg-red-600 border flex text-white text-xl items-center justify-center font-semibold gap-2 rounded-md p-2 hover:bg-red-700 transition-colors"
+          className="w-full bg-red-600 border flex text-white text-base sm:text-lg items-center justify-center font-semibold gap-2 rounded-md p-2 hover:bg-red-700 transition-colors min-h-[44px]"
         >
           Logout
         </button>

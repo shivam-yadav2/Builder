@@ -54,12 +54,7 @@ const getPropertyById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Property ID is required");
   }
 
-  const property = await Property.findById(id)
-    .populate({
-      path: "creator",
-      select: "email",
-    })
-    .lean();
+  const property = await Property.findById(id).lean();
 
   if (!property || property.isDeleted) {
     throw new ApiError(404, "Property not found");

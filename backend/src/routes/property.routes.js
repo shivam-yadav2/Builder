@@ -9,7 +9,6 @@ const {
 } = require('../controllers/property.controller.js');
 
 const { upload } = require("../middelware/multer.middelware.js");
-const { verifyJwt } = require("../middelware/auth.middelware.js");
 const { verifyAdminJwt } = require('../middelware/adminAuth.middelware.js');
 
 router.route('/add-gallery').post(

@@ -4,19 +4,13 @@ const { ApiResponse } = require("../utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../utils/asyncHandler.utils.js");
 const Land = require("../models/land.model.js");
 const Home = require("../models/home.model.js");
-const { User } = require("../models/user.model.js");
-
 const jwt = require("jsonwebtoken");
 
 const generateAccessAndRefreshTokens = async (adminId) => {
-  console.log("i am here ,top ")
   try {
-    console.log("i am here ,in ", adminId)
     const admin = await Admin.findById(adminId);
-    console.log("i am here ,here ", admin)
     const refreshToken = admin.generateRefreshToken();
     const accessToken = admin.generateAccessToken();
-    console.log(refreshToken, accessToken);
 
     admin.refreshToken = refreshToken;
     await admin.save({ validateBeforeSave: false });
@@ -29,36 +23,28 @@ const generateAccessAndRefreshTokens = async (adminId) => {
 const registerAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  console.log(email, password);
-
-  if ([email, password].some((field) => field?.trim() === "")) {
+  if (!email || !password || email.trim() === "" || password.trim() === "") {
     throw new ApiError(400, "All fields are required");
   }
 
   const isAlreadyExist = await Admin.findOne({ email });
-
   if (isAlreadyExist) {
     throw new ApiError(409, "Admin Already Exists");
   }
 
-  const user = await Admin.create({
-    email,
-    password,
-  });
-
-  if (!user) {
+  const admin = await Admin.create({ email, password });
+  if (!admin) {
     throw new ApiError(500, "Admin not created");
   }
 
-  const createdUser = await Admin.findById(user._id).select("-password");
-
-  if (!createdUser) {
-    throw new ApiError(500, "User not created");
+  const createdAdmin = await Admin.findById(admin._id).select("-password");
+  if (!createdAdmin) {
+    throw new ApiError(500, "Admin not created");
   }
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "Admin Created", createdUser));
+    .json(new ApiResponse(201, createdAdmin, "Admin Created"));
 });
 
 const loginAdmin = asyncHandler(async (req, res) => {
@@ -74,7 +60,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
   }
 
   const isPasswordCorrect = await existedAdmin.isPasswordCorrect(password);
-
   if (!isPasswordCorrect) {
     throw new ApiError(400, "Invalid credentials");
   }
@@ -100,11 +85,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        {
-          admin: loggedInAdmin,
-          accessToken,
-          refreshToken,
-        },
+        { admin: loggedInAdmin, accessToken, refreshToken },
         "Admin Logged In"
       )
     );
@@ -112,15 +93,9 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
 const logoutAdmin = asyncHandler(async (req, res) => {
   await Admin.findByIdAndUpdate(
-    req.admin._id,
-    {
-      $set: {
-        refreshToken: undefined,
-      },
-    },
-    {
-      new: true,
-    }
+    req.user?._id,
+    { $set: { refreshToken: undefined } },
+    { new: true }
   );
 
   const options = {
@@ -175,7 +150,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           200,
-          { accessToken, newRefreshToken },
+          { accessToken, refreshToken: newRefreshToken },
           "Access Token Refreshed Successfully"
         )
       );
@@ -185,45 +160,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const getAdminAllProperties = asyncHandler(async (req, res) => {
-  // Fetch lands with creatorType: "User" and populate creator
-  const userLands = await Land.find({ creatorType: "User" , isDelete:false })
-    .populate({
-      path: "creator",
-      model: "User",
-      select: "name email phone avatar",
-    })
-    .lean()
-    .then((lands) => lands.map((land) => ({ ...land, type: "Land" })));
+  const [lands, homes] = await Promise.all([
+    Land.find({ isDelete: false }).sort({ createdAt: -1 }).lean(),
+    Home.find({ isDelete: false }).sort({ createdAt: -1 }).lean(),
+  ]);
 
-  // Fetch lands with creatorType: "Admin" and populate creator
-  const adminLands = await Land.find({ creatorType: "Admin" , isDelete:false })
-    .populate({
-      path: "creator",
-      model: "Admin",
-    })
-    .lean()
-    .then((lands) => lands.map((land) => ({ ...land, type: "Land" })));
-
-  // Fetch homes with creatorType: "User" and populate creator
-  const userHome = await Home.find({ creatorType: "User" , isDelete:false })
-    .populate({
-      path: "creator",
-      model: "User",
-      select: "name email phone avatar",
-    })
-    .lean()
-    .then((homes) => homes.map((home) => ({ ...home, type: "Home" })));
-
-  // Fetch homes with creatorType: "Admin" and populate creator
-  const adminHome = await Home.find({ creatorType: "Admin" , isDelete:false})
-    .populate({
-      path: "creator",
-      model: "Admin",
-    })
-    .lean()
-    .then((homes) => homes.map((home) => ({ ...home, type: "Home" })));
-
-  const properties = [...userLands, ...adminLands, ...userHome, ...adminHome];
+  const properties = [
+    ...lands.map((l) => ({ ...l, type: "Land" })),
+    ...homes.map((h) => ({ ...h, type: "Home" })),
+  ];
 
   res
     .status(200)
@@ -232,49 +177,10 @@ const getAdminAllProperties = asyncHandler(async (req, res) => {
     );
 });
 
-const updateLandApprovalStatus = asyncHandler(async (req, res) => {
-  const { status, message, id, type } = req.body;
-
-  // Validate status
-  const validStatuses = ["approved", "denied"];
-  if (!validStatuses.includes(status)) {
-    throw new ApiError(400, "Invalid status. Must be 'approved' or 'denied'");
-  }
-
-  if (type === "Land") {
-    const user = await Land.findById(id);
-    if (!user) {
-      throw new ApiError(404, "Land not found");
-    }
-    user.approvalStatus = status;
-    user.adminMessage = message || "";
-
-    await user.save({ validateBeforeSave: false });
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, `Land ${status} successfully.`));
-  } else if (type === "Home") {
-    const user = await Home.findById(id);
-    if (!user) {
-      throw new ApiError(404, "Home not found");
-    }
-    user.approvalStatus = status;
-    user.adminMessage = message || "";
-
-    await user.save({ validateBeforeSave: false });
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, `Home ${status} successfully.`));
-  }
-});
-
 module.exports = {
   registerAdmin,
   loginAdmin,
   logoutAdmin,
   refreshAccessToken,
   getAdminAllProperties,
-  updateLandApprovalStatus
 };

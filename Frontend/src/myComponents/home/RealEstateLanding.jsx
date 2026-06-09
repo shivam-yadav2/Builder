@@ -57,7 +57,7 @@ const RealEstateLanding = () => {
         setIsSubmitting(true);
         
         try {
-            const response = await axios.post('https://backend.rsusb2sbuildersconstructions.com/api/v1/constructionFilter/add', {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/v1/constructionFilter/add`, {
                 name: formData.name,
                 number: formData.number,
                 location: formData.location,
@@ -103,7 +103,7 @@ const RealEstateLanding = () => {
         <div style={{
             backgroundImage: "url('/assets/img/bgsec.png')",
             backgroundPosition: "center"
-        }} className="min-h-screen bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 relative overflow-hidden">
+        }} className="bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 relative overflow-hidden">
             
             {/* Enhanced background decorative elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -112,30 +112,30 @@ const RealEstateLanding = () => {
                 <div className="absolute top-1/2 left-10 w-24 h-24 bg-emerald-300/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
             </div>
 
-            <div className="container mx-auto px-6 py-12 relative z-10">
+            <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
                 {/* Enhanced Header */}
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
-                        <Sparkles className="w-5 h-5 text-yellow-300 animate-spin" />
-                        <span className="text-white font-medium">Premium Real Estate Platform</span>
+                <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+                    <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-4 sm:mb-6">
+                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 animate-spin" />
+                        <span className="text-white font-medium text-xs sm:text-base">Premium Real Estate Platform</span>
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-6 leading-tight">
                         Find Your Dream Home
                     </h1>
-                    <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-base sm:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed px-2">
                         Submit your requirements and let our experts help you find the perfect property
                     </p>
                 </div>
 
                 {/* Enhanced Enquiry Form */}
-                <div className="max-w-5xl mx-auto bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 mb-16 border border-white/20">
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-gray-800 mb-3">Property Enquiry Form</h2>
-                        <p className="text-gray-600">Fill in your details and requirements to get personalized property recommendations</p>
+                <div className="max-w-5xl mx-auto bg-white/95 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 mb-8 sm:mb-16 border border-white/20">
+                    <div className="text-center mb-6 sm:mb-8">
+                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2 sm:mb-3">Property Enquiry Form</h2>
+                        <p className="text-gray-600 text-sm sm:text-base">Fill in your details and requirements to get personalized property recommendations</p>
                     </div>
 
                     <form onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                             
                             {/* Name Field */}
                             <div className="lg:col-span-1">
@@ -149,14 +149,14 @@ const RealEstateLanding = () => {
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         placeholder="Enter your full name"
-                                        className={`w-full px-4 py-4 pl-12 bg-gray-50 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 focus:scale-[1.02] font-medium ${
+                                        className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2.5 sm:py-4 pl-10 sm:pl-12 bg-gray-50 border-2 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 font-medium ${
                                             errors.name 
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                                                 : 'border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 hover:border-emerald-300 hover:bg-white'
                                         }`}
                                     />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <div className="p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
+                                    <div className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2">
+                                        <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
                                             <User className="w-4 h-4 text-emerald-600" />
                                         </div>
                                     </div>
@@ -176,14 +176,14 @@ const RealEstateLanding = () => {
                                         value={formData.number}
                                         onChange={handleInputChange}
                                         placeholder="Enter 10-digit number"
-                                        className={`w-full px-4 py-4 pl-12 bg-gray-50 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 focus:scale-[1.02] font-medium ${
+                                        className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2.5 sm:py-4 pl-10 sm:pl-12 bg-gray-50 border-2 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 font-medium ${
                                             errors.number 
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                                                 : 'border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 hover:border-emerald-300 hover:bg-white'
                                         }`}
                                     />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <div className="p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
+                                    <div className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2">
+                                        <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
                                             <Phone className="w-4 h-4 text-emerald-600" />
                                         </div>
                                     </div>
@@ -203,14 +203,14 @@ const RealEstateLanding = () => {
                                         value={formData.location}
                                         onChange={handleInputChange}
                                         placeholder="City, Area, or Locality"
-                                        className={`w-full px-4 py-4 pl-12 bg-gray-50 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 focus:scale-[1.02] font-medium ${
+                                        className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2.5 sm:py-4 pl-10 sm:pl-12 bg-gray-50 border-2 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 font-medium ${
                                             errors.location 
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                                                 : 'border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 hover:border-emerald-300 hover:bg-white'
                                         }`}
                                     />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <div className="p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
+                                    <div className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2">
+                                        <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
                                             <MapPin className="w-4 h-4 text-emerald-600" />
                                         </div>
                                     </div>
@@ -231,14 +231,14 @@ const RealEstateLanding = () => {
                                         onChange={handleInputChange}
                                         placeholder="e.g., 2000"
                                         min="0"
-                                        className={`w-full px-4 py-4 pl-12 bg-gray-50 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 focus:scale-[1.02] font-medium ${
+                                        className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2.5 sm:py-4 pl-10 sm:pl-12 bg-gray-50 border-2 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 font-medium ${
                                             errors.plotArea 
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                                                 : 'border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 hover:border-emerald-300 hover:bg-white'
                                         }`}
                                     />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <div className="p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
+                                    <div className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2">
+                                        <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
                                             <Square className="w-4 h-4 text-emerald-600" />
                                         </div>
                                     </div>
@@ -249,7 +249,7 @@ const RealEstateLanding = () => {
                             {/* Construction Area Field */}
                             <div className="lg:col-span-1">
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Construction Area (sq ft) *
+                                    Cons. Area (sq ft) *
                                 </label>
                                 <div className="relative group">
                                     <input
@@ -259,14 +259,14 @@ const RealEstateLanding = () => {
                                         onChange={handleInputChange}
                                         placeholder="e.g., 1500"
                                         min="0"
-                                        className={`w-full px-4 py-4 pl-12 bg-gray-50 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 focus:scale-[1.02] font-medium ${
+                                        className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2.5 sm:py-4 pl-10 sm:pl-12 bg-gray-50 border-2 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 font-medium ${
                                             errors.constructionArea 
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                                                 : 'border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 hover:border-emerald-300 hover:bg-white'
                                         }`}
                                     />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <div className="p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
+                                    <div className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2">
+                                        <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
                                             <Building className="w-4 h-4 text-emerald-600" />
                                         </div>
                                     </div>
@@ -287,14 +287,14 @@ const RealEstateLanding = () => {
                                         onChange={handleInputChange}
                                         placeholder="e.g., 50"
                                         min="0"
-                                        className={`w-full px-4 py-4 pl-12 bg-gray-50 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 focus:scale-[1.02] font-medium ${
+                                        className={`w-full text-sm sm:text-base px-3 sm:px-4 py-2.5 sm:py-4 pl-10 sm:pl-12 bg-gray-50 border-2 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 font-medium ${
                                             errors.budget 
                                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                                                 : 'border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 hover:border-emerald-300 hover:bg-white'
                                         }`}
                                     />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <div className="p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
+                                    <div className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2">
+                                        <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg group-focus-within:bg-emerald-500/20 transition-colors">
                                             <DollarSign className="w-4 h-4 text-emerald-600" />
                                         </div>
                                     </div>
@@ -308,7 +308,7 @@ const RealEstateLanding = () => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="group relative px-12 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center space-x-3 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="group relative px-8 py-3 sm:px-12 sm:py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl sm:rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center space-x-3 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {/* Animated background shimmer */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>

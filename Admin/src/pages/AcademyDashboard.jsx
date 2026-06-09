@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       const config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://backend.rsusb2sbuildersconstructions.com/api/v1/admin/get-all-properties',
+        url: `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/get-all-properties`,
         headers: {
           'Authorization': `Bearer ${Cookies.get('accessTokenAdmin')}`,
         },
@@ -140,8 +140,8 @@ const AdminDashboard = () => {
   const confirmEdit = async () => {
     try {
       const updateUrl = selectedProperty.type === 'Land'
-        ? 'https://backend.rsusb2sbuildersconstructions.com/api/v1/land/update-land'
-        : 'https://backend.rsusb2sbuildersconstructions.com/api/v1/home/update-home';
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/update-land`
+        : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/update-home`;
 
       const payload = {
         id: selectedProperty._id,
@@ -185,8 +185,8 @@ const AdminDashboard = () => {
   const confirmDelete = async () => {
     try {
       const deleteUrl = selectedProperty.type === 'Land'
-        ? 'https://backend.rsusb2sbuildersconstructions.com/api/v1/land/delete-land'
-        : 'https://backend.rsusb2sbuildersconstructions.com/api/v1/home/delete-home';
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/delete-land`
+        : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/delete-home`;
 
       await toast.promise(
         axios.post(
@@ -486,7 +486,7 @@ const AdminDashboard = () => {
                     viewProperty.images.map((img, index) => (
                       <img
                         key={index}
-                        src={`https://backend.rsusb2sbuildersconstructions.com/${img}`}
+                        src={`${import.meta.env.VITE_API_BASE_URL}/${img}`}
                         alt={`Property ${index}`}
                         className="w-24 h-24 object-cover rounded"
                       />

@@ -9,9 +9,7 @@ import MyContext from "@/context/MyContext";
 import ContactSection from "@/myComponents/home/ContactSection";
 
 const RentProperties = () => {
-  const { homeData, landData, userData } = useContext(MyContext);
-  //console.log("homeData:", homeData);
-  //console.log("landData:", landData);
+  const { homeData, landData } = useContext(MyContext);
 
   const properties = [...(homeData || []), ...(landData || [])].filter(
     (property) => property?.status === "Available" && !property?.isDelete
@@ -31,11 +29,9 @@ const RentProperties = () => {
                   location={property.location}
                   sqft={property.landArea}
                   price={property.unitPrice}
-                  image={`https://backend.rsusb2sbuildersconstructions.com/${property.images?.[0]}`}
-                  name={property?.creator?.name}
+                  image={`${import.meta.env.VITE_API_BASE_URL}/${property.images?.[0]}`}
                   city={property?.city}
                   type={property?.propertyType}
-                  avatar={property?.creator?.avatar ? `https://backend.rsusb2sbuildersconstructions.com/${property?.creator?.avatar} ` : `https://cdn-icons-png.flaticon.com/512/9187/9187604.png`}
                   property={property}
                 />
               </Link>

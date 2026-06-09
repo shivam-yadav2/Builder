@@ -49,7 +49,7 @@ const ContactSection = () => {
         }
 
         const promise = fetch(
-            "https://backend.rsusb2sbuildersconstructions.com/api/v1/enquiry/add-enquiry",
+            `${import.meta.env.VITE_API_BASE_URL}/api/v1/enquiry/add-enquiry`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

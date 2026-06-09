@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
 import {
   Card,
@@ -7,14 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -26,14 +19,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert";
-import { Trash2, LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
+import { DataTable } from "@/utils/Datatable";
 
-// API URL as a constant
-const API_BASE_URL = "https://backend.rsusb2sbuildersconstructions.com/api/v1";
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
-const InquiryDashboardAcadmey = () => {
-  const navigate = useNavigate();
+const authHeader = () => ({
+  Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
+});
+
+const InquiryDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [enquiries, setEnquiries] = useState([]);
@@ -45,43 +40,20 @@ const InquiryDashboardAcadmey = () => {
     fetchEnquiries();
   }, []);
 
-  // Convert budget string to number
-  const convertBudgetToNumber = (enquiry) => {
-    if (enquiry.budget && typeof enquiry.budget === "string") {
-      return {
-        ...enquiry,
-        budget: parseInt(enquiry.budget, 10),
-      };
-    }
-    return enquiry;
-  };
-
   const fetchEnquiries = async () => {
     setIsLoading(true);
     try {
-      const authData = {
-        email: "shiv2@gmail.com",
-        password: "123456",
-      };
-
-      const config = {
-        method: "get",
-        url: `${API_BASE_URL}/enquiry/get-enquiry`,
-        headers: {
-          "Content-Type": "text/plain",
-        },
-        data: authData,
-      };
-
-      const response = await axios.request(config);
-      const processedEnquiries = (response.data.data || []).map((enquiry) =>
-        convertBudgetToNumber({
-          ...enquiry,
-          phone: enquiry.phone.toString(), // Ensure phone is string
-        })
+      const response = await axios.get(
+        `${API_BASE_URL}/enquiry/get-enquiry`,
+        { headers: authHeader() }
       );
-
-      setEnquiries(processedEnquiries);
+      const payload =
+        response?.data?.data ?? response?.data?.message ?? [];
+      const processed = (payload || []).map((enquiry) => ({
+        ...enquiry,
+        phone: enquiry.phone?.toString() ?? "",
+      }));
+      setEnquiries(processed);
       setError(null);
     } catch (err) {
       console.error("Error fetching enquiries:", err);
@@ -101,22 +73,17 @@ const InquiryDashboardAcadmey = () => {
     setIsSubmitting(true);
     try {
       await toast.promise(
-        axios.post(`${API_BASE_URL}/enquiry/delete-enquiry`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          
-            id:selectedEnquiryId,
-          
-        }),
+        axios.post(
+          `${API_BASE_URL}/enquiry/delete-enquiry`,
+          { id: selectedEnquiryId },
+          { headers: authHeader() }
+        ),
         {
           loading: "Deleting enquiry...",
           success: "Enquiry deleted successfully",
           error: "Failed to delete enquiry",
         }
       );
-
-      // Refresh enquiries after deletion
       fetchEnquiries();
     } catch (error) {
       console.error("Error deleting enquiry:", error);
@@ -127,26 +94,54 @@ const InquiryDashboardAcadmey = () => {
     }
   };
 
-  const handleLogout = () => {
-    try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
+  const columns = [
+    { accessorKey: "name", header: "Name" },
+    {
+      accessorKey: "phone",
+      header: "Mobile",
+      cell: ({ row }) => row.original.phone || "—",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      cell: ({ row }) => row.original.email || "—",
+    },
+    {
+      accessorKey: "message",
+      header: "Message",
+      cell: ({ row }) => (
+        <span className="block max-w-md break-words">
+          {row.original.message || "—"}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => handleDelete(row.original._id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      ),
+    },
+  ];
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="space-y-4">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -159,79 +154,41 @@ const InquiryDashboardAcadmey = () => {
         }}
       />
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Inquiry Dashboard</h1>
-        <Button
-          onClick={handleLogout}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </Button>
-      </div>
+      <h1 className="text-2xl sm:text-3xl font-bold">General Inquiries</h1>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           {error}
         </div>
       )}
 
       <Card className="shadow-sm">
         <CardHeader className="bg-gray-50 border-b">
-          <CardTitle>Main Inquiries</CardTitle>
+          <CardTitle>Inquiries ({enquiries.length})</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          {enquiries.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              No inquiries found
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Mobile</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Message</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {enquiries.map((enquiry) => (
-                  <TableRow key={enquiry._id}>
-                    <TableCell>{enquiry.name}</TableCell>
-                    <TableCell>{enquiry.phone}</TableCell>
-                    <TableCell>{enquiry.email}</TableCell>
-                    <TableCell>{enquiry.message || "N/A"}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(enquiry._id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+        <CardContent className="p-3 sm:p-4">
+          <DataTable
+            columns={columns}
+            data={enquiries}
+            filterColumnId="name"
+            filterPlaceholder="Search by name..."
+          />
         </CardContent>
       </Card>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this enquiry? This action cannot be undone.
+              Are you sure you want to delete this enquiry? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isSubmitting}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} disabled={isSubmitting}>
               {isSubmitting ? "Deleting..." : "Yes, Delete"}
             </AlertDialogAction>
@@ -242,4 +199,4 @@ const InquiryDashboardAcadmey = () => {
   );
 };
 
-export default InquiryDashboardAcadmey;
+export default InquiryDashboard;

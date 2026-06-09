@@ -63,9 +63,24 @@ const updateRentFilter = asyncHandler(async (req, res) => {
   });
 });
 
+const deleteRentFilter = asyncHandler(async (req, res) => {
+  const rentFilter = await RentFilter.findByIdAndDelete(req.params.id);
+
+  if (!rentFilter) {
+    res.status(404);
+    throw new Error('Rent filter not found');
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
 module.exports = {
   createRentFilter,
   getRentFilters,
   updateRentFilter,
+  deleteRentFilter,
 };
 

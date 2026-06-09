@@ -38,7 +38,7 @@ export function LoginForm({ className, ...props }) {
       const config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://backend.rsusb2sbuildersconstructions.com/api/v1/admin/login',
+        url: `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/login`,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -49,18 +49,16 @@ export function LoginForm({ className, ...props }) {
       };
 
       const response = await axios.request(config);
-      const accessToken = response.data?.data?.accessToken; // Assuming the token is in response.data.accessToken
-      console.log(response?.data?.data)
+      const accessToken = response.data?.data?.accessToken;
 
       if (accessToken) {
-        Cookies.set('accessTokenAdmin', accessToken); // Store token in cookie for 7 days
+        Cookies.set('accessTokenAdmin', accessToken, { expires: 7, sameSite: 'lax' });
         toast.success("Login successful!");
-        navigate('/dashboard'); // Redirect to dashboard
+        navigate('/dashboard');
       } else {
         toast.error("No access token received.");
       }
     } catch (error) {
-      console.error(error);
       toast.error("Login failed. Please check your credentials.");
     }
   };

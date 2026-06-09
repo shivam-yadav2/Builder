@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   Menu,
-  X,
   Home,
   Info,
   Building,
@@ -10,7 +9,6 @@ import {
   ChevronRight,
   Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NavLink } from "react-router-dom";
 import ConstructionEnquiry from "@/utils/ButtonCustom";
@@ -60,7 +58,7 @@ export default function Navbar() {
         ></div>
       </div>
 
-      <div className="relative container mx-auto grid grid-cols-2 lg:grid-cols-5 p-3 lg:p-4">
+      <div className="relative container mx-auto grid grid-cols-2 lg:grid-cols-5 px-3 py-2 lg:px-4 lg:py-3 items-center">
         {/* Enhanced Logo Section */}
         <NavLink
           to="/"
@@ -70,10 +68,8 @@ export default function Navbar() {
             <img
               src="/assets/logo/logo.png"
               alt="Logo"
-              className="  transition-all h-[80px] duration-300 "
+              className="transition-all h-12 sm:h-14 lg:h-[72px] duration-300"
             />
-            {/* <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-ping"></div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div> */}
           </div>
         </NavLink>
 
@@ -147,43 +143,22 @@ export default function Navbar() {
 
             <SheetContent
               side="left"
-              className="w-80 p-0 bg-gradient-to-br from-[#004e2e] via-[#005a35] to-[#003422] border-r-0"
+              className="w-[78vw] max-w-xs sm:w-72 p-0 bg-gradient-to-br from-[#004e2e] via-[#005a35] to-[#003422] border-r-0"
             >
-              <div className=" overflow-y-scroll">
-                {/* Mobile Header Section */}
-                <div className="relative p-6 border-b border-white/10  bg-gradient-to-r from-black/20 to-transparent">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <img
-                          src="/assets/logo/logo.png"
-                          alt="Logo"
-                          className="w-14 h-14 rounded-full border-2 border-white/30 shadow-lg"
-                        />
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
-                      </div>
-                      <div>
-                        <h2 className="text-white font-bold text-xl bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">
-                          RSUS.B2S
-                        </h2>
-                        <p className="text-green-200 text-sm">
-                          Your Property Partner
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setIsOpen(false)}
-                      className="text-white hover:bg-white/20 p-2 h-auto rounded-full transition-all duration-200 hover:rotate-90 hover:scale-110"
-                    >
-                      <X className="h-5 w-5" />
-                    </Button>
+              <div className="overflow-y-auto h-full flex flex-col">
+                {/* Mobile Header Section — logo only, full width, centered */}
+                <div className="relative px-4 pt-12 pb-4">
+                  <div className="flex items-center justify-center">
+                    <img
+                      src="/assets/logo/logo.png"
+                      alt="Logo"
+                      className="h-16 w-auto object-contain"
+                    />
                   </div>
 
                   {/* Mobile Special Offer */}
-                  <div className="mt-4 flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-400/30 text-amber-200 px-4 py-2 rounded-full text-sm">
-                    <Sparkles className="h-4 w-4 animate-spin" />
+                  <div className="mt-4 flex items-center justify-center space-x-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-400/30 text-amber-200 px-3 py-1.5 rounded-full text-[11px] mx-auto w-fit">
+                    <Sparkles className="h-3 w-3 animate-spin" />
                     <span className="font-semibold">
                       Free Property Consultation
                     </span>
@@ -191,8 +166,8 @@ export default function Navbar() {
                 </div>
 
                 {/* Mobile Navigation Section */}
-                <div className="flex-1 p-6">
-                  <div className="space-y-3">
+                <div className="flex-1 p-3">
+                  <div className="space-y-1.5">
                     {navigationItems.map((item, index) => {
                       const IconComponent = item.icon;
                       return (
@@ -207,42 +182,42 @@ export default function Navbar() {
                             to={item.path}
                             onClick={() => setIsOpen(false)}
                             className={({ isActive }) =>
-                              `group relative flex items-center justify-between w-full p-4 rounded-xl transition-all duration-300 overflow-hidden ${
+                              `group relative flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-all duration-300 overflow-hidden ${
                                 isActive
-                                  ? "bg-white text-[#004e2e] shadow-xl scale-[1.02] border-2 border-green-400/50"
-                                  : "text-white hover:bg-white/15 hover:shadow-lg hover:translate-x-1 border-2 border-transparent"
+                                  ? "bg-white text-[#004e2e] shadow-xl scale-[1.02] border border-green-400/50"
+                                  : "text-white hover:bg-white/15 hover:shadow-lg hover:translate-x-1 border border-transparent"
                               }`
                             }
                           >
                             {/* Background Shimmer Effect */}
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
-                            <div className="relative flex items-center space-x-4">
+                            <div className="relative flex items-center space-x-3">
                               <div
-                                className={`p-3 rounded-lg transition-all duration-300 ${
+                                className={`p-2 rounded-md transition-all duration-300 ${
                                   window.location.pathname === item.path
                                     ? "bg-[#004e2e]/20 shadow-inner"
                                     : "bg-white/10 group-hover:bg-white/20 group-hover:shadow-lg"
                                 }`}
                               >
-                                <IconComponent className="h-6 w-6" />
+                                <IconComponent className="h-4 w-4" />
                               </div>
-                              <div>
-                                <span className="font-semibold text-lg block">
+                              <div className="leading-tight">
+                                <span className="font-semibold text-sm block">
                                   {item.label}
                                 </span>
-                                <span className="text-xs opacity-70">
+                                <span className="text-[10px] opacity-70">
                                   Explore {item.label.toLowerCase()}
                                 </span>
                               </div>
                             </div>
 
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1.5">
                               {window.location.pathname === item.path && (
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
                               )}
                               <ChevronRight
-                                className={`h-5 w-5 transition-all duration-300 ${
+                                className={`h-4 w-4 transition-all duration-300 ${
                                   window.location.pathname === item.path
                                     ? "opacity-100 translate-x-0 text-green-600"
                                     : "opacity-50 group-hover:opacity-100 group-hover:translate-x-1"
@@ -257,17 +232,17 @@ export default function Navbar() {
                 </div>
 
                 {/* Mobile Action Section */}
-                <div className="p-6 border-t border-white/10 bg-gradient-to-t from-black/20 to-transparent">
-                  <div className="space-y-4">
+                <div className="px-4 pt-2 pb-6">
+                  <div className="space-y-3">
                     <div className="text-center">
-                      <p className="text-white font-semibold text-lg">
+                      <p className="text-white font-semibold text-sm">
                         Ready to get started?
                       </p>
-                      <p className="text-green-200 text-sm">
+                      <p className="text-green-200 text-[11px]">
                         Let's find your perfect property solution
                       </p>
                     </div>
-                    <div className="relative group">
+                    <div className="relative group flex justify-center">
                       <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
                       <div className="relative">
                         <ConstructionEnquiry

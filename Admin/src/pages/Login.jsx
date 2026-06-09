@@ -1,6 +1,6 @@
 import { LoginForm } from "@/components/login-form";
 import React, { useEffect } from "react";
-import { LoginFormInquiry } from "@/components/login-form inquary";
+// import { LoginFormInquiry } from "@/components/login-form inquary";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
