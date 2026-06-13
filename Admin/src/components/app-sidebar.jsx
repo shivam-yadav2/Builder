@@ -6,6 +6,7 @@ import {
   Image as ImageIcon,
   Plus,
   Wrench,
+  Quote,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -18,6 +19,8 @@ import {
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const data = {
   projects: [
@@ -42,6 +45,11 @@ const data = {
       title: "Gallery",
       url: "/dashboard/gallery",
       icon: ImageIcon,
+    },
+    {
+      title: "Testimonials",
+      url: "/dashboard/testimonials",
+      icon: Quote,
     },
   ],
   Enquiry: [
@@ -70,6 +78,29 @@ const data = {
 
 export function AppSidebar({ ...props }) {
   const navigate = useNavigate();
+  const [newEnquiries, setNewEnquiries] = useState(0);
+
+  // Show a badge with the number of unhandled (New) general enquiries.
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/v1/enquiry/get-enquiry`, {
+        headers: { Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}` },
+      })
+      .then((res) => {
+        const list = res.data?.data || [];
+        const count = list.filter((e) => (e.status || "New") === "New").length;
+        setNewEnquiries(count);
+      })
+      .catch(() => {
+        /* ignore — badge just won't show */
+      });
+  }, []);
+
+  const enquiryItems = data.Enquiry.map((item) =>
+    item.url === "/dashboard/general_inquiry"
+      ? { ...item, badge: newEnquiries }
+      : item
+  );
 
   const logout = () => {
     const id = toast.loading("Logging Out ...");
@@ -87,7 +118,7 @@ export function AppSidebar({ ...props }) {
         <NavMain />
         <NavProjects title="Dashboard" projects={data.projects} />
         <NavProjects title="Pages" projects={data.Pages} />
-        <NavProjects title="Enquiries" projects={data.Enquiry} />
+        <NavProjects title="Enquiries" projects={enquiryItems} />
       </SidebarContent>
       <SidebarFooter>
         <button

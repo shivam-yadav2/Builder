@@ -9,6 +9,7 @@ import GalleryPanel from "@/pages/Gallery";
 import SalesInquiry from "@/pages/SalesInquiry";
 import AddProperty from "@/pages/AddProperty";
 import AllProperty from "@/pages/AllProperty";
+import Testimonials from "@/pages/Testimonials";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: "all_property", element: <AllProperty /> },
       { path: "add_property", element: <AddProperty /> },
       { path: "gallery", element: <GalleryPanel /> },
+      { path: "testimonials", element: <Testimonials /> },
       { path: "general_inquiry", element: <InquiryDashboard /> },
       { path: "sales_inquiry", element: <SalesInquiry /> },
       { path: "rent_inquiry", element: <RentInquiry /> },

@@ -20,7 +20,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert";
 import { Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DataTable } from "@/utils/Datatable";
+
+const statusStyles = {
+  New: "text-blue-700",
+  Contacted: "text-amber-700",
+  Closed: "text-gray-500",
+};
 
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
@@ -61,6 +74,25 @@ const InquiryDashboard = () => {
       toast.error("Failed to load enquiries");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Move an enquiry through the New -> Contacted -> Closed workflow.
+  const updateStatus = async (id, status) => {
+    setEnquiries((prev) =>
+      prev.map((e) => (e._id === id ? { ...e, status } : e))
+    );
+    try {
+      await axios.post(
+        `${API_BASE_URL}/enquiry/update-status`,
+        { id, status },
+        { headers: authHeader() }
+      );
+      toast.success(`Marked as ${status}`);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      toast.error("Failed to update status");
+      fetchEnquiries();
     }
   };
 
@@ -114,6 +146,28 @@ const InquiryDashboard = () => {
           {row.original.message || "—"}
         </span>
       ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const current = row.original.status || "New";
+        return (
+          <Select
+            value={current}
+            onValueChange={(value) => updateStatus(row.original._id, value)}
+          >
+            <SelectTrigger className={`h-8 w-32 font-medium ${statusStyles[current] || ""}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="New">New</SelectItem>
+              <SelectItem value="Contacted">Contacted</SelectItem>
+              <SelectItem value="Closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+      },
     },
     {
       accessorKey: "actions",

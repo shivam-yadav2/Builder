@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaStar } from "react-icons/fa";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Build a usable avatar URL: pass-through absolute URLs, prefix server-stored paths.
+const resolveAvatar = (avatar, name) => {
+  if (!avatar) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
+  if (/^https?:\/\//.test(avatar)) return avatar;
+  return `${API_BASE_URL}/${avatar}`;
+};
 
 // Import Swiper React components and styles
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,8 +19,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 const Testimonial = () => {
-  // Sample testimonial data
-  const testimonials = [
+  // Sample testimonial data — used as a fallback until real ones are added.
+  const fallbackTestimonials = [
     {
       name: "Annette Black",
       role: "CEO Themsflat",
@@ -55,6 +64,34 @@ const Testimonial = () => {
       text: "My experience with property management services has exceeded expectations. They efficiently manage properties with a professional and attentive approach in every situation. I feel reassured that any issue will be resolved promptly and effectively.",
     },
   ];
+
+  const [testimonials, setTestimonials] = useState(fallbackTestimonials);
+
+  useEffect(() => {
+    let active = true;
+    axios
+      .get(`${API_BASE_URL}/api/v1/testimonial/get-all`)
+      .then((res) => {
+        const data = res.data?.data || [];
+        if (active && data.length > 0) {
+          setTestimonials(
+            data.map((t) => ({
+              name: t.name,
+              role: t.role || "Customer",
+              avatar: resolveAvatar(t.avatar, t.name),
+              rating: t.rating || 5,
+              text: t.text,
+            }))
+          );
+        }
+      })
+      .catch(() => {
+        /* keep fallback testimonials on error */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <>

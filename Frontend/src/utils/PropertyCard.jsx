@@ -1,11 +1,10 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, Bed, Bath, Square } from 'lucide-react';
+import { MapPin, Bed, Bath, Square, Star, BadgeCheck } from 'lucide-react';
 
 const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city, type , property }) => {
   // Format price for better display
-  console.log(property)
   const formatPrice = (price) => {
     if (price >= 100000000) {
       return `IDR.${(price / 1000000).toFixed(0)}.000.000`;
@@ -34,6 +33,18 @@ const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city,
           </span>
           <span className="bg-gray-800 text-white text-xs font-semibold capitalize px-3 py-1 rounded-full">
             {city}
+          </span>
+        </div>
+
+        {/* Trust badges */}
+        <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+          {property?.isFeatured && (
+            <span className="flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1 text-xs font-semibold text-amber-950 shadow">
+              <Star className="h-3 w-3 fill-current" /> Featured
+            </span>
+          )}
+          <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-emerald-700 shadow">
+            <BadgeCheck className="h-3 w-3" /> Verified
           </span>
         </div>
       </div>

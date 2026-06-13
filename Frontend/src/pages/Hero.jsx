@@ -34,7 +34,14 @@ const HeroSection = () => {
               whether you're building, buying, or renting.
             </p>
 
-            <button className="bg-white text-emerald-600 px-5 py-2.5 sm:px-8 sm:py-4 rounded-lg font-semibold text-sm sm:text-lg hover:bg-gray-50 transition-colors duration-300 flex items-center group w-fit">
+            <button
+              onClick={() =>
+                document
+                  .getElementById("services")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="bg-white text-emerald-600 px-5 py-2.5 sm:px-8 sm:py-4 rounded-lg font-semibold text-sm sm:text-lg hover:bg-gray-50 transition-colors duration-300 flex items-center group w-fit cursor-pointer"
+            >
               Explore Our Services
               <svg
                 className="ml-2 sm:ml-3 w-4 sm:w-5 h-4 sm:h-5 transform group-hover:translate-x-1 transition-transform duration-300"

@@ -81,7 +81,7 @@ const Service = ({ onBuyClick, onRentClick, onConstructionClick }) => {
   );
 
   return (
-    <div className="py-6 lg:py-10 relative overflow-hidden">
+    <div id="services" className="py-6 lg:py-10 relative overflow-hidden scroll-mt-20">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50">
         <div className="absolute inset-0 opacity-10">

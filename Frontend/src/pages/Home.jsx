@@ -21,6 +21,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import RealEstateLanding from "@/myComponents/home/RealEstateLanding";
 import ContactSection from "@/myComponents/home/ContactSection";
 import HeroSection from "./Hero";
+import RecentlySold from "@/myComponents/home/RecentlySold";
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -296,6 +297,8 @@ const Home = () => {
           <RealEstateLanding/>
           <Separator />
           <WhyChooseUs />
+          <RecentlySold />
+          <Testimonial />
           {/* <Separator /> */}
           {/* <OurProperties /> */}
           {/* <TopProperty /> */}

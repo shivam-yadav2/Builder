@@ -26,6 +26,30 @@ exports.createEnquiry = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, newEnquiry, "Enquiry created successfully"));
 });
 
+// UPDATE enquiry status (New -> Contacted -> Closed)
+exports.updateEnquiryStatus = asyncHandler(async (req, res) => {
+  const { id, status } = req.body;
+  const validStatuses = ["New", "Contacted", "Closed"];
+
+  if (!id || !validStatuses.includes(status)) {
+    throw new ApiError(400, "Valid enquiry id and status are required");
+  }
+
+  const enquiry = await Enquiry.findByIdAndUpdate(
+    id,
+    { $set: { status } },
+    { new: true }
+  );
+
+  if (!enquiry) {
+    throw new ApiError(404, "Enquiry not found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, enquiry, "Enquiry status updated successfully"));
+});
+
 // DELETE an enquiry by ID
 exports.deleteEnquiry = asyncHandler(async (req, res) => {
   const { id } = req.body;

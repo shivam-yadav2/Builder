@@ -20,6 +20,7 @@ const landRouter = require("./routes/land.routes.js");
 const homeRouter = require("./routes/home.routes.js");
 const propertyRouter = require("./routes/property.routes.js");
 const galleryRouter = require("./routes/gallery.routes.js");
+const testimonialRouter = require("./routes/testimonial.routes.js");
 const constructionFilterRouter = require("./routes/constructionFilter.routes.js");
 const rentFilterRouter = require("./routes/rentFilter.routes.js");
 const sellFilterRouter = require("./routes/sellFilter.routes.js");
@@ -33,6 +34,7 @@ app.use("/api/v1/land/", landRouter);
 app.use("/api/v1/home/", homeRouter);
 app.use("/api/v1/property/", propertyRouter);
 app.use("/api/v1/gallery/", galleryRouter);
+app.use("/api/v1/testimonial/", testimonialRouter);
 
 app.use(errorHandler);
 

@@ -3,6 +3,30 @@ const { ApiResponse } = require("../utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../utils/asyncHandler.utils.js");
 const Gallery = require("../models/gallery.model.js");
 
+// Normalises the `keepImages` field (existing image paths to retain on update).
+const parseKeepImages = (keepImages) => {
+  if (!keepImages) return [];
+  if (Array.isArray(keepImages)) return keepImages.filter(Boolean);
+  if (typeof keepImages === "string") {
+    const trimmed = keepImages.trim();
+    if (!trimmed) return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean);
+    } catch {
+      // not JSON — fall back to comma separated
+    }
+    return trimmed.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+};
+
+const cleanGalleryPath = (filePath) =>
+  filePath
+    ?.replace("public\\", "")
+    ?.replace(/\\/g, "/")
+    .replace("public/", "");
+
 const createGallery = asyncHandler(async (req, res) => {
   const { name, location, sold_price, sold_date, tags } = req.body;
   const files = req.files?.images || [];
@@ -76,7 +100,7 @@ const getGalleryById = asyncHandler(async (req, res) => {
 });
 
 const updateGallery = asyncHandler(async (req, res) => {
-  const { id, name, location, sold_price, sold_date, tags } = req.body;
+  const { id, name, location, sold_price, sold_date, tags, keepImages } = req.body;
   const files = req.files?.images || [];
 
   if (!id) {
@@ -88,10 +112,16 @@ const updateGallery = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Gallery item not found");
   }
 
-  const imageUrls =
-    files.length > 0 ? files.map((file) => 
-      file.path?.replace("public\\", "")?.replace(/\\/g, "/").replace("public/", "")
-    ) : gallery.images;
+  // Merge retained existing images with newly uploaded ones. Fall back to the
+  // current images only when the client sends neither.
+  const newImages = files.map(cleanGalleryPath);
+  let imageUrls = gallery.images;
+  if (keepImages !== undefined || newImages.length > 0) {
+    imageUrls = [...parseKeepImages(keepImages), ...newImages];
+    if (imageUrls.length === 0) {
+      throw new ApiError(400, "A gallery item must have at least one image");
+    }
+  }
 
   // Parse tags if they are sent as a string
   let parsedTags = gallery.tags;

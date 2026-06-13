@@ -8,7 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import axios from 'axios';
-import { Pencil, Trash2, Home as HomeIcon, Mountain, Plus } from 'lucide-react';
+import {
+  Pencil, Trash2, Home as HomeIcon, Mountain, Plus, Star,
+  MapPin, Bed, Bath, Square, Layers, Car, CalendarDays, Building2,
+  User, IndianRupee, ImageOff,
+} from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import {
@@ -23,16 +27,79 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import { Info } from 'lucide-react';
+
+// Label with optional required (*) marker and a small grey hint line.
+const FieldLabel = ({ children, required, hint }) => (
+  <div className="mb-1">
+    <Label className="text-sm font-medium text-gray-800">
+      {children}
+      {required && <span className="ml-0.5 text-red-500">*</span>}
+    </Label>
+    {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
+  </div>
+);
+
+// Section heading used to group the long edit form.
+const SectionHeading = ({ children }) => (
+  <h3 className="col-span-1 mb-1 mt-2 border-b pb-2 text-base font-semibold text-gray-900 sm:col-span-2">
+    {children}
+  </h3>
+);
+
+// --- View modal helpers ---
+const statusBadgeClass = (status) =>
+  status === 'Available'
+    ? 'bg-green-100 text-green-700'
+    : status === 'Pending'
+      ? 'bg-yellow-100 text-yellow-700'
+      : 'bg-red-100 text-red-700';
+
+const approvalBadgeClass = (status) =>
+  status === 'approved'
+    ? 'bg-blue-100 text-blue-700'
+    : status === 'pending'
+      ? 'bg-orange-100 text-orange-700'
+      : 'bg-gray-100 text-gray-700';
+
+// A compact icon stat card (e.g. bedrooms, bathrooms).
+const StatCard = ({ icon: Icon, label, value }) => (
+  <div className="flex flex-col items-center justify-center gap-1 rounded-lg border bg-gray-50 p-3 text-center">
+    <Icon className="h-5 w-5 text-emerald-600" />
+    <span className="text-base font-semibold text-gray-900">{value ?? '—'}</span>
+    <span className="text-[11px] uppercase tracking-wide text-gray-500">{label}</span>
+  </div>
+);
+
+// A labelled detail row used inside the View modal sections.
+const DetailRow = ({ label, value }) => (
+  <div className="flex flex-col">
+    <span className="text-xs uppercase tracking-wide text-gray-400">{label}</span>
+    <span className="text-sm font-medium text-gray-800 break-words">{value || '—'}</span>
+  </div>
+);
+
+const SectionCard = ({ title, children }) => (
+  <div className="rounded-lg border p-4">
+    <h4 className="mb-3 text-sm font-semibold text-gray-900">{title}</h4>
+    {children}
+  </div>
+);
 
 const AllProperty = () => {
   const [properties, setProperties] = useState([]);
   const [viewProperty, setViewProperty] = useState(null);
+  const [activeImage, setActiveImage] = useState(0);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [formData, setFormData] = useState({});
-  const [imagePreviews, setImagePreviews] = useState([]); // For image previews
+  const [existingImages, setExistingImages] = useState([]); // existing image paths to keep
+  const [newImages, setNewImages] = useState([]); // newly added File objects
+  const [isSaving, setIsSaving] = useState(false);
+
+  const MAX_IMAGES = 5;
 
   const fetchProperties = async () => {
     try {
@@ -60,6 +127,7 @@ const AllProperty = () => {
 
   const handleView = (property) => {
     setViewProperty(property);
+    setActiveImage(0);
     setIsViewModalOpen(true);
   };
 
@@ -80,7 +148,6 @@ const AllProperty = () => {
       description: property.description || '',
       status: property.status || 'Available',
       approvalStatus: property.approvalStatus || 'pending',
-      images: property.images || [], // Initialize with existing images
       rooms: property.rooms || '',
       bedrooms: property.bedrooms || '',
       kitchen: property.kitchen || '',
@@ -89,9 +156,8 @@ const AllProperty = () => {
       park: property.park || false,
       buildYear: property.buildYear || '',
     });
-    setImagePreviews(
-      property.images?.map((img) => `${import.meta.env.VITE_API_BASE_URL}/${img}`) || []
-    );
+    setExistingImages(property.images || []);
+    setNewImages([]);
     setIsEditModalOpen(true);
   };
 
@@ -105,25 +171,22 @@ const AllProperty = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + formData.images.length > 5) {
-      toast.error('Maximum 5 images allowed');
+    if (existingImages.length + newImages.length + files.length > MAX_IMAGES) {
+      toast.error(`Maximum ${MAX_IMAGES} images allowed`);
       return;
     }
-
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
-    setFormData((prev) => ({
-      ...prev,
-      images: [...prev.images, ...files],
-    }));
+    setNewImages((prev) => [...prev, ...files]);
+    e.target.value = ''; // allow re-selecting the same file
   };
 
-  const handleRemoveImage = (index) => {
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+  // Remove one of the already-saved images (won't be sent in keepImages).
+  const handleRemoveExisting = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Remove a not-yet-uploaded image.
+  const handleRemoveNew = (index) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSelectChange = (name, value) => {
@@ -134,31 +197,26 @@ const AllProperty = () => {
   };
 
   const confirmEdit = async () => {
+    if (existingImages.length + newImages.length === 0) {
+      toast.error('A property must have at least one image');
+      return;
+    }
+
+    const updateUrl = selectedProperty.type === 'Land'
+      ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/update-land`
+      : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/update-home`;
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('id', selectedProperty._id);
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+    // Tell the backend which existing photos to keep, then attach new uploads.
+    formDataToSend.append('keepImages', JSON.stringify(existingImages));
+    newImages.forEach((file) => formDataToSend.append('images', file));
+
+    setIsSaving(true);
     try {
-      const updateUrl = selectedProperty.type === 'Land'
-        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/update-land`
-        : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/update-home`;
-
-      const formDataToSend = new FormData();
-      formDataToSend.append('id', selectedProperty._id);
-      Object.keys(formData).forEach((key) => {
-        if (key === 'images') {
-
-          console.log(formData.images)
-
-          if (formData.images?.length) {
-            Array.from(formData.images).forEach((file, index) => {
-              formDataToSend.append("images", file);
-            });
-          }
-
-
-        } else {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
-
-      console.log(formDataToSend?.images)
       await toast.promise(
         axios.post(updateUrl, formDataToSend, {
           headers: {
@@ -173,7 +231,8 @@ const AllProperty = () => {
             setIsEditModalOpen(false);
             setSelectedProperty(null);
             setFormData({});
-            setImagePreviews([]);
+            setExistingImages([]);
+            setNewImages([]);
             fetchProperties();
             return `Property "${selectedProperty?.title}" updated successfully`;
           },
@@ -182,11 +241,8 @@ const AllProperty = () => {
           },
         }
       );
-    } catch (error) {
-      console.error('Error updating property:', error);
-      toast.error('Failed to update property', {
-        description: error.response?.data?.message || 'An error occurred',
-      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -228,6 +284,37 @@ const AllProperty = () => {
       );
     } catch (error) {
       console.error('Error deleting property:', error);
+    }
+  };
+
+  // Toggle whether a property is featured on the public homepage.
+  const toggleFeatured = async (property) => {
+    const updateUrl = property.type === 'Land'
+      ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/update-land`
+      : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/update-home`;
+    const next = !property.isFeatured;
+    // Optimistic update for snappy UI.
+    setProperties((prev) =>
+      prev.map((p) => (p._id === property._id ? { ...p, isFeatured: next } : p))
+    );
+    try {
+      await axios.post(
+        updateUrl,
+        { id: property._id, isFeatured: next },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('accessTokenAdmin')}`,
+          },
+        }
+      );
+      toast.success(next ? 'Marked as featured' : 'Removed from featured');
+    } catch (error) {
+      // Roll back on failure.
+      setProperties((prev) =>
+        prev.map((p) => (p._id === property._id ? { ...p, isFeatured: !next } : p))
+      );
+      toast.error(error.response?.data?.message || 'Failed to update featured status');
     }
   };
 
@@ -327,6 +414,29 @@ const AllProperty = () => {
       ),
     },
     {
+      accessorKey: 'isFeatured',
+      header: 'Featured',
+      cell: ({ row }) => {
+        const property = row.original;
+        return (
+          <Button
+            variant="ghost"
+            size="icon"
+            title={property.isFeatured ? 'Featured — click to remove' : 'Click to feature'}
+            onClick={() => toggleFeatured(property)}
+          >
+            <Star
+              className={
+                property.isFeatured
+                  ? 'h-5 w-5 fill-amber-400 text-amber-400'
+                  : 'h-5 w-5 text-gray-300'
+              }
+            />
+          </Button>
+        );
+      },
+    },
+    {
       accessorKey: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
@@ -374,147 +484,156 @@ const AllProperty = () => {
 
       {/* View Property Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[88vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{viewProperty?.title}</DialogTitle>
+            <DialogTitle className="sr-only">{viewProperty?.title}</DialogTitle>
           </DialogHeader>
           {viewProperty && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label className={'mb-2'}>Type</Label>
-                  <p>{viewProperty.type}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Location</Label>
-                  <p>{viewProperty.location}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Full Address</Label>
-                  <p>{viewProperty.fullAddress}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Pincode</Label>
-                  <p>{viewProperty.pincode}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>State</Label>
-                  <p>{viewProperty.state}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>City</Label>
-                  <p>{viewProperty.city}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Locality</Label>
-                  <p>{viewProperty.locality}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Landmark</Label>
-                  <p>{viewProperty.landmark}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Land Area</Label>
-                  <p>{viewProperty.landArea}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Price</Label>
-                  <p>₹{viewProperty.unitPrice || viewProperty.totalPrice}</p>
-                </div>
-                {viewProperty.type === 'Home' && (
-                  <>
-                    <div>
-                      <Label className={'mb-2'}>Rooms</Label>
-                      <p>{viewProperty.rooms || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label className={'mb-2'}>Bedrooms</Label>
-                      <p>{viewProperty.bedrooms || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label className={'mb-2'}>Kitchen</Label>
-                      <p>{viewProperty.kitchen || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label className={'mb-2'}>Bathrooms</Label>
-                      <p>{viewProperty.bathrooms || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label className={'mb-2'}>Floor</Label>
-                      <p>{viewProperty.floor || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label className={'mb-2'}>Park</Label>
-                      <p>{viewProperty.park ? 'Yes' : 'No'}</p>
-                    </div>
-                    <div>
-                      <Label className={'mb-2'}>Build Year</Label>
-                      <p>{viewProperty.buildYear || 'N/A'}</p>
-                    </div>
-                  </>
-                )}
-                <div>
-                  <Label className={'mb-2'}>Status</Label>
-                  <Badge
-                    className={
-                      viewProperty.status === 'Available'
-                        ? 'bg-green-100 text-green-700'
-                        : viewProperty.status === 'Pending'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-red-100 text-red-700'
-                    }
-                  >
-                    {viewProperty.status}
-                  </Badge>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Approval Status</Label>
-                  <Badge
-                    className={
-                      viewProperty.approvalStatus === 'approved'
-                        ? 'bg-blue-100 text-blue-700'
-                        : viewProperty.approvalStatus === 'pending'
-                          ? 'bg-orange-100 text-orange-700'
-                          : 'bg-gray-100 text-gray-700'
-                    }
-                  >
-                    {viewProperty.approvalStatus || 'N/A'}
-                  </Badge>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Property Type</Label>
-                  <p>{viewProperty.propertyType}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Description</Label>
-                  <p>{viewProperty.description}</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Creator</Label>
-                  <p>{viewProperty.creator?.name} ({viewProperty.creator?.email})</p>
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Admin Message</Label>
-                  <p>{viewProperty.adminMessage || 'N/A'}</p>
-                </div>
-              </div>
+            <div className="space-y-5">
+              {/* Image gallery */}
               <div>
-                <Label className={'mb-2'}>Images</Label>
-                <div className="flex gap-2 overflow-x-auto">
+                <div className="relative h-56 w-full overflow-hidden rounded-xl bg-gray-100 sm:h-72">
                   {viewProperty.images?.length > 0 ? (
-                    viewProperty.images.map((img, index) => (
-                      <img
-                        key={index}
-                        src={`${import.meta.env.VITE_API_BASE_URL}/${img}`}
-                        alt={`Property ${index}`}
-                        className="w-24 h-24 object-cover rounded"
-                      />
-                    ))
+                    <img
+                      src={`${import.meta.env.VITE_API_BASE_URL}/${viewProperty.images[activeImage] || viewProperty.images[0]}`}
+                      alt={viewProperty.title}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
-                    <p>No images available</p>
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-gray-400">
+                      <ImageOff className="h-8 w-8" />
+                      <span className="text-sm">No images available</span>
+                    </div>
                   )}
+                  <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                    <Badge className="bg-black/70 text-white hover:bg-black/70">
+                      {viewProperty.type}
+                    </Badge>
+                    {viewProperty.isFeatured && (
+                      <Badge className="bg-amber-400 text-amber-950 hover:bg-amber-400">
+                        <Star className="mr-1 h-3 w-3 fill-current" /> Featured
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                {viewProperty.images?.length > 1 && (
+                  <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+                    {viewProperty.images.map((img, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setActiveImage(index)}
+                        className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition ${
+                          activeImage === index ? 'border-emerald-500' : 'border-transparent opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={`${import.meta.env.VITE_API_BASE_URL}/${img}`}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Title, location & price */}
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-xl font-bold text-gray-900">{viewProperty.title}</h2>
+                  <p className="mt-1 flex items-center gap-1 text-sm text-gray-500">
+                    <MapPin className="h-4 w-4 shrink-0" />
+                    {viewProperty.location || viewProperty.fullAddress}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Badge className={statusBadgeClass(viewProperty.status)}>
+                      {viewProperty.status}
+                    </Badge>
+                    <Badge className={approvalBadgeClass(viewProperty.approvalStatus)}>
+                      {viewProperty.approvalStatus || 'N/A'}
+                    </Badge>
+                    {viewProperty.propertyType && (
+                      <Badge variant="secondary" className="capitalize">
+                        For {viewProperty.propertyType}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="flex items-center gap-0.5 text-2xl font-bold text-emerald-600">
+                    <IndianRupee className="h-5 w-5" />
+                    {Number(viewProperty.unitPrice || viewProperty.totalPrice || 0).toLocaleString('en-IN')}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {viewProperty.type === 'Home' ? 'Total price' : 'Per unit price'}
+                  </p>
                 </div>
               </div>
+
+              {/* Key stats (Home only) */}
+              {viewProperty.type === 'Home' && (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+                  <StatCard icon={Bed} label="Beds" value={viewProperty.bedrooms} />
+                  <StatCard icon={Bath} label="Baths" value={viewProperty.bathrooms} />
+                  <StatCard icon={HomeIcon} label="Rooms" value={viewProperty.rooms} />
+                  <StatCard icon={Layers} label="Floors" value={viewProperty.floor} />
+                  <StatCard icon={Car} label="Parking" value={viewProperty.park ? 'Yes' : 'No'} />
+                  <StatCard icon={CalendarDays} label="Built" value={viewProperty.buildYear} />
+                </div>
+              )}
+
+              {/* Location & area sections */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <SectionCard title="Location">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                    <DetailRow label="Full Address" value={viewProperty.fullAddress} />
+                    <DetailRow label="Landmark" value={viewProperty.landmark} />
+                    <DetailRow label="City" value={viewProperty.city} />
+                    <DetailRow label="State" value={viewProperty.state} />
+                    <DetailRow label="Locality" value={viewProperty.locality} />
+                    <DetailRow label="Pincode" value={viewProperty.pincode} />
+                  </div>
+                </SectionCard>
+                <SectionCard title="Property Info">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                    <DetailRow
+                      label="Land Area"
+                      value={viewProperty.landArea ? `${viewProperty.landArea} sq.ft` : null}
+                    />
+                    {viewProperty.type === 'Home' && (
+                      <DetailRow label="Kitchen" value={viewProperty.kitchen} />
+                    )}
+                    <DetailRow label="Listing Type" value={viewProperty.type} />
+                    <DetailRow label="Intent" value={viewProperty.propertyType} />
+                  </div>
+                </SectionCard>
+              </div>
+
+              {/* Description */}
+              {viewProperty.description && (
+                <SectionCard title="Description">
+                  <p className="text-sm leading-relaxed text-gray-700">
+                    {viewProperty.description}
+                  </p>
+                </SectionCard>
+              )}
+
+              {/* Meta */}
+              {(viewProperty.creator || viewProperty.adminMessage) && (
+                <SectionCard title="Other Details">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {viewProperty.creator && (
+                      <div className="flex items-center gap-2 text-sm text-gray-700">
+                        <User className="h-4 w-4 text-gray-400" />
+                        {viewProperty.creator?.name}
+                        {viewProperty.creator?.email ? ` (${viewProperty.creator.email})` : ''}
+                      </div>
+                    )}
+                    <DetailRow label="Admin Message" value={viewProperty.adminMessage} />
+                  </div>
+                </SectionCard>
+              )}
             </div>
           )}
           <DialogFooter>
@@ -531,10 +650,18 @@ const AllProperty = () => {
           </DialogHeader>
           {selectedProperty && (
             <div className="space-y-4">
+              <p className="text-sm text-gray-500">
+                Fields marked <span className="text-red-500">*</span> are
+                required. Changes go live as soon as you save.
+              </p>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Common Fields for Both Home and Land */}
+                {/* ---- Basic Information ---- */}
+                <SectionHeading>Basic Information</SectionHeading>
                 <div>
-                  <Label className={'mb-2'}>Title</Label>
+                  <FieldLabel required hint="Public title buyers will see">
+                    Title
+                  </FieldLabel>
                   <Input
                     name="title"
                     value={formData.title}
@@ -543,81 +670,9 @@ const AllProperty = () => {
                   />
                 </div>
                 <div>
-                  <Label className={'mb-2'}>Full Address</Label>
-                  <Input
-                    name="fullAddress"
-                    value={formData.fullAddress}
-                    onChange={handleFormChange}
-                    placeholder="Enter full address"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Pincode</Label>
-                  <Input
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleFormChange}
-                    placeholder="Enter pincode"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>State</Label>
-                  <Input
-                    name="state"
-                    value={formData.state}
-                    onChange={handleFormChange}
-                    placeholder="Enter state"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>City</Label>
-                  <Input
-                    name="city"
-                    value={formData.city}
-                    onChange={handleFormChange}
-                    placeholder="Enter city"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Locality</Label>
-                  <Input
-                    name="locality"
-                    value={formData.locality}
-                    onChange={handleFormChange}
-                    placeholder="Enter locality"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Landmark</Label>
-                  <Input
-                    name="landmark"
-                    value={formData.landmark}
-                    onChange={handleFormChange}
-                    placeholder="Enter landmark"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Land Area</Label>
-                  <Input
-                    name="landArea"
-                    value={formData.landArea}
-                    onChange={handleFormChange}
-                    placeholder="Enter land area"
-                    type="number"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Price</Label>
-                  <Input
-                    name="unitPrice"
-                    value={formData.unitPrice}
-                    onChange={handleFormChange}
-                    placeholder="Enter price"
-                    type="number"
-                  />
-                </div>
-                <div>
-                  <Label className={'mb-2'}>Property Type</Label>
+                  <FieldLabel hint="How the listing appears on the site">
+                    Property Type
+                  </FieldLabel>
                   <Select
                     value={formData.propertyType}
                     onValueChange={(value) => handleSelectChange('propertyType', value)}
@@ -632,8 +687,112 @@ const AllProperty = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="col-span-1 sm:col-span-2">
+                  <FieldLabel hint="Describe condition, view, connectivity and highlights">
+                    Description
+                  </FieldLabel>
+                  <Textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleFormChange}
+                    rows={4}
+                    placeholder="Enter description"
+                  />
+                </div>
+
+                {/* ---- Address ---- */}
+                <SectionHeading>Address</SectionHeading>
                 <div>
-                  <Label className={'mb-2'}>Status</Label>
+                  <FieldLabel required>Full Address</FieldLabel>
+                  <Input
+                    name="fullAddress"
+                    value={formData.fullAddress}
+                    onChange={handleFormChange}
+                    placeholder="Enter full address"
+                  />
+                </div>
+                <div>
+                  <FieldLabel required hint="6-digit pincode">
+                    Pincode
+                  </FieldLabel>
+                  <Input
+                    name="pincode"
+                    value={formData.pincode}
+                    onChange={handleFormChange}
+                    maxLength={6}
+                    inputMode="numeric"
+                    placeholder="Enter pincode"
+                  />
+                </div>
+                <div>
+                  <FieldLabel required>State</FieldLabel>
+                  <Input
+                    name="state"
+                    value={formData.state}
+                    onChange={handleFormChange}
+                    placeholder="Enter state"
+                  />
+                </div>
+                <div>
+                  <FieldLabel required>City</FieldLabel>
+                  <Input
+                    name="city"
+                    value={formData.city}
+                    onChange={handleFormChange}
+                    placeholder="Enter city"
+                  />
+                </div>
+                <div>
+                  <FieldLabel required>Locality</FieldLabel>
+                  <Input
+                    name="locality"
+                    value={formData.locality}
+                    onChange={handleFormChange}
+                    placeholder="Enter locality"
+                  />
+                </div>
+                <div>
+                  <FieldLabel hint="A nearby well-known point (optional)">
+                    Landmark
+                  </FieldLabel>
+                  <Input
+                    name="landmark"
+                    value={formData.landmark}
+                    onChange={handleFormChange}
+                    placeholder="Enter landmark"
+                  />
+                </div>
+
+                {/* ---- Area, Pricing & Status ---- */}
+                <SectionHeading>Area, Pricing &amp; Status</SectionHeading>
+                <div>
+                  <FieldLabel required hint="Plot size in sq.ft">
+                    Land Area
+                  </FieldLabel>
+                  <Input
+                    name="landArea"
+                    value={formData.landArea}
+                    onChange={handleFormChange}
+                    placeholder="Enter land area"
+                    type="number"
+                  />
+                </div>
+                <div>
+                  <FieldLabel required hint="Amount in ₹">
+                    Price
+                  </FieldLabel>
+                  <Input
+                    name="unitPrice"
+                    value={formData.unitPrice}
+                    onChange={handleFormChange}
+                    placeholder="Enter price"
+                    type="number"
+                  />
+                </div>
+                <div>
+                  <FieldLabel hint="Availability shown to buyers">
+                    Status
+                  </FieldLabel>
                   <Select
                     value={formData.status}
                     onValueChange={(value) => handleSelectChange('status', value)}
@@ -649,7 +808,9 @@ const AllProperty = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label className={'mb-2'}>Approval Status</Label>
+                  <FieldLabel hint="Controls if it appears publicly">
+                    Approval Status
+                  </FieldLabel>
                   <Select
                     value={formData.approvalStatus}
                     onValueChange={(value) => handleSelectChange('approvalStatus', value)}
@@ -664,53 +825,13 @@ const AllProperty = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="col-span-1 sm:col-span-2">
-                  <Label className={'mb-2'}>Description</Label>
-                  <Textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
-                    placeholder="Enter description"
-                  />
-                </div>
-                {/* Image Upload Field */}
-                <div className="col-span-1 sm:col-span-2">
-                  <Label className={'mb-2'}>Images (Max 5)</Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    className="mb-2"
-                  />
-                  <p className="text-sm text-gray-500 mb-2">
-                    {formData.images?.length || 0}/5 images selected
-                  </p>
-                  <div className="flex gap-2 overflow-x-auto">
-                    {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={preview}
-                          alt={`Preview ${index}`}
-                          className="w-24 h-24 object-cover rounded"
-                        />
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-0 right-0 h-6 w-6"
-                          onClick={() => handleRemoveImage(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Home-Specific Fields */}
+
+                {/* ---- Home-Specific Fields ---- */}
                 {selectedProperty.type === 'Home' && (
                   <>
+                    <SectionHeading>House Details</SectionHeading>
                     <div>
-                      <Label className={'mb-2'}>Rooms</Label>
+                      <FieldLabel required>Rooms</FieldLabel>
                       <Input
                         name="rooms"
                         value={formData.rooms}
@@ -720,7 +841,7 @@ const AllProperty = () => {
                       />
                     </div>
                     <div>
-                      <Label className={'mb-2'}>Bedrooms</Label>
+                      <FieldLabel required>Bedrooms</FieldLabel>
                       <Input
                         name="bedrooms"
                         value={formData.bedrooms}
@@ -730,7 +851,7 @@ const AllProperty = () => {
                       />
                     </div>
                     <div>
-                      <Label className={'mb-2'}>Kitchen</Label>
+                      <FieldLabel>Kitchen</FieldLabel>
                       <Input
                         name="kitchen"
                         value={formData.kitchen}
@@ -740,7 +861,7 @@ const AllProperty = () => {
                       />
                     </div>
                     <div>
-                      <Label className={'mb-2'}>Bathrooms</Label>
+                      <FieldLabel required>Bathrooms</FieldLabel>
                       <Input
                         name="bathrooms"
                         value={formData.bathrooms}
@@ -750,7 +871,7 @@ const AllProperty = () => {
                       />
                     </div>
                     <div>
-                      <Label className={'mb-2'}>Floor</Label>
+                      <FieldLabel required>Floor</FieldLabel>
                       <Input
                         name="floor"
                         value={formData.floor}
@@ -760,7 +881,9 @@ const AllProperty = () => {
                       />
                     </div>
                     <div>
-                      <Label className={'mb-2'}>Build Year</Label>
+                      <FieldLabel required hint="Year of construction">
+                        Build Year
+                      </FieldLabel>
                       <Input
                         name="buildYear"
                         value={formData.buildYear}
@@ -769,7 +892,7 @@ const AllProperty = () => {
                         type="number"
                       />
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 pt-6">
                       <input
                         type="checkbox"
                         name="park"
@@ -777,18 +900,90 @@ const AllProperty = () => {
                         onChange={handleFormChange}
                         className="h-4 w-4"
                       />
-                      <Label className={'mb-2'}>Parking Available</Label>
+                      <Label>Parking Available</Label>
                     </div>
                   </>
                 )}
+
+                {/* ---- Images ---- */}
+                <SectionHeading>Photos</SectionHeading>
+                <div className="col-span-1 sm:col-span-2">
+                  <div className="mb-3 flex gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>
+                      Existing photos are kept. Remove the ones you don't want
+                      with the trash icon, and add new ones below — they're
+                      merged together. The first photo is used as the cover.
+                    </span>
+                  </div>
+                  <FieldLabel hint={`Up to ${MAX_IMAGES} images total (existing + new).`}>
+                    Add Images
+                  </FieldLabel>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="mb-2"
+                  />
+                  <p className="text-sm text-gray-500 mb-2">
+                    {existingImages.length + newImages.length}/{MAX_IMAGES} images
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Existing (saved) images */}
+                    {existingImages.map((img, index) => (
+                      <div key={`existing-${index}`} className="relative">
+                        <img
+                          src={`${import.meta.env.VITE_API_BASE_URL}/${img}`}
+                          alt={`Saved ${index}`}
+                          className="h-24 w-24 rounded object-cover"
+                        />
+                        <span className="absolute bottom-0 left-0 rounded-tr bg-black/60 px-1 text-[10px] text-white">
+                          Saved
+                        </span>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -right-1 -top-1 h-6 w-6"
+                          onClick={() => handleRemoveExisting(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    {/* Newly added images */}
+                    {newImages.map((file, index) => (
+                      <div key={`new-${index}`} className="relative">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`New ${index}`}
+                          className="h-24 w-24 rounded object-cover"
+                        />
+                        <span className="absolute bottom-0 left-0 rounded-tr bg-green-600/80 px-1 text-[10px] text-white">
+                          New
+                        </span>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -right-1 -top-1 h-6 w-6"
+                          onClick={() => handleRemoveNew(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+            <Button variant="outline" onClick={() => setIsEditModalOpen(false)} disabled={isSaving}>
               Cancel
             </Button>
-            <Button onClick={confirmEdit}>Save Changes</Button>
+            <Button onClick={confirmEdit} disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

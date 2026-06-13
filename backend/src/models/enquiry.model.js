@@ -17,6 +17,11 @@ const EnquirySchema = new Schema(
     message: {
       type: String,
     },
+    status: {
+      type: String,
+      enum: ["New", "Contacted", "Closed"],
+      default: "New",
+    },
     isDeleted: {
       type: Boolean,
       default: false,

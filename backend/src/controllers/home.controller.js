@@ -6,6 +6,25 @@ const { asyncHandler } = require("../utils/asyncHandler.utils.js");
 const cleanImagePath = (filePath) =>
   filePath.replace(/^public[\\/]/, "").replace(/\\/g, "/");
 
+// Normalises the `keepImages` field (existing image paths the client wants to
+// retain on update) into a clean array, whatever shape it arrives in.
+const parseKeepImages = (keepImages) => {
+  if (!keepImages) return [];
+  if (Array.isArray(keepImages)) return keepImages.filter(Boolean);
+  if (typeof keepImages === "string") {
+    const trimmed = keepImages.trim();
+    if (!trimmed) return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean);
+    } catch {
+      // not JSON — fall back to comma separated
+    }
+    return trimmed.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+};
+
 exports.createHome = asyncHandler(async (req, res) => {
   const {
     title,
@@ -124,15 +143,24 @@ exports.getHomeById = asyncHandler(async (req, res) => {
 });
 
 exports.updateHome = asyncHandler(async (req, res) => {
-  const { id, ...updateData } = req.body;
+  const { id, keepImages, ...updateData } = req.body;
 
   const home = await Home.findById(id);
   if (!home || home.isDelete) {
     throw new ApiError(404, "Home Listing Not Found");
   }
 
-  if (req.files && req.files.images && req.files.images.length > 0) {
-    updateData.images = req.files.images.map((file) => cleanImagePath(file.path));
+  // Merge retained existing images with any newly uploaded ones, so editing a
+  // listing no longer wipes its previous photos.
+  const newImages =
+    req.files?.images?.map((file) => cleanImagePath(file.path)) || [];
+  if (keepImages !== undefined || newImages.length > 0) {
+    const kept = parseKeepImages(keepImages);
+    const merged = [...kept, ...newImages];
+    if (merged.length === 0) {
+      throw new ApiError(400, "A listing must have at least one image");
+    }
+    updateData.images = merged;
   }
 
   const updatedHome = await Home.findByIdAndUpdate(id, updateData, {

@@ -30,9 +30,10 @@ const FeaturedProperty = () => {
   //console.log("homeData:", homeData);
   //console.log("landData:", landData);
 
-  const combinedProperties = [...(homeData || []), ...(landData || [])].filter(
-    (property) => property?.status === "Available" && !property?.isDelete
-  );
+  const combinedProperties = [...(homeData || []), ...(landData || [])]
+    .filter((property) => property?.status === "Available" && !property?.isDelete)
+    // Show admin-curated featured listings first.
+    .sort((a, b) => (b?.isFeatured ? 1 : 0) - (a?.isFeatured ? 1 : 0));
 
 
   //  console.log(homeData)
