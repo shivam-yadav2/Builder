@@ -298,7 +298,7 @@ const Home = () => {
           <Separator />
           <WhyChooseUs />
           <RecentlySold />
-          {/* <Testimonial /> */}
+          <Testimonial />
           {/* <Separator /> */}
           {/* <OurProperties /> */}
           {/* <TopProperty /> */}
