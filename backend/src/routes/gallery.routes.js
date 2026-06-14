@@ -13,14 +13,14 @@ const { verifyAdminJwt } = require('../middelware/adminAuth.middelware.js');
 
 // Create gallery item (Admin only)
 router.route('/add').post(
-    upload.fields([{ name: 'images', maxCount: 10 }]),
+    upload.fields([{ name: 'images', maxCount: 15 }]),
     verifyAdminJwt,
     createGallery
 );
 
 // Update gallery item (Admin only)
 router.route('/update').post(
-    upload.fields([{ name: 'images', maxCount: 10 }]),
+    upload.fields([{ name: 'images', maxCount: 15 }]),
     verifyAdminJwt,
     updateGallery
 );

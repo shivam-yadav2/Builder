@@ -73,7 +73,7 @@ const createGallery = asyncHandler(async (req, res) => {
 
 const getAllGallery = asyncHandler(async (req, res) => {
   const gallery = await Gallery.find({ isDeleted: false })
-    .sort({ sold_date: -1 }) // Sort by sold_date descending (newest first)
+    .sort({ createdAt: -1 }) // Newest added items first
     .lean();
 
   return res

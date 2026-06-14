@@ -283,18 +283,21 @@ const GalleryManagement = () => {
                   </span>
                 </div>
               )}
-              <FieldLabel required={!isEditing} hint="Images or videos. The first one is the cover.">
+              <FieldLabel required={!isEditing} hint="Up to 15 images or videos. The first one is the cover.">
                 Media
               </FieldLabel>
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:bg-gray-50">
+              {/* The file input is overlaid at opacity-0 (not display:none) so it
+                  stays directly tappable — display:none inputs fire `change`
+                  unreliably on mobile Safari/Chrome. */}
+              <label className="relative flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:bg-gray-50">
                 <ImagePlus className="h-6 w-6 text-gray-400" />
-                <span className="text-sm text-gray-600">Click to add images / videos</span>
-                <Input
+                <span className="text-sm text-gray-600">Tap to add images / videos</span>
+                <input
                   type="file"
                   multiple
                   accept="image/*,video/*"
                   onChange={handleFileChange}
-                  className="hidden"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
 

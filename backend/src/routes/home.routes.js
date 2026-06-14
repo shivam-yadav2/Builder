@@ -13,13 +13,13 @@ const { upload } = require("../middelware/multer.middelware.js");
 const { verifyAdminJwt } = require('../middelware/adminAuth.middelware.js');
 
 router.route('/add-home').post(
-    upload.fields([{ name: 'images', maxCount: 5 }]),
+    upload.fields([{ name: 'images', maxCount: 15 }]),
     verifyAdminJwt,
     createHome
 );
 
 router.route('/update-home').post(
-    upload.fields([{ name: 'images', maxCount: 5 }]),
+    upload.fields([{ name: 'images', maxCount: 15 }]),
     verifyAdminJwt,
     updateHome
 );

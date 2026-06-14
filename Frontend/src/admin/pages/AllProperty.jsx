@@ -99,7 +99,7 @@ const AllProperty = () => {
   const [newImages, setNewImages] = useState([]); // newly added File objects
   const [isSaving, setIsSaving] = useState(false);
 
-  const MAX_IMAGES = 5;
+  const MAX_IMAGES = 15;
 
   const fetchProperties = async () => {
     try {

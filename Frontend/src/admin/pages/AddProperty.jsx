@@ -172,6 +172,12 @@ const AddProperty = () => {
 
   const onSubmit = async (data) => {
     console.log("Form Data:", data); // Log form data for debugging
+    // Guard the image count client-side so the user gets a clear message
+    // instead of a server-side upload rejection.
+    if (data.images?.length > 15) {
+      setApiError("You can upload a maximum of 15 images.");
+      return;
+    }
     try {
       setApiError(null); // Clear previous errors
       setSubmitting(true);
@@ -994,7 +1000,7 @@ const AddProperty = () => {
                   Photos
                 </h3>
                 <div>
-                  <FieldLabel hint="Upload multiple clear photos (JPG/PNG). The first one is used as the cover.">
+                  <FieldLabel hint="Upload up to 15 clear photos (JPG/PNG). The first one is used as the cover.">
                     Images
                   </FieldLabel>
                   <Controller

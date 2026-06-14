@@ -16,14 +16,14 @@ const router = express.Router();
 router
   .route("/add-land")
   .post(
-    upload.fields([{ name: "images", maxCount: 5 }]),
+    upload.fields([{ name: "images", maxCount: 15 }]),
     verifyAdminJwt,
     createLand
   );
 router
   .route("/update-land")
   .post(
-    upload.fields([{ name: "images", maxCount: 5 }]),
+    upload.fields([{ name: "images", maxCount: 15 }]),
     verifyAdminJwt,
     updateLand
   );
