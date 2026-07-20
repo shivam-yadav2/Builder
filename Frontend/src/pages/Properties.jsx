@@ -19,8 +19,8 @@ const RentProperties = () => {
   return (
     <Layout>
       <div className="container mx-auto ">
-        <h1 className="pt-6 pl-6 md:pl-16 ml-[30%] text-3xl lg:text-4xl font-semibold">Featured Listing Properties For Rent</h1>
-        <div className="grid grid-cols-1 mt-5 md:grid-cols-3 gap-6 p-6 md:ml-10 ">
+        <h1 className="pt-6 px-4 text-3xl lg:text-4xl font-semibold text-center">Featured Listing Properties</h1>
+        <div className="grid grid-cols-1 mt-5 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
           {properties.length > 0 ? (
             properties.map((property, i) => (
               <Link to={`/property-details/${property?.type}/${property?._id}`} key={property._id}>

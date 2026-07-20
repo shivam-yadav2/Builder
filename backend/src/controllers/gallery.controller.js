@@ -27,39 +27,61 @@ const cleanGalleryPath = (filePath) =>
     ?.replace(/\\/g, "/")
     .replace("public/", "");
 
+// Normalise comma-separated or array tags into a clean array.
+const parseTags = (tags) => {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags;
+  if (typeof tags === "string") {
+    return tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  return [];
+};
+
 const createGallery = asyncHandler(async (req, res) => {
-  const { name, location, sold_price, sold_date, tags } = req.body;
+  const {
+    name,
+    location,
+    description,
+    tags,
+    category,
+    sold_price,
+    sold_date,
+    project_type,
+    area,
+    completed_date,
+  } = req.body;
   const files = req.files?.images || [];
 
-  if ([name, location, sold_price, sold_date].some((field) => !field?.trim())) {
-    throw new ApiError(400, "All fields are required");
+  const cat = category === "construction" ? "construction" : "sold";
+
+  // Common required fields
+  if (!name?.trim() || !location?.trim()) {
+    throw new ApiError(400, "Name and location are required");
+  }
+  // Sold items must record the sale price & date
+  if (cat === "sold" && (!sold_price?.trim() || !sold_date?.trim())) {
+    throw new ApiError(400, "Sold price and sold date are required");
   }
 
-  const imageUrls = files.map((file) =>
-    file.path?.replace("public\\", "")?.replace(/\\/g, "/").replace("public/", "")
-  );
-
+  const imageUrls = files.map(cleanGalleryPath);
   if (imageUrls.length === 0) {
     throw new ApiError(400, "Please upload at least one image");
   }
 
-  // Parse tags if they are sent as a string
-  let parsedTags = [];
-  if (tags) {
-    if (typeof tags === 'string') {
-      parsedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-    } else if (Array.isArray(tags)) {
-      parsedTags = tags;
-    }
-  }
-
   const gallery = await Gallery.create({
+    category: cat,
     name,
     location,
-    sold_price,
-    sold_date,
+    description,
     images: imageUrls,
-    tags: parsedTags,
+    tags: parseTags(tags),
+    // sold
+    sold_price: cat === "sold" ? sold_price : undefined,
+    sold_date: cat === "sold" ? sold_date : undefined,
+    // construction
+    project_type: cat === "construction" ? project_type : undefined,
+    area: cat === "construction" ? area : undefined,
+    completed_date: cat === "construction" ? completed_date || undefined : undefined,
   });
 
   if (!gallery) {
@@ -72,7 +94,18 @@ const createGallery = asyncHandler(async (req, res) => {
 });
 
 const getAllGallery = asyncHandler(async (req, res) => {
-  const gallery = await Gallery.find({ isDeleted: false })
+  const { category } = req.query;
+  const filter = { isDeleted: false };
+
+  // Legacy items have no category — treat anything that isn't explicitly
+  // "construction" as a sold item.
+  if (category === "construction") {
+    filter.category = "construction";
+  } else if (category === "sold") {
+    filter.category = { $ne: "construction" };
+  }
+
+  const gallery = await Gallery.find(filter)
     .sort({ createdAt: -1 }) // Newest added items first
     .lean();
 
@@ -100,7 +133,19 @@ const getGalleryById = asyncHandler(async (req, res) => {
 });
 
 const updateGallery = asyncHandler(async (req, res) => {
-  const { id, name, location, sold_price, sold_date, tags, keepImages } = req.body;
+  const {
+    id,
+    name,
+    location,
+    description,
+    sold_price,
+    sold_date,
+    project_type,
+    area,
+    completed_date,
+    tags,
+    keepImages,
+  } = req.body;
   const files = req.files?.images || [];
 
   if (!id) {
@@ -123,22 +168,21 @@ const updateGallery = asyncHandler(async (req, res) => {
     }
   }
 
-  // Parse tags if they are sent as a string
-  let parsedTags = gallery.tags;
-  if (tags !== undefined) {
-    if (typeof tags === 'string') {
-      parsedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-    } else if (Array.isArray(tags)) {
-      parsedTags = tags;
-    }
-  }
-
   gallery.name = name || gallery.name;
   gallery.location = location || gallery.location;
-  gallery.sold_price = sold_price || gallery.sold_price;
-  gallery.sold_date = sold_date || gallery.sold_date;
+  if (description !== undefined) gallery.description = description;
+  if (tags !== undefined) gallery.tags = parseTags(tags);
   gallery.images = imageUrls;
-  gallery.tags = parsedTags;
+
+  // Update only the fields relevant to this item's category.
+  if (gallery.category === "construction") {
+    if (project_type !== undefined) gallery.project_type = project_type;
+    if (area !== undefined) gallery.area = area;
+    if (completed_date) gallery.completed_date = completed_date;
+  } else {
+    if (sold_price) gallery.sold_price = sold_price;
+    if (sold_date) gallery.sold_date = sold_date;
+  }
 
   await gallery.save();
 

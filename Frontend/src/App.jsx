@@ -11,6 +11,7 @@ import PropertyDetailsPage from "./pages/PropertyDetailsPage";
 import ScrollToTop from "./utils/ScrollTop";
 import FilteredProperties from "./pages/FilteredProperties";
 import Gallery from "./pages/Gallery";
+import Projects from "./pages/Projects";
 
 // Admin is merged into this app but lazy-loaded, so public visitors never
 // download the admin bundle — it only loads under /admin and /dashboard.
@@ -43,6 +44,7 @@ function App() {
               {/* Public site */}
               <Route path="/" element={<Home />} />
               <Route path="/gallery" element={<Gallery />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/property" element={<Properties />} />

@@ -3,16 +3,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { MapPin, Bed, Bath, Square, Star, BadgeCheck } from 'lucide-react';
 
+// Format a number as Indian currency (₹85 Lakh, ₹1.25 Cr, ₹45,000).
+export const formatINR = (value) => {
+  const num = Number(value);
+  if (!num || Number.isNaN(num)) return "Price on request";
+  if (num >= 10000000) {
+    return `₹${(num / 10000000).toFixed(2).replace(/\.?0+$/, "")} Cr`;
+  }
+  if (num >= 100000) {
+    return `₹${(num / 100000).toFixed(2).replace(/\.?0+$/, "")} Lakh`;
+  }
+  return `₹${num.toLocaleString("en-IN")}`;
+};
+
 const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city, type , property }) => {
-  // Format price for better display
-  const formatPrice = (price) => {
-    if (price >= 100000000) {
-      return `IDR.${(price / 1000000).toFixed(0)}.000.000`;
-    } else if (price >= 1000000) {
-      return `IDR.${(price / 1000000).toFixed(0)}.000.000`;
-    }
-    return `IDR.${price?.toLocaleString()}`;
-  };
 
   return (
     <Card className="group  bg-white rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:bg-[#004e2e] border-0 cursor-pointer">
@@ -68,8 +72,8 @@ const PropertyCard = ({ location, title, sqft, price, image, name, avatar, city,
               <span>Sqft: {sqft}</span>
             </p>
           </div>
-          <span className="text-lg font-bold group-hover:text-white text-gray-900 transition-colors duration-300">
-            ₹ {price}
+          <span className="text-lg font-bold group-hover:text-white text-gray-900 transition-colors duration-300 whitespace-nowrap">
+            {formatINR(price)}
           </span>
         </div>
 

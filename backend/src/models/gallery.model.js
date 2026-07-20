@@ -3,6 +3,13 @@ const { Schema } = mongoose;
 
 const GallerySchema = new Schema(
   {
+    // "sold" = sold-property showcase, "construction" = completed construction projects
+    category: {
+      type: String,
+      enum: ["sold", "construction"],
+      default: "sold",
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -11,21 +18,40 @@ const GallerySchema = new Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+    },
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    tags: [
+      {
+        type: String,
+      },
+    ],
+
+    // Sold-property fields
     sold_price: {
       type: String,
-      required: true,
     },
     sold_date: {
       type: Date,
-      required: true,
     },
-    images: [{
-      type: String,
-      required: true,
-    }],
-    tags: [{
-      type: String,
-    }],
+
+    // Construction-project fields
+    project_type: {
+      type: String, // e.g. Residential / Commercial / Villa
+    },
+    area: {
+      type: String, // e.g. "2400 sq.ft"
+    },
+    completed_date: {
+      type: Date,
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,

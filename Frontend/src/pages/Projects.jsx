@@ -3,16 +3,15 @@ import axios from "axios";
 import Layout from "@/layout/Layout";
 import {
   MapPin,
-  Calendar,
+  Ruler,
+  Building2,
+  CalendarCheck,
   Eye,
+  X,
   ChevronLeft,
   ChevronRight,
-  X,
-  Award,
-  Home,
-  BadgeCheck,
+  HardHat,
   ArrowUpRight,
-  Quote,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_BASE_URL;
@@ -29,17 +28,17 @@ const Media = ({ url, alt, className }) =>
     <img src={mediaUrl(url)} alt={alt} className={className} />
   );
 
-const Gallery = () => {
-  const [gallery, setGallery] = useState([]);
+const Projects = () => {
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState(null); // project open in lightbox
   const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
     axios
-      .get(`${API}/api/v1/gallery/get-all?category=sold`)
-      .then((res) => setGallery(res.data?.data || []))
-      .catch(() => setGallery([]))
+      .get(`${API}/api/v1/gallery/get-all?category=construction`)
+      .then((res) => setProjects(res.data?.data || []))
+      .catch(() => setProjects([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -50,8 +49,8 @@ const Gallery = () => {
     };
   }, [active]);
 
-  const open = (item) => {
-    setActive(item);
+  const open = (project) => {
+    setActive(project);
     setImgIndex(0);
   };
   const close = () => setActive(null);
@@ -62,8 +61,8 @@ const Gallery = () => {
         {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-br from-emerald-800 via-emerald-700 to-emerald-600">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-            <div className="absolute -left-10 bottom-0 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl" />
+            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+            <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl" />
             <div
               className="absolute inset-0 opacity-10"
               style={{
@@ -76,31 +75,31 @@ const Gallery = () => {
 
           <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-24">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-emerald-200 backdrop-blur">
-              <Award className="h-4 w-4" />
-              Our Track Record
+              <HardHat className="h-4 w-4" />
+              Our Construction Portfolio
             </div>
             <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl">
-              Properties we've <span className="text-emerald-400">sold</span> &amp;
-              dreams we've delivered.
+              Projects we've <span className="text-emerald-400">built</span> from
+              the ground up.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
-              A portfolio of real deals successfully closed for our clients —
-              proof of our commitment to getting the right outcome, every time.
+              A showcase of the homes, villas and commercial spaces we've
+              designed and constructed — built to last, finished with care.
             </p>
 
-            {gallery.length > 0 && (
+            {projects.length > 0 && (
               <div className="mt-10 flex flex-wrap gap-x-10 gap-y-4">
                 <div>
-                  <p className="text-3xl font-bold text-white">{gallery.length}+</p>
-                  <p className="text-sm text-white/60">Properties Sold</p>
+                  <p className="text-3xl font-bold text-white">{projects.length}+</p>
+                  <p className="text-sm text-white/60">Projects Completed</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-white">100%</p>
-                  <p className="text-sm text-white/60">Verified Deals</p>
+                  <p className="text-sm text-white/60">On-site Quality</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-white">Happy</p>
-                  <p className="text-sm text-white/60">Clients</p>
+                  <p className="text-3xl font-bold text-white">A→Z</p>
+                  <p className="text-sm text-white/60">End-to-end Build</p>
                 </div>
               </div>
             )}
@@ -113,87 +112,91 @@ const Gallery = () => {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="animate-pulse overflow-hidden rounded-3xl border">
-                  <div className="h-64 bg-gray-100" />
+                  <div className="h-60 bg-gray-100" />
                   <div className="space-y-3 p-5">
                     <div className="h-5 w-2/3 rounded bg-gray-100" />
                     <div className="h-4 w-1/2 rounded bg-gray-100" />
-                    <div className="h-6 w-1/3 rounded bg-gray-100" />
                   </div>
                 </div>
               ))}
             </div>
-          ) : gallery.length === 0 ? (
+          ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
-                <Home className="h-9 w-9 text-emerald-500" />
+                <Building2 className="h-9 w-9 text-emerald-500" />
               </div>
               <h3 className="mt-6 text-2xl font-semibold text-gray-800">
-                Success stories coming soon
+                Projects coming soon
               </h3>
               <p className="mt-2 max-w-md text-gray-500">
-                We're adding our recently sold properties. Check back shortly to
-                see our work.
+                We're putting our latest construction projects together. Check
+                back shortly to see our work.
               </p>
             </div>
           ) : (
             <>
               <div className="mb-10 flex items-end justify-between">
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-900">Sold Properties</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">Completed Projects</h2>
                   <p className="mt-1 text-gray-500">
-                    {gallery.length} {gallery.length === 1 ? "property" : "properties"} successfully sold
+                    {projects.length} {projects.length === 1 ? "project" : "projects"} delivered
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {gallery.map((item, index) => (
+                {projects.map((project, index) => (
                   <article
-                    key={item._id}
-                    onClick={() => open(item)}
+                    key={project._id}
+                    onClick={() => open(project)}
                     className="group relative cursor-pointer overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl"
                     style={{ animation: `fadeUp 0.5s ease ${index * 70}ms both` }}
                   >
                     <div className="relative h-64 overflow-hidden">
                       <Media
-                        url={item.images?.[0]}
-                        alt={item.name}
+                        url={project.images?.[0]}
+                        alt={project.name}
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-                      {/* SOLD badge */}
-                      <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-red-500 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg">
-                        <BadgeCheck className="h-3.5 w-3.5" /> Sold
+                      <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+                        <CalendarCheck className="h-3 w-3" /> Completed
                       </span>
 
                       <div className="absolute right-4 top-4 flex h-10 w-10 translate-y-1 items-center justify-center rounded-full bg-white/95 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                         <ArrowUpRight className="h-5 w-5 text-gray-900" />
                       </div>
 
+                      {/* Title over image */}
                       <div className="absolute inset-x-0 bottom-0 p-5">
-                        <h3 className="text-xl font-bold text-white drop-shadow line-clamp-1">
-                          {item.name}
+                        <h3 className="text-xl font-bold text-white drop-shadow">
+                          {project.name}
                         </h3>
                         <p className="mt-1 flex items-center gap-1 text-sm text-white/85">
-                          <MapPin className="h-3.5 w-3.5" /> {item.location}
+                          <MapPin className="h-3.5 w-3.5" /> {project.location}
                         </p>
                       </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between px-5 py-4">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-wide text-gray-400">Sold for</p>
-                        <p className="text-lg font-bold text-emerald-600">{item.sold_price}</p>
-                      </div>
-                      {item.sold_date && (
-                        <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                          <Calendar className="h-4 w-4" />
-                          {new Date(item.sold_date).toLocaleDateString("en-IN", {
-                            month: "short",
-                            year: "numeric",
-                          })}
+                    {/* Meta footer */}
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-4 text-sm text-gray-600">
+                      {project.project_type && (
+                        <span className="flex items-center gap-1.5">
+                          <Building2 className="h-4 w-4 text-emerald-500" />
+                          {project.project_type}
+                        </span>
+                      )}
+                      {project.area && (
+                        <span className="flex items-center gap-1.5">
+                          <Ruler className="h-4 w-4 text-emerald-500" />
+                          {project.area}
+                        </span>
+                      )}
+                      {project.completed_date && (
+                        <span className="flex items-center gap-1.5">
+                          <CalendarCheck className="h-4 w-4 text-emerald-500" />
+                          {new Date(project.completed_date).getFullYear()}
                         </span>
                       )}
                     </div>
@@ -275,21 +278,33 @@ const Gallery = () => {
                 </div>
 
                 {/* Details */}
-                <div className="space-y-5">
-                  <div className="rounded-2xl bg-emerald-50 p-5">
-                    <p className="text-xs uppercase tracking-wide text-emerald-700/70">Sold Price</p>
-                    <p className="text-3xl font-bold text-emerald-600">{active.sold_price}</p>
-                    {active.sold_date && (
-                      <p className="mt-1 flex items-center gap-1.5 text-sm text-emerald-700/80">
-                        <Calendar className="h-4 w-4" />
-                        Sold on {new Date(active.sold_date).toLocaleDateString()}
-                      </p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    {active.project_type && (
+                      <div className="rounded-xl border bg-gray-50 p-3">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Type</p>
+                        <p className="font-semibold text-gray-800">{active.project_type}</p>
+                      </div>
+                    )}
+                    {active.area && (
+                      <div className="rounded-xl border bg-gray-50 p-3">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Area</p>
+                        <p className="font-semibold text-gray-800">{active.area}</p>
+                      </div>
+                    )}
+                    {active.completed_date && (
+                      <div className="rounded-xl border bg-gray-50 p-3">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Completed</p>
+                        <p className="font-semibold text-gray-800">
+                          {new Date(active.completed_date).toLocaleDateString()}
+                        </p>
+                      </div>
                     )}
                   </div>
 
                   {active.description && (
                     <div>
-                      <h4 className="mb-1 text-sm font-semibold text-gray-900">About this property</h4>
+                      <h4 className="mb-1 text-sm font-semibold text-gray-900">About this project</h4>
                       <p className="text-sm leading-relaxed text-gray-600">{active.description}</p>
                     </div>
                   )}
@@ -306,14 +321,6 @@ const Gallery = () => {
                       ))}
                     </div>
                   )}
-
-                  <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-white p-4">
-                    <Quote className="h-5 w-5 shrink-0 text-emerald-500" />
-                    <p className="text-sm text-gray-600">
-                      Successfully sold — another happy client and a deal closed
-                      with complete transparency.
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -325,16 +332,10 @@ const Gallery = () => {
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
           }
-          .line-clamp-1 {
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
         `}</style>
       </div>
     </Layout>
   );
 };
 
-export default Gallery;
+export default Projects;

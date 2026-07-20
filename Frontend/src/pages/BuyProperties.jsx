@@ -58,7 +58,7 @@ const BuyProperties = () => {
     <Layout>
       <div className="container mx-auto">
         <h1 className="pt-6 pl-6 md:pl-16 text-3xl ml-[30%] lg:text-4xl font-semibold">Featured Listing Properties For Buy</h1>
-        <div className="grid grid-cols-1 mt-5 md:grid-cols-3 gap-6 p-6 md:ml-10 ">
+        <div className="grid grid-cols-1 mt-5 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
           {combinedProperties.length > 0 ? (
             combinedProperties.map((property, i) => {
               console.log(property)

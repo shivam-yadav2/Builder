@@ -71,7 +71,7 @@ const PropertyDetailSec = ({ details, type }) => {
       <h1 className="text-xl sm:text-2xl font-semibold pl-4 pt-4 sm:pl-6 sm:pt-6">
         Property Details
       </h1>
-      <div className="text-sm sm:text-base grid grid-cols-2 gap-10 sm:gap-40 py-4 sm:py-6 px-4 sm:pl-6 sm:pr-20">
+      <div className="text-sm sm:text-base grid grid-cols-2 gap-6 sm:gap-12 py-4 sm:py-6 px-4 sm:px-6">
         {/* Left Column */}
         <div className="space-y-1 md:space-y-2">
           {leftColumn.map((field, index) =>

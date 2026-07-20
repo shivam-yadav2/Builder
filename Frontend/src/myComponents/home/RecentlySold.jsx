@@ -16,7 +16,7 @@ const RecentlySold = () => {
   useEffect(() => {
     let active = true;
     axios
-      .get(`${API_BASE_URL}/api/v1/gallery/get-all`)
+      .get(`${API_BASE_URL}/api/v1/gallery/get-all?category=sold`)
       .then((res) => {
         if (active) setItems((res.data?.data || []).slice(0, 6));
       })

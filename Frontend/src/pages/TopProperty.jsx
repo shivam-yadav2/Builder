@@ -28,7 +28,7 @@ const TopProperty = () => {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 mt-5 md:grid-cols-3 gap-6 p-6 md:ml-10">
+        <div className="grid grid-cols-1 mt-5 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
           {bestProperties.length > 0 ? (
             bestProperties.slice(0, 3).map((property, index) => (
               <Link to={`/property-details/${property?.type}/${property?._id}`} key={property?._id}>

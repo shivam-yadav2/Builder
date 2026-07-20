@@ -42,7 +42,7 @@ const data = {
       icon: Plus,
     },
     {
-      title: "Gallery",
+      title: "Showcase",
       url: "/dashboard/gallery",
       icon: ImageIcon,
     },

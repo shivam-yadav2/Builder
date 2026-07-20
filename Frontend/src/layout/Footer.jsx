@@ -16,7 +16,8 @@ const Footer = () => {
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
     { name: 'Properties', path: '/property' },
-    { name: 'Gallery', path: '/gallery' },
+    { name: 'Our Projects', path: '/projects' },
+    { name: 'Sold Properties', path: '/gallery' },
     { name: 'Contact', path: '/contact' }
   ];
 
@@ -53,26 +54,25 @@ const Footer = () => {
         <div className="absolute -bottom-10 right-40 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
       </div>
 
-      <div className="relative container mx-auto px-4 py-12">
+      <div className="relative container mx-auto px-4 py-8 sm:py-10 lg:py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
 
           {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center">
               <img
                 src="/assets/logo/logo.png"
                 alt="PropExpert Logo"
-                className=""
+                className="h-14 sm:h-16 w-auto object-contain"
               />
-
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
                Trust us to handle your real estate needs.
             </p>
 
             {/* Social Media */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {socialLinks.map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
@@ -194,21 +194,21 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-white/10 my-8"></div>
+        <div className="border-t border-white/10 my-6 sm:my-8"></div>
 
         {/* Bottom Footer */}
-        <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-          <div className="flex items-center space-x-2 text-gray-400 text-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1 text-gray-400 text-xs sm:text-sm">
             <span>© {currentYear} PropExpert. Made with</span>
-            <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" />
+            <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 fill-current animate-pulse" />
             <span>in India. All rights reserved.</span>
           </div>
 
-          <div className="flex items-center space-x-6">
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <a href="#" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+            <a href="#" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors">
               Terms of Service
             </a>
             <button
