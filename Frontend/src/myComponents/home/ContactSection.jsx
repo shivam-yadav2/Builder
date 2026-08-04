@@ -93,14 +93,14 @@ const ContactSection = () => {
         }}>
             <div className="absolute w-full h-full top-0 left-0 bg-black/40"></div>
 
-            <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 flex items-center">
+            <div id="contact-section" className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 flex items-center">
                 <Toaster />
                 <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 sm:gap-12 lg:gap-16 w-full max-w-7xl mx-auto">
                     {/* Left Side - Contact Information */}
                     <div className="col-span-1 lg:col-span-3 text-white space-y-6 sm:space-y-8">
                         <div>
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-                                Ready to Build Your Dream Home?
+                                Ready for Construction of Your Home?
                             </h2>
                             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
                                 Contact RsusBuilders

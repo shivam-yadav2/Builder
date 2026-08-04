@@ -23,9 +23,9 @@ const Service = ({ onBuyClick, onRentClick, onConstructionClick }) => {
     },
     {
       key: 'rent',
-      title: 'Rent Homes',
+      title: 'Sell Your Property',
       description:
-        'Find affordable and luxurious rental homes with flexible lease options for families and individuals.',
+        'If you want to sell your property, contact us and we will guide you through listing, checking, and final steps.',
       onClick: onRentClick,
       cardClass: 'bg-white/80 backdrop-blur-sm border border-emerald-100',
       iconBg: 'bg-gradient-to-br from-emerald-100 to-green-100',
@@ -36,9 +36,9 @@ const Service = ({ onBuyClick, onRentClick, onConstructionClick }) => {
     },
     {
       key: 'construction',
-      title: 'Build Your Dream Home',
+      title: 'Home Construction Services',
       description:
-        'Share your vision, and we’ll design and construct your perfect home with world-class architecture.',
+        'Share your plan with us, and we will help with home construction from start to finish.',
       onClick: onConstructionClick,
       cardClass: 'bg-white/80 backdrop-blur-sm border border-emerald-100',
       iconBg: 'bg-gradient-to-br from-emerald-100 to-green-100',
@@ -113,7 +113,7 @@ const Service = ({ onBuyClick, onRentClick, onConstructionClick }) => {
               </h1>
             </div>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 font-medium px-2">
-              Buy, Rent, or Build — we make your dream home a reality.
+              Buy, sell, or build with our construction team — we make the process simple and clear.
             </p>
           </div>
 

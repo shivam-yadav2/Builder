@@ -24,13 +24,13 @@ const HeroSection = () => {
         {/* Left: text */}
         <div className="text-white flex flex-col justify-center py-6 lg:py-12 lg:w-1/2 lg:pr-8">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-            Build Your<br />Dream Home
+            Construction Services<br />For Your Home
           </h1>
 
           <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 leading-relaxed opacity-90 max-w-md">
-            <span className="font-semibold">RsusBuilders and Constructions</span> is here to craft your
-            perfect home with top-quality construction and trusted real estate solutions,
-            whether you're building, buying, or renting.
+            <span className="font-semibold">RsusBuilders and Constructions</span> is here to help with
+            trusted construction services and simple real estate support,
+            whether you are building a new home, buying property, or selling your property through us.
           </p>
 
           <button

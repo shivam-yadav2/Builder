@@ -76,7 +76,7 @@ export default function Navbar() {
         {/* Right actions */}
         <div className="flex shrink-0 items-center gap-3">
           <div className="hidden xl:block">
-            <ConstructionEnquiry title="Build Your Home" />
+            <ConstructionEnquiry title="Construction Services" />
           </div>
 
           {/* Mobile / tablet menu */}
@@ -135,7 +135,7 @@ export default function Navbar() {
                 {/* Footer CTA */}
                 <div className="border-t border-white/10 p-5">
                   <p className="mb-3 text-center text-sm text-white/70">
-                    Ready to build your dream home?
+                    Ready to start construction for your home?
                   </p>
                   <div className="flex justify-center">
                     <ConstructionEnquiry title="Get Started Now" theme={"white"} />

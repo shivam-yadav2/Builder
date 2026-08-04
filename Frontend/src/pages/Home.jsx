@@ -23,6 +23,60 @@ import ContactSection from "@/myComponents/home/ContactSection";
 import HeroSection from "./Hero";
 import RecentlySold from "@/myComponents/home/RecentlySold";
 
+const SellYourPropertySection = () => {
+  const points = [
+    "Your property will be listed only after verification.",
+    "We help you get genuine buyers and clear communication.",
+    "Our team supports you from enquiry to final sale.",
+  ];
+
+  return (
+    <section className="bg-[#f6fbf8] py-10 sm:py-14 lg:py-16">
+      <div className="container mx-auto px-4">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center rounded-3xl bg-white shadow-xl border border-emerald-100 overflow-hidden">
+          <div className="p-6 sm:p-8 lg:p-12">
+            <p className="inline-flex items-center rounded-full bg-emerald-50 px-4 py-1 text-sm font-semibold text-emerald-700">
+              Sell Your Property
+            </p>
+            <h2 className="mt-4 text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              Want to sell your property?
+            </h2>
+            <p className="mt-4 text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl leading-relaxed">
+              Contact us if you want to sell your house, plot, or land. We keep the process simple and help you connect with the right buyers.
+            </p>
+
+            <div className="mt-6 space-y-3">
+              {points.map((point) => (
+                <div key={point} className="flex items-start gap-3 rounded-2xl bg-emerald-50/70 px-4 py-3 text-sm sm:text-base text-gray-700">
+                  <span className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-600 shrink-0" />
+                  <span>{point}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-6 sm:p-8 lg:p-12 text-white h-full flex flex-col justify-center">
+            <h3 className="text-xl sm:text-2xl font-bold">Why sell with us</h3>
+            <p className="mt-3 text-sm sm:text-base text-white/90 leading-relaxed">
+              We support owners who want a trusted team to handle the selling process with care and clear steps.
+            </p>
+            <div className="mt-6 space-y-4">
+              <div className="rounded-2xl bg-white/10 p-4">
+                <p className="font-semibold">Verified listing</p>
+                <p className="mt-1 text-sm text-white/85">Your property is checked before it goes live.</p>
+              </div>
+              <div className="rounded-2xl bg-white/10 p-4">
+                <p className="font-semibold">Easy contact</p>
+                <p className="mt-1 text-sm text-white/85">Interested buyers can reach out quickly through our team.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -77,6 +131,13 @@ const Home = () => {
   const openModal = (type = 'For Construction') => {
     setModalType(type);
     setIsModalOpen(true);
+  };
+
+  const handleSellPropertyClick = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      document.getElementById("contact-section")?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
   };
 
   const handleInputChange = (e) => {
@@ -241,9 +302,10 @@ const Home = () => {
         <HeroSection/>
         <Service
           onBuyClick={() => openModal('For Buy')}
-          onRentClick={() => openModal('For Rent')}
+          onRentClick={handleSellPropertyClick}
           onConstructionClick={() => openModal('For Construction')}
         />
+        <SellYourPropertySection />
           {/* <div className="w-full h-[95vh]">
             <div className="w-full h-[91vh] relative">
               <Swiper
