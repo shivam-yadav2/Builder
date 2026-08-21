@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@admin/components/ui/alert";
-import { Trash2 } from "lucide-react";
+import { Trash2, Phone, MessageCircle, Download } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -48,6 +48,45 @@ const InquiryDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedEnquiryId, setSelectedEnquiryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("All");
+
+  const cleanPhone = (p) => String(p || "").replace(/\D/g, "").slice(-10);
+
+  const filteredEnquiries =
+    statusFilter === "All"
+      ? enquiries
+      : enquiries.filter((e) => (e.status || "New") === statusFilter);
+
+  const statusCounts = {
+    All: enquiries.length,
+    New: enquiries.filter((e) => (e.status || "New") === "New").length,
+    Contacted: enquiries.filter((e) => e.status === "Contacted").length,
+    Closed: enquiries.filter((e) => e.status === "Closed").length,
+  };
+
+  // Export the current (filtered) list to a CSV file.
+  const exportCsv = () => {
+    const rows = filteredEnquiries.map((e) => ({
+      Name: e.name || "",
+      Mobile: e.phone || "",
+      Email: e.email || "",
+      Message: (e.message || "").replace(/\n/g, " "),
+      Status: e.status || "New",
+      Date: e.createdAt ? new Date(e.createdAt).toLocaleDateString() : "",
+    }));
+    const headers = Object.keys(rows[0] || { Name: "", Mobile: "", Email: "", Message: "", Status: "", Date: "" });
+    const csv = [
+      headers.join(","),
+      ...rows.map((r) => headers.map((h) => `"${String(r[h]).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `enquiries-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     fetchEnquiries();
@@ -174,15 +213,40 @@ const InquiryDashboard = () => {
       header: "Actions",
       enableSorting: false,
       enableHiding: false,
-      cell: ({ row }) => (
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => handleDelete(row.original._id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      ),
+      cell: ({ row }) => {
+        const phone = cleanPhone(row.original.phone);
+        return (
+          <div className="flex items-center gap-1.5">
+            {phone && (
+              <>
+                <a
+                  href={`tel:${phone}`}
+                  className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  title="Call"
+                >
+                  <Phone className="h-4 w-4" />
+                </a>
+                <a
+                  href={`https://wa.me/91${phone}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-8 w-8 items-center justify-center rounded-md bg-green-100 text-green-700 hover:bg-green-200"
+                  title="WhatsApp"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </a>
+              </>
+            )}
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleDelete(row.original._id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -208,7 +272,12 @@ const InquiryDashboard = () => {
         }}
       />
 
-      <h1 className="text-2xl sm:text-3xl font-bold">General Inquiries</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl sm:text-3xl font-bold">General Inquiries</h1>
+        <Button variant="outline" onClick={exportCsv} disabled={filteredEnquiries.length === 0}>
+          <Download className="mr-2 h-4 w-4" /> Export CSV
+        </Button>
+      </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -216,14 +285,40 @@ const InquiryDashboard = () => {
         </div>
       )}
 
+      {/* Status filter tabs */}
+      <div className="flex flex-wrap gap-2">
+        {["All", "New", "Contacted", "Closed"].map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+              statusFilter === s
+                ? "border-emerald-600 bg-emerald-600 text-white"
+                : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {s}
+            <span
+              className={`rounded-full px-1.5 text-xs ${
+                statusFilter === s ? "bg-white/20" : "bg-gray-100 text-gray-500"
+              }`}
+            >
+              {statusCounts[s]}
+            </span>
+          </button>
+        ))}
+      </div>
+
       <Card className="shadow-sm">
         <CardHeader className="bg-gray-50 border-b">
-          <CardTitle>Inquiries ({enquiries.length})</CardTitle>
+          <CardTitle>
+            {statusFilter === "All" ? "All Inquiries" : `${statusFilter} Inquiries`} ({filteredEnquiries.length})
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-3 sm:p-4">
           <DataTable
             columns={columns}
-            data={enquiries}
+            data={filteredEnquiries}
             filterColumnId="name"
             filterPlaceholder="Search by name..."
           />

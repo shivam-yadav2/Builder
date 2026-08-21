@@ -117,8 +117,9 @@ const GalleryManagement = () => {
   };
 
   const handleFileChange = (e) => {
-    setNewImages((prev) => [...prev, ...Array.from(e.target.files)]);
-    e.target.value = '';
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setNewImages((prev) => [...prev, ...Array.from(files)]);
   };
 
   const resetForm = () => {
@@ -361,18 +362,15 @@ const GalleryManagement = () => {
               <FieldLabel required={!isEditing} hint="Up to 15 images or videos. The first one is the cover.">
                 Media
               </FieldLabel>
-              {/* opacity-0 overlay input — reliable on mobile (display:none fires change unreliably). */}
-              <label className="relative flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:bg-gray-50">
-                <ImagePlus className="h-6 w-6 text-gray-400" />
-                <span className="text-sm text-gray-600">Tap to add images / videos</span>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*,video/*"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                />
-              </label>
+              {/* Native file input — styled only with a border/padding on the
+                  element itself (no wrapper / no accept filter, which broke
+                  selection on mobile). */}
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-600 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-600 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-emerald-700"
+              />
 
               {totalImages > 0 && (
                 <>

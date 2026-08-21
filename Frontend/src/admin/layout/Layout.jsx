@@ -6,20 +6,51 @@ import {
 } from "@admin/components/ui/sidebar";
 import { Toaster } from "@admin/components/ui/sonner";
 import AdminBottomDock from "@admin/components/AdminBottomDock";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@admin/components/ui/dropdown-menu";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { User } from "lucide-react";
+import { User, LogOut } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
+
+// Pull a display name/email out of the admin JWT, if present.
+const getAdminProfile = (token) => {
+    try {
+        const p = jwtDecode(token);
+        return {
+            name: p.name || p.fullName || p.username || "Administrator",
+            email: p.email || "RSUS B2S Builders",
+        };
+    } catch {
+        return { name: "Administrator", email: "RSUS B2S Builders" };
+    }
+};
 
 export default function Layout() {
     const token = Cookies.get('accessTokenAdmin');
     const navigate = useNavigate();
+    const profile = getAdminProfile(token);
 
     useEffect(() => {
         if (!token) {
             navigate("/admin");
         }
     }, [token]);
+
+    const logout = () => {
+        Cookies.remove("accessTokenAdmin");
+        Cookies.remove("refreshToken");
+        toast.success("Logged out");
+        navigate("/admin");
+    };
 
     return (
         <SidebarProvider>
@@ -40,16 +71,28 @@ export default function Layout() {
                         </span>
                     </div>
 
-                    {/* Account chip */}
-                    <div className="ml-auto flex items-center gap-2">
-                        <div className="hidden text-right leading-tight sm:block">
-                            <p className="text-sm font-medium text-gray-800">Administrator</p>
-                            <p className="text-xs text-gray-400">RSUS B2S Builders</p>
-                        </div>
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white">
-                            <User className="h-5 w-5" />
-                        </div>
-                    </div>
+                    {/* Account menu */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className="ml-auto flex items-center gap-2 rounded-full outline-none ring-emerald-500 focus-visible:ring-2">
+                            <div className="hidden text-right leading-tight sm:block">
+                                <p className="max-w-[160px] truncate text-sm font-medium text-gray-800">{profile.name}</p>
+                                <p className="max-w-[160px] truncate text-xs text-gray-400">{profile.email}</p>
+                            </div>
+                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white">
+                                <User className="h-5 w-5" />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel>
+                                <p className="truncate font-medium">{profile.name}</p>
+                                <p className="truncate text-xs font-normal text-gray-400">{profile.email}</p>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-600">
+                                <LogOut className="mr-2 h-4 w-4" /> Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </header>
                 {/* Extra bottom padding on mobile so content clears the dock */}
                 <div className="p-3 pb-24 sm:p-5 lg:pb-5">

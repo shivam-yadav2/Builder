@@ -4,7 +4,11 @@
   "description": "This is backend on Mern Stack",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "engines": {
+    "node": ">=18 <=22"
   },
   "author": "Shivam Yadav",
   "license": "ISC",

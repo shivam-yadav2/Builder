@@ -95,6 +95,9 @@ const AllProperty = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [formData, setFormData] = useState({});
+  const [soldProperty, setSoldProperty] = useState(null);
+  const [soldForm, setSoldForm] = useState({ sold_price: '', sold_date: '' });
+  const [isMarkingSold, setIsMarkingSold] = useState(false);
   const [existingImages, setExistingImages] = useState([]); // existing image paths to keep
   const [newImages, setNewImages] = useState([]); // newly added File objects
   const [isSaving, setIsSaving] = useState(false);
@@ -249,6 +252,39 @@ const AllProperty = () => {
   const handleDelete = (property) => {
     setSelectedProperty(property);
     setIsDeleteModalOpen(true);
+  };
+
+  // Mark a property Sold and auto-add it to the public Showcase.
+  const openMarkSold = (property) => {
+    setSoldProperty(property);
+    setSoldForm({ sold_price: '', sold_date: new Date().toISOString().split('T')[0] });
+  };
+
+  const confirmMarkSold = async () => {
+    if (!soldForm.sold_price.trim() || !soldForm.sold_date) {
+      toast.error('Please enter the sold price and date');
+      return;
+    }
+    setIsMarkingSold(true);
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/mark-sold`,
+        {
+          id: soldProperty._id,
+          type: soldProperty.type,
+          sold_price: soldForm.sold_price,
+          sold_date: soldForm.sold_date,
+        },
+        { headers: { Authorization: `Bearer ${Cookies.get('accessTokenAdmin')}` } }
+      );
+      toast.success(`"${soldProperty.title}" marked as sold & added to Showcase`);
+      setSoldProperty(null);
+      fetchProperties();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to mark as sold');
+    } finally {
+      setIsMarkingSold(false);
+    }
   };
 
   const confirmDelete = async () => {
@@ -457,6 +493,11 @@ const AllProperty = () => {
               <DropdownMenuItem onClick={() => handleEdit(property)}>
                 Edit
               </DropdownMenuItem>
+              {property.status !== 'Sold' && (
+                <DropdownMenuItem onClick={() => openMarkSold(property)}>
+                  Mark as Sold
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => handleDelete(property)}>
                 Delete
               </DropdownMenuItem>
@@ -1001,6 +1042,45 @@ const AllProperty = () => {
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mark as Sold Modal */}
+      <Dialog open={!!soldProperty} onOpenChange={(open) => !open && setSoldProperty(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark as Sold</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600">
+            This marks "{soldProperty?.title}" as <strong>Sold</strong> and adds it to
+            the public <strong>Showcase</strong> (Sold Properties) with its photos.
+          </p>
+          <div className="space-y-3">
+            <div>
+              <Label className="mb-1">Sold Price</Label>
+              <Input
+                value={soldForm.sold_price}
+                onChange={(e) => setSoldForm((f) => ({ ...f, sold_price: e.target.value }))}
+                placeholder="e.g., ₹85,00,000"
+              />
+            </div>
+            <div>
+              <Label className="mb-1">Sold Date</Label>
+              <Input
+                type="date"
+                value={soldForm.sold_date}
+                onChange={(e) => setSoldForm((f) => ({ ...f, sold_date: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSoldProperty(null)} disabled={isMarkingSold}>
+              Cancel
+            </Button>
+            <Button onClick={confirmMarkSold} disabled={isMarkingSold}>
+              {isMarkingSold ? 'Saving...' : 'Mark Sold'}
             </Button>
           </DialogFooter>
         </DialogContent>

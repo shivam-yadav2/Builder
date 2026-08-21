@@ -1,755 +1,369 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@admin/components/ui/card';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@admin/components/ui/table';
-import { Badge } from '@admin/components/ui/badge';
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid,
+} from "recharts";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts';
-import { Button } from '@admin/components/ui/button';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from '@admin/components/ui/dialog';
-import { Input } from '@admin/components/ui/input';
-import { Label } from '@admin/components/ui/label';
-import { Textarea } from '@admin/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@admin/components/ui/select';
-import { Pencil, Trash2, Plus, MoreHorizontal, ArrowUpDown } from 'lucide-react';
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger,
-} from '@admin/components/ui/dropdown-menu';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { toast } from 'sonner';
+  Building2,
+  CheckCircle2,
+  Inbox,
+  IndianRupee,
+  Plus,
+  Image as ImageIcon,
+  Quote,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  Phone,
+  MessageCircle,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@admin/components/ui/card";
+import { Badge } from "@admin/components/ui/badge";
 
-// Mock dashboard data (replace with API-derived data)
-const initialDashboardData = {
-  totalProperties: 0,
-  availableProperties: 0,
-  totalValue: 0,
-  pendingApprovals: 0,
-  recentProperties: [],
-  priceTrendData: [],
+const API = import.meta.env.VITE_API_BASE_URL;
+const auth = () => ({ Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}` });
+
+// Compact Indian currency (₹1.25 Cr / ₹85 L / ₹45,000).
+const formatINR = (value) => {
+  const n = Number(value);
+  if (!n || Number.isNaN(n)) return "₹0";
+  if (n >= 1e7) return `₹${(n / 1e7).toFixed(2).replace(/\.?0+$/, "")} Cr`;
+  if (n >= 1e5) return `₹${(n / 1e5).toFixed(2).replace(/\.?0+$/, "")} L`;
+  return `₹${n.toLocaleString("en-IN")}`;
 };
 
+const monthKey = (d) => `${d.getFullYear()}-${d.getMonth()}`;
+const isThisMonth = (s) => {
+  const d = new Date(s);
+  const n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+};
+const isLastMonth = (s) => {
+  const d = new Date(s);
+  const n = new Date();
+  const lm = new Date(n.getFullYear(), n.getMonth() - 1, 1);
+  return d.getFullYear() === lm.getFullYear() && d.getMonth() === lm.getMonth();
+};
+
+const STATUS_COLORS = { Available: "#10b981", Pending: "#f59e0b", Sold: "#ef4444" };
+
+const StatCard = ({ icon: Icon, label, value, sub, delta, accent }) => (
+  <Card className="overflow-hidden">
+    <CardContent className="p-5">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-gray-500">{label}</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
+          {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
+        </div>
+        <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${accent}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+      </div>
+      {delta != null && (
+        <div className="mt-3 flex items-center gap-1 text-xs font-medium">
+          {delta >= 0 ? (
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+          ) : (
+            <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+          )}
+          <span className={delta >= 0 ? "text-emerald-600" : "text-red-500"}>
+            {delta >= 0 ? "+" : ""}
+            {delta}
+          </span>
+          <span className="text-gray-400">vs last month</span>
+        </div>
+      )}
+    </CardContent>
+  </Card>
+);
+
 const AdminDashboard = () => {
-  const [dashboardData, setDashboardData] = useState(initialDashboardData);
-  const [viewProperty, setViewProperty] = useState(null);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [formData, setFormData] = useState({});
-
-  const fetchProperties = async () => {
-    try {
-      const config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/get-all-properties`,
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('accessTokenAdmin')}`,
-        },
-      };
-      const response = await axios.request(config);
-      const properties = response.data.data || [];
-
-      // Calculate dashboard metrics
-      const totalProperties = properties.length;
-      const availableProperties = properties.filter(p => p.status === 'Available').length;
-      const totalValue = properties.reduce((sum, p) => sum + (parseFloat(p.unitPrice || p.totalPrice || 0)), 0);
-      const pendingApprovals = properties.filter(p => p.approvalStatus === 'pending').length;
-
-      // Mock price trend data (replace with actual data if available)
-      const priceTrendData = [
-        { month: 'Jan', price: 1000000 },
-        { month: 'Feb', price: 1200000 },
-        { month: 'Mar', price: 1500000 },
-      ];
-
-      setDashboardData({
-        totalProperties,
-        availableProperties,
-        totalValue,
-        pendingApprovals,
-        recentProperties: properties.slice(0, 5), // Show up to 5 recent properties
-        priceTrendData,
-      });
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-      toast.error('Failed to fetch properties', {
-        description: error.response?.data?.message || 'An error occurred',
-      });
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState([]);
+  const [gallery, setGallery] = useState([]);
+  const [enquiries, setEnquiries] = useState([]);
 
   useEffect(() => {
-    fetchProperties();
+    Promise.allSettled([
+      axios.get(`${API}/api/v1/admin/get-all-properties`, { headers: auth() }),
+      axios.get(`${API}/api/v1/gallery/get-all`),
+      axios.get(`${API}/api/v1/enquiry/get-enquiry`, { headers: auth() }),
+    ])
+      .then(([p, g, e]) => {
+        if (p.status === "fulfilled") setProperties(p.value.data?.data || []);
+        if (g.status === "fulfilled") setGallery(g.value.data?.data || []);
+        if (e.status === "fulfilled")
+          setEnquiries(e.value.data?.data || e.value.data?.message || []);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleView = (property) => {
-    setViewProperty(property);
-    setIsViewModalOpen(true);
-  };
+  // ---- Metrics ----
+  const totalProperties = properties.length;
+  const available = properties.filter((p) => p.status === "Available").length;
+  const newEnquiries = enquiries.filter((e) => (e.status || "New") === "New").length;
+  const portfolioValue = properties.reduce((sum, p) => {
+    const total =
+      Number(p.totalPrice) ||
+      (Number(p.unitPrice) && Number(p.landArea)
+        ? Number(p.unitPrice) * Number(p.landArea)
+        : Number(p.unitPrice)) ||
+      0;
+    return sum + total;
+  }, 0);
 
-  const handleEdit = (property) => {
-    setSelectedProperty(property);
-    setFormData({
-      title: property.title || '',
-      type: property.type || '',
-      fullAddress: property.fullAddress || '',
-      pincode: property.pincode || '',
-      state: property.state || '',
-      city: property.city || '',
-      locality: property.locality || '',
-      landmark: property.landmark || '',
-      landArea: property.landArea || '',
-      unitPrice: property.unitPrice || property.totalPrice || '',
-      propertyType: property.propertyType || '',
-      description: property.description || '',
-      status: property.status || 'Available',
-      approvalStatus: property.approvalStatus || 'pending',
-      rooms: property.rooms || '',
-      bedrooms: property.bedrooms || '',
-      kitchen: property.kitchen || '',
-      bathrooms: property.bathrooms || '',
-      floor: property.floor || '',
-      park: property.park || false,
-      buildYear: property.buildYear || '',
+  const propsThisMonth = properties.filter((p) => isThisMonth(p.createdAt)).length;
+  const propsLastMonth = properties.filter((p) => isLastMonth(p.createdAt)).length;
+  const enqThisMonth = enquiries.filter((e) => isThisMonth(e.createdAt)).length;
+  const enqLastMonth = enquiries.filter((e) => isLastMonth(e.createdAt)).length;
+
+  const soldItems = gallery.filter((g) => g.category !== "construction");
+  const constructionItems = gallery.filter((g) => g.category === "construction");
+
+  // Enquiries per month (last 6)
+  const now = new Date();
+  const monthBuckets = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthBuckets.push({
+      key: monthKey(d),
+      label: d.toLocaleString("en", { month: "short" }),
+      Enquiries: 0,
     });
-    setIsEditModalOpen(true);
-  };
+  }
+  enquiries.forEach((e) => {
+    const b = monthBuckets.find((m) => m.key === monthKey(new Date(e.createdAt)));
+    if (b) b.Enquiries += 1;
+  });
 
-  const handleFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
+  // Properties by status (pie)
+  const statusData = ["Available", "Pending", "Sold"]
+    .map((s) => ({ name: s, value: properties.filter((p) => p.status === s).length }))
+    .filter((d) => d.value > 0);
 
-  const handleSelectChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const recentEnquiries = [...enquiries]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
 
-  const confirmEdit = async () => {
-    try {
-      const updateUrl = selectedProperty.type === 'Land'
-        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/update-land`
-        : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/update-home`;
+  const quickActions = [
+    { to: "/dashboard/add_property", label: "Add Property", icon: Plus, accent: "bg-blue-600" },
+    { to: "/dashboard/gallery", label: "Add Showcase", icon: ImageIcon, accent: "bg-emerald-600" },
+    { to: "/dashboard/testimonials", label: "Add Testimonial", icon: Quote, accent: "bg-amber-500" },
+    { to: "/dashboard/general_inquiry", label: "View Enquiries", icon: Inbox, accent: "bg-purple-600" },
+  ];
 
-      const payload = {
-        id: selectedProperty._id,
-        ...formData,
-      };
-
-      await toast.promise(
-        axios.post(updateUrl, payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get('accessTokenAdmin')}`,
-          },
-        }),
-        {
-          loading: 'Updating property...',
-          success: () => {
-            setIsEditModalOpen(false);
-            setSelectedProperty(null);
-            setFormData({});
-            fetchProperties();
-            return `Property "${selectedProperty?.title}" updated successfully`;
-          },
-          error: (error) => {
-            return error.response?.data?.message || 'Failed to update property';
-          },
-        }
-      );
-    } catch (error) {
-      console.error('Error updating property:', error);
-      toast.error('Failed to update property', {
-        description: error.response?.data?.message || 'An error occurred',
-      });
-    }
-  };
-
-  const handleDelete = (property) => {
-    setSelectedProperty(property);
-    setIsDeleteModalOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    try {
-      const deleteUrl = selectedProperty.type === 'Land'
-        ? `${import.meta.env.VITE_API_BASE_URL}/api/v1/land/delete-land`
-        : `${import.meta.env.VITE_API_BASE_URL}/api/v1/home/delete-home`;
-
-      await toast.promise(
-        axios.post(
-          deleteUrl,
-          { id: selectedProperty._id },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${Cookies.get('accessTokenAdmin')}`,
-            },
-          }
-        ),
-        {
-          loading: 'Deleting property...',
-          success: () => {
-            setIsDeleteModalOpen(false);
-            setSelectedProperty(null);
-            fetchProperties();
-            return `Property "${selectedProperty?.title}" deleted successfully`;
-          },
-          error: (error) => {
-            return error.response?.data?.message || 'Failed to delete property';
-          },
-        }
-      );
-    } catch (error) {
-      console.error('Error deleting property:', error);
-    }
-  };
-
-  const truncateAddress = (address) => {
-    const words = address?.split(' ') || [];
-    return words.slice(0, 4).join(' ') + (words.length > 4 ? '...' : '');
-  };
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-28 animate-pulse rounded-xl bg-gray-100" />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="space-y-6">
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-6">Rsusb2sbuilders Groups Property Dashboard</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Welcome back 👋</h1>
+        <p className="text-sm text-gray-500">Here's what's happening across your business.</p>
+      </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <Card>
+      {/* Quick actions */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {quickActions.map((a) => (
+          <Link
+            key={a.to}
+            to={a.to}
+            className="group flex items-center gap-3 rounded-xl border bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <span className={`flex h-10 w-10 items-center justify-center rounded-lg text-white ${a.accent}`}>
+              <a.icon className="h-5 w-5" />
+            </span>
+            <span className="text-sm font-medium text-gray-800">{a.label}</span>
+            <ArrowUpRight className="ml-auto h-4 w-4 text-gray-300 transition-colors group-hover:text-gray-500" />
+          </Link>
+        ))}
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          icon={Building2}
+          label="Total Properties"
+          value={totalProperties}
+          sub={`${available} available`}
+          delta={propsThisMonth - propsLastMonth}
+          accent="bg-blue-50 text-blue-600"
+        />
+        <StatCard
+          icon={Inbox}
+          label="New Enquiries"
+          value={newEnquiries}
+          sub={`${enquiries.length} total leads`}
+          delta={enqThisMonth - enqLastMonth}
+          accent="bg-purple-50 text-purple-600"
+        />
+        <StatCard
+          icon={IndianRupee}
+          label="Portfolio Value"
+          value={formatINR(portfolioValue)}
+          sub="Across all listings"
+          accent="bg-emerald-50 text-emerald-600"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Showcase Items"
+          value={soldItems.length + constructionItems.length}
+          sub={`${soldItems.length} sold · ${constructionItems.length} built`}
+          accent="bg-amber-50 text-amber-600"
+        />
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Total Properties</CardTitle>
+            <CardTitle className="text-base">Enquiries — last 6 months</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold">{dashboardData.totalProperties}</p>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthBuckets} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
+                  <YAxis allowDecimals={false} tickLine={false} axisLine={false} fontSize={12} />
+                  <Tooltip cursor={{ fill: "#f8fafc" }} />
+                  <Bar dataKey="Enquiries" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={44} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>Available Properties</CardTitle>
+            <CardTitle className="text-base">Properties by status</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold">{dashboardData.availableProperties}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Value (₹)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{dashboardData.totalValue.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Pending Approvals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{dashboardData.pendingApprovals}</p>
+            {statusData.length === 0 ? (
+              <p className="py-16 text-center text-sm text-gray-400">No properties yet</p>
+            ) : (
+              <>
+                <div className="h-48 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={statusData}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius={50}
+                        outerRadius={75}
+                        paddingAngle={3}
+                      >
+                        {statusData.map((entry) => (
+                          <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || "#94a3b8"} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-2 space-y-1">
+                  {statusData.map((s) => (
+                    <div key={s.name} className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 text-gray-600">
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ background: STATUS_COLORS[s.name] }}
+                        />
+                        {s.name}
+                      </span>
+                      <span className="font-semibold text-gray-900">{s.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Price Trend Chart */}
-
-
-      {/* Recent Properties Table */}
+      {/* Recent enquiries */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <span>Recent Properties</span>
-            <Link to="/dashboard/add_property">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Plus className="w-4 h-4 mr-1" /> Add Property
-              </Button>
-            </Link>
-          </CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base">Recent Enquiries</CardTitle>
+          <Link to="/dashboard/general_inquiry" className="text-sm font-medium text-emerald-600 hover:underline">
+            View all
+          </Link>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>S.No</TableHead>
-                <TableHead>
-                  <Button variant="ghost">
-                    Title
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>
-                  <Button variant="ghost">
-                    Price
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Approval Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {dashboardData.recentProperties.map((property, index) => (
-                <TableRow key={property._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{property.title}</TableCell>
-                  <TableCell>
-                    <Badge variant={property.type === 'Land' ? 'default' : 'secondary'}>
-                      {property.type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{truncateAddress(property.fullAddress)}</TableCell>
-                  <TableCell>₹{(property.unitPrice || property.totalPrice)?.toLocaleString()}</TableCell>
-                  <TableCell>{property.landArea || 'N/A'}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        property.status === 'Available' ? 'default' :
-                          property.status === 'Pending' ? 'secondary' : 'destructive'
-                      }
-                    >
-                      {property.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        property.approvalStatus === 'approved' ? 'default' :
-                          property.approvalStatus === 'pending' ? 'secondary' : 'outline'
-                      }
-                    >
-                      {property.approvalStatus || 'N/A'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleView(property)}>View</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(property)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(property)}>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+          {recentEnquiries.length === 0 ? (
+            <div className="flex flex-col items-center py-10 text-center">
+              <Inbox className="h-8 w-8 text-gray-300" />
+              <p className="mt-2 text-sm text-gray-400">No enquiries yet</p>
+            </div>
+          ) : (
+            <ul className="divide-y">
+              {recentEnquiries.map((e) => (
+                <li key={e._id} className="flex items-center gap-3 py-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">
+                    {e.name?.[0]?.toUpperCase() || "?"}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-gray-900">{e.name}</p>
+                    <p className="truncate text-xs text-gray-500">{e.message || e.email || e.phone}</p>
+                  </div>
+                  <Badge
+                    className={
+                      (e.status || "New") === "New"
+                        ? "bg-blue-100 text-blue-700"
+                        : e.status === "Contacted"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-100 text-gray-600"
+                    }
+                  >
+                    {e.status || "New"}
+                  </Badge>
+                  {e.phone && (
+                    <div className="hidden items-center gap-1.5 sm:flex">
+                      <a
+                        href={`tel:${e.phone}`}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        title="Call"
+                      >
+                        <Phone className="h-4 w-4" />
+                      </a>
+                      <a
+                        href={`https://wa.me/91${String(e.phone).replace(/\D/g, "").slice(-10)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-700 hover:bg-green-200"
+                        title="WhatsApp"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                      </a>
+                    </div>
+                  )}
+                </li>
               ))}
-            </TableBody>
-          </Table>
+            </ul>
+          )}
         </CardContent>
       </Card>
-
-      {/* View Property Modal */}
-      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{viewProperty?.title}</DialogTitle>
-          </DialogHeader>
-          {viewProperty && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>Type</Label>
-                  <p>{viewProperty.type}</p>
-                </div>
-                <div>
-                  <Label>Location</Label>
-                  <p>{viewProperty.location}</p>
-                </div>
-                <div>
-                  <Label>Full Address</Label>
-                  <p>{viewProperty.fullAddress}</p>
-                </div>
-                <div>
-                  <Label>Pincode</Label>
-                  <p>{viewProperty.pincode}</p>
-                </div>
-                <div>
-                  <Label>State</Label>
-                  <p>{viewProperty.state}</p>
-                </div>
-                <div>
-                  <Label>City</Label>
-                  <p>{viewProperty.city}</p>
-                </div>
-                <div>
-                  <Label>Locality</Label>
-                  <p>{viewProperty.locality}</p>
-                </div>
-                <div>
-                  <Label>Landmark</Label>
-                  <p>{viewProperty.landmark}</p>
-                </div>
-                <div>
-                  <Label>Land Area</Label>
-                  <p>{viewProperty.landArea}</p>
-                </div>
-                <div>
-                  <Label>Price</Label>
-                  <p>₹{(viewProperty.unitPrice || viewProperty.totalPrice)?.toLocaleString()}</p>
-                </div>
-                {viewProperty.type === 'Home' && (
-                  <>
-                    <div>
-                      <Label>Rooms</Label>
-                      <p>{viewProperty.rooms || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label>Bedrooms</Label>
-                      <p>{viewProperty.bedrooms || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label>Kitchen</Label>
-                      <p>{viewProperty.kitchen || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label>Bathrooms</Label>
-                      <p>{viewProperty.bathrooms || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label>Floor</Label>
-                      <p>{viewProperty.floor || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <Label>Park</Label>
-                      <p>{viewProperty.park ? 'Yes' : 'No'}</p>
-                    </div>
-                    <div>
-                      <Label>Build Year</Label>
-                      <p>{viewProperty.buildYear || 'N/A'}</p>
-                    </div>
-                  </>
-                )}
-                <div>
-                  <Label>Status</Label>
-                  <Badge
-                    variant={
-                      viewProperty.status === 'Available' ? 'default' :
-                        viewProperty.status === 'Pending' ? 'secondary' : 'destructive'
-                    }
-                  >
-                    {viewProperty.status}
-                  </Badge>
-                </div>
-                <div>
-                  <Label>Approval Status</Label>
-                  <Badge
-                    variant={
-                      viewProperty.approvalStatus === 'approved' ? 'default' :
-                        viewProperty.approvalStatus === 'pending' ? 'secondary' : 'outline'
-                    }
-                  >
-                    {viewProperty.approvalStatus || 'N/A'}
-                  </Badge>
-                </div>
-                <div>
-                  <Label>Property Type</Label>
-                  <p>{viewProperty.propertyType}</p>
-                </div>
-                <div>
-                  <Label>Description</Label>
-                  <p>{viewProperty.description}</p>
-                </div>
-                <div>
-                  <Label>Creator</Label>
-                  <p>{viewProperty.creator?.name} ({viewProperty.creator?.email})</p>
-                </div>
-                <div>
-                  <Label>Admin Message</Label>
-                  <p>{viewProperty.adminMessage || 'N/A'}</p>
-                </div>
-              </div>
-              <div>
-                <Label>Images</Label>
-                <div className="flex gap-2 overflow-x-auto">
-                  {viewProperty.images?.length > 0 ? (
-                    viewProperty.images.map((img, index) => (
-                      <img
-                        key={index}
-                        src={`${import.meta.env.VITE_API_BASE_URL}/${img}`}
-                        alt={`Property ${index}`}
-                        className="w-24 h-24 object-cover rounded"
-                      />
-                    ))
-                  ) : (
-                    <p>No images available</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Property Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Property: {selectedProperty?.title}</DialogTitle>
-          </DialogHeader>
-          {selectedProperty && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input
-                    name="title"
-                    value={formData.title}
-                    onChange={handleFormChange}
-                    placeholder="Enter property title"
-                  />
-                </div>
-                <div>
-                  <Label>Full Address</Label>
-                  <Input
-                    name="fullAddress"
-                    value={formData.fullAddress}
-                    onChange={handleFormChange}
-                    placeholder="Enter full address"
-                  />
-                </div>
-                <div>
-                  <Label>Pincode</Label>
-                  <Input
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleFormChange}
-                    placeholder="Enter pincode"
-                  />
-                </div>
-                <div>
-                  <Label>State</Label>
-                  <Input
-                    name="state"
-                    value={formData.state}
-                    onChange={handleFormChange}
-                    placeholder="Enter state"
-                  />
-                </div>
-                <div>
-                  <Label>City</Label>
-                  <Input
-                    name="city"
-                    value={formData.city}
-                    onChange={handleFormChange}
-                    placeholder="Enter city"
-                  />
-                </div>
-                <div>
-                  <Label>Locality</Label>
-                  <Input
-                    name="locality"
-                    value={formData.locality}
-                    onChange={handleFormChange}
-                    placeholder="Enter locality"
-                  />
-                </div>
-                <div>
-                  <Label>Landmark</Label>
-                  <Input
-                    name="landmark"
-                    value={formData.landmark}
-                    onChange={handleFormChange}
-                    placeholder="Enter landmark"
-                  />
-                </div>
-                <div>
-                  <Label>Land Area</Label>
-                  <Input
-                    name="landArea"
-                    value={formData.landArea}
-                    onChange={handleFormChange}
-                    placeholder="Enter land area"
-                  />
-                </div>
-                <div>
-                  <Label>Price</Label>
-                  <Input
-                    name="unitPrice"
-                    value={formData.unitPrice}
-                    onChange={handleFormChange}
-                    placeholder="Enter price"
-                    type="number"
-                  />
-                </div>
-                <div>
-                  <Label>Property Type</Label>
-                  <Input
-                    name="propertyType"
-                    value={formData.propertyType}
-                    onChange={handleFormChange}
-                    placeholder="Enter property type"
-                  />
-                </div>
-                <div>
-                  <Label>Status</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) => handleSelectChange('status', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Available">Available</SelectItem>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Sold">Sold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Approval Status</Label>
-                  <Select
-                    value={formData.approvalStatus}
-                    onValueChange={(value) => handleSelectChange('approvalStatus', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select approval status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="col-span-1 sm:col-span-2">
-                  <Label>Description</Label>
-                  <Textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
-                    placeholder="Enter description"
-                  />
-                </div>
-                {selectedProperty.type === 'Home' && (
-                  <>
-                    <div>
-                      <Label>Rooms</Label>
-                      <Input
-                        name="rooms"
-                        value={formData.rooms}
-                        onChange={handleFormChange}
-                        placeholder="Enter number of rooms"
-                        type="number"
-                      />
-                    </div>
-                    <div>
-                      <Label>Bedrooms</Label>
-                      <Input
-                        name="bedrooms"
-                        value={formData.bedrooms}
-                        onChange={handleFormChange}
-                        placeholder="Enter number of bedrooms"
-                        type="number"
-                      />
-                    </div>
-                    <div>
-                      <Label>Kitchen</Label>
-                      <Input
-                        name="kitchen"
-                        value={formData.kitchen}
-                        onChange={handleFormChange}
-                        placeholder="Enter number of kitchens"
-                        type="number"
-                      />
-                    </div>
-                    <div>
-                      <Label>Bathrooms</Label>
-                      <Input
-                        name="bathrooms"
-                        value={formData.bathrooms}
-                        onChange={handleFormChange}
-                        placeholder="Enter number of bathrooms"
-                        type="number"
-                      />
-                    </div>
-                    <div>
-                      <Label>Floor</Label>
-                      <Input
-                        name="floor"
-                        value={formData.floor}
-                        onChange={handleFormChange}
-                        placeholder="Enter floor number"
-                        type="number"
-                      />
-                    </div>
-                    <div>
-                      <Label>Build Year</Label>
-                      <Input
-                        name="buildYear"
-                        value={formData.buildYear}
-                        onChange={handleFormChange}
-                        placeholder="Enter build year"
-                        type="number"
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        name="park"
-                        checked={formData.park}
-                        onChange={handleFormChange}
-                        className="h-4 w-4"
-                      />
-                      <Label>Parking Available</Label>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={confirmEdit}>
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Modal */}
-      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Delete</DialogTitle>
-          </DialogHeader>
-          <p>Are you sure you want to delete the property "{selectedProperty?.title}"?</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

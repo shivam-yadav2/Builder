@@ -4,6 +4,7 @@ const { ApiResponse } = require("../utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../utils/asyncHandler.utils.js");
 const Land = require("../models/land.model.js");
 const Home = require("../models/home.model.js");
+const Gallery = require("../models/gallery.model.js");
 const jwt = require("jsonwebtoken");
 
 const generateAccessAndRefreshTokens = async (adminId) => {
@@ -177,10 +178,53 @@ const getAdminAllProperties = asyncHandler(async (req, res) => {
     );
 });
 
+// Mark a property as Sold and copy it into the public Showcase (sold category).
+const markPropertySold = asyncHandler(async (req, res) => {
+  const { id, type, sold_price, sold_date } = req.body;
+
+  if (!id || !["Home", "Land"].includes(type)) {
+    throw new ApiError(400, "Valid property id and type are required");
+  }
+  if (!sold_price || !sold_date) {
+    throw new ApiError(400, "Sold price and sold date are required");
+  }
+
+  const Model = type === "Land" ? Land : Home;
+  const property = await Model.findById(id);
+  if (!property || property.isDelete) {
+    throw new ApiError(404, "Property not found");
+  }
+
+  // Mark the listing as sold.
+  property.status = "Sold";
+  await property.save();
+
+  // Create the matching Showcase (sold) entry, reusing the property's media.
+  const gallery = await Gallery.create({
+    category: "sold",
+    name: property.title,
+    location: property.location || property.fullAddress,
+    description: property.description,
+    images: property.images,
+    tags: property.nearby || [],
+    sold_price: sold_price.toString(),
+    sold_date,
+  });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      { property, gallery },
+      "Property marked as sold and added to showcase"
+    )
+  );
+});
+
 module.exports = {
   registerAdmin,
   loginAdmin,
   logoutAdmin,
   refreshAccessToken,
   getAdminAllProperties,
+  markPropertySold,
 };
