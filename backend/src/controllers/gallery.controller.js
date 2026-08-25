@@ -63,7 +63,7 @@ const createGallery = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Sold price and sold date are required");
   }
 
-  const imageUrls = files.map(cleanGalleryPath);
+  const imageUrls = files.map((f) => cleanGalleryPath(f.path));
   if (imageUrls.length === 0) {
     throw new ApiError(400, "Please upload at least one image");
   }
@@ -159,7 +159,7 @@ const updateGallery = asyncHandler(async (req, res) => {
 
   // Merge retained existing images with newly uploaded ones. Fall back to the
   // current images only when the client sends neither.
-  const newImages = files.map(cleanGalleryPath);
+  const newImages = files.map((f) => cleanGalleryPath(f.path));
   let imageUrls = gallery.images;
   if (keepImages !== undefined || newImages.length > 0) {
     imageUrls = [...parseKeepImages(keepImages), ...newImages];
